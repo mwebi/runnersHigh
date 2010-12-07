@@ -5,10 +5,6 @@
   android:layout_height="fill_parent" 
   >
   
-<View 
-	android:layout_width="fill_parent"
-	android:layout_height="fill_parent"
-	android:background="#FFFFFF"
-android:id="@+id/runnersHighViewXML"/>  
+
   
 </LinearLayout>

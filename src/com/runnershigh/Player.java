@@ -15,11 +15,15 @@ public class Player {
 	private int posY;
 	private int width;
 	private int height;
+	private boolean jumping = false;
+	private boolean reachedPeak = false;
+	private int jumpHeight = 50;
+	private int jumpStartY;
 
 	public Player(Context context) {
 		
 		posX = 70;
-		posY = 60;
+		posY = -150;
 		
 		//Queue<Block> blocks;
 		
@@ -28,10 +32,36 @@ public class Player {
 	}
 	
 	public void jump() {
-		
+		if(!jumping) {
+			jumping = true;
+			jumpStartY = posY;
+			
+		}
 	}
+	
+	public void doJump() {
+		if(jumping == true){
+			if(!reachedPeak) {
+				if(posY < jumpStartY + jumpHeight) {
+					posY += 5;
+				}
+				else if (posY >= jumpStartY + jumpHeight){
+					reachedPeak = true;
+				}
+			}
+			if(reachedPeak) {
+				if(posY > jumpStartY)
+					posY -= 5;
+				else if (posY <= jumpStartY){
+					reachedPeak =false;
+					jumping = false;
+				}
+			}						
+		}
+	}
+	
 	public void run() {
-		posX=posX+5;
+		//posX=posX+5;
 	}
 	public void draw(Canvas canvas) {
 		canvas.drawBitmap(playerImg, posX-width/2, (posY-height/2)*-1, null);
