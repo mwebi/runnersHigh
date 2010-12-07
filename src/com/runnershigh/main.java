@@ -13,12 +13,16 @@ public class main extends Activity {
 	    @Override
 		public void onCreate(Bundle savedInstanceState) {
 	    	super.onCreate(savedInstanceState);
+	    	//setContentView(R.layout.main);	 
 				        
 			requestWindowFeature(Window.FEATURE_NO_TITLE);  
 			getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
-				        
-			RunnersHighView gameView = (RunnersHighView) findViewById(R.id.runnersHighView);	        
+			
+			//setContentView(R.layout.runnershigh);	        
+			//(RunnersHighView) findViewById(R.id.runnersHighViewXML);
+			RunnersHighView gameView = new RunnersHighView(getApplicationContext()); 
 			setContentView(gameView);	        
+			
 		}	
 				
     
@@ -28,21 +32,34 @@ public class main extends Activity {
 		public RunnersHighView(Context context) {
 			super(context);
 			
-			//setContentView(R.layout.)
+			//setContentView(R.layout.main);	 
 			
-			//this.setBackgroundColor(0xFFFFFF);
+			//setBackgroundColor(0xFFFFFF);
 			player = new Player(getApplicationContext());
 			
-			// TODO Auto-generated constructor stub
+			Thread rHThread = new Thread(this);
+			rHThread.start();
 		}
 
 		@Override
 		public void run() {
 			// TODO Auto-generated method stub
+			while(true){
+				player.run();
+				postInvalidate();
+				try{ Thread.sleep(50); }
+				catch (InterruptedException e)
+				{
+					e.printStackTrace();
+				}
+			}
+			
 		}
 		
 		public void draw(Canvas canvas) {
+			
 			player.draw(canvas);
+			invalidate();
 		}
 
 	}

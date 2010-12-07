@@ -18,8 +18,8 @@ public class Player {
 
 	public Player(Context context) {
 		
-		posX = 40;
-		posY = 70;
+		posX = 70;
+		posY = 60;
 		
 		//Queue<Block> blocks;
 		
@@ -30,7 +30,9 @@ public class Player {
 	public void jump() {
 		
 	}
-
+	public void run() {
+		posX=posX+5;
+	}
 	public void draw(Canvas canvas) {
 		canvas.drawBitmap(playerImg, posX-width/2, (posY-height/2)*-1, null);
 	}
