@@ -7,6 +7,7 @@ import android.graphics.Canvas;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.provider.ContactsContract.CommonDataKinds.Event;
+import android.view.Display;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
@@ -57,6 +58,9 @@ public class main extends Activity {
     
 	public class RunnersHighView extends View implements Runnable {
 		private Player player;
+		private Level level;
+		private int width;
+		private int height;
 	
 		public RunnersHighView(Context context) {
 			super(context);
@@ -65,9 +69,13 @@ public class main extends Activity {
 //			
 //			counter.setText("fhhf");
 //			counter.setTextColor(0xFF0000);
+
+			Display display = ((WindowManager) getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+			width= display.getWidth(); 
+			height= display.getHeight();
 			
-			//setBackgroundColor(0xFFFFFF);
 			player = new Player(getApplicationContext());
+			level = new Level(context, width, height);
 			
 			Thread rHThread = new Thread(this);
 			rHThread.start();
@@ -78,11 +86,11 @@ public class main extends Activity {
 			// TODO Auto-generated method stub
 			while(true){
 				player.run();
-				
 				player.doJump();
+				level.update();
 				
 				postInvalidate();
-				try{ Thread.sleep(50); }
+				try{ Thread.sleep(25); }
 				catch (InterruptedException e)
 				{
 					e.printStackTrace();
@@ -92,7 +100,7 @@ public class main extends Activity {
 		}
 		
 		public void draw(Canvas canvas) {
-			
+			level.draw(canvas, 0, height);
 			player.draw(canvas);
 			invalidate();
 		}
