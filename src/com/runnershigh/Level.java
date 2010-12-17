@@ -6,6 +6,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Rect;
 import android.util.Log;
 
 
@@ -16,6 +17,7 @@ public class Level {
 	private int height;
 	private int sectionPosition;
 	private int sectionsWidth;
+	private int scoreCounter;
 	private Context context;
 	
 	public Level(Context context, int width, int heigth) {
@@ -24,7 +26,10 @@ public class Level {
 		this.sectionPosition = 0;
 		this.sectionsWidth = 0;
 		this.context = context;
+		this.scoreCounter = 0;
+		
 		sections = new Vector<LevelSection>();
+		
 		while(this.sectionsWidth < this.width)
 			generateAndAddSection();
 		
@@ -44,10 +49,12 @@ public class Level {
 			synchronized (sections) {
 				sections.remove(0);	
 			}
-			
 		}
-		else
-			sectionPosition -= 1;
+		else {
+			sectionPosition -= 3;
+			scoreCounter += 3;
+		}
+			
 	}
 	
 	public void draw(Canvas canvas, int referenceX, int referenceY) {
@@ -96,17 +103,45 @@ public class Level {
 		
 	}
 	
+	public Vector<Rect> getBlockData() {
+		Vector<Rect> blockData = new Vector<Rect>();
+		
+		Rect currentRect = new Rect();
+		int currentX = sectionPosition;
+		currentRect.left = currentX;
+		int currentY = sections.firstElement().getHeight();
+		
+		for (LevelSection section : sections) {
+			if (section.getHeight() != currentY) {
+				currentRect.right = currentX;
+				currentRect.bottom = 0;
+				currentRect.top = currentY;
+				blockData.add(currentRect);
+				
+				currentRect.left = currentX;
+				currentY = section.getHeight();
+			}
+			currentX += section.getWidth();
+		}
+		
+		return blockData;
+	}
+
+	public int getScoreCounter() {
+		return scoreCounter;
+	}
+
 	private class LevelSection {
-		private Vector<Block> blocks;
+		private Vector<Tile> blocks;
 		private int width;
 		private int height;
 		
 		public LevelSection(int height) {
-			blocks = new Vector<Block>();
+			blocks = new Vector<Tile>();
 			this.height = height;
 			
 			while(height > 0) {
-				Block newBlock = new Block(height);
+				Tile newBlock = new Tile(height);
 				blocks.add(newBlock);
 				height -= newBlock.getHeight();
 			}
@@ -127,18 +162,18 @@ public class Level {
 		}
 
 		public void draw(Canvas canvas, int referenceX, int referenceY) {
-			for (Block block : blocks) {
+			for (Tile block : blocks) {
 				block.draw(canvas, referenceX, referenceY);
 			}
 		}
 		
-		private class Block {
+		private class Tile {
 			private Bitmap image;
 			private int posY;
 			private int width;
 			private int height;
 
-			public Block(int posY) {
+			public Tile(int posY) {
 				this.posY = posY;
 				image = BitmapFactory.decodeResource(context.getResources(), R.drawable.blockpart);
 				this.width = image.getWidth();
