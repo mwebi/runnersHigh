@@ -106,19 +106,21 @@ public class Level {
 	public Vector<Rect> getBlockData() {
 		Vector<Rect> blockData = new Vector<Rect>();
 		
-		Rect currentRect = new Rect();
-		int currentX = sectionPosition;
-		currentRect.left = currentX;
-		int currentY = sections.firstElement().getHeight();
 		
+		int currentX = sectionPosition;
+		int startX = currentX;
+		
+		int currentY = sections.firstElement().getHeight();
 		for (LevelSection section : sections) {
 			if (section.getHeight() != currentY) {
+				Rect currentRect = new Rect();
+				currentRect.left = startX;
 				currentRect.right = currentX;
 				currentRect.bottom = 0;
 				currentRect.top = currentY;
 				blockData.add(currentRect);
 				
-				currentRect.left = currentX;
+				startX = currentX;
 				currentY = section.getHeight();
 			}
 			currentX += section.getWidth();
