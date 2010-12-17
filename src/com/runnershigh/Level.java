@@ -45,14 +45,14 @@ public class Level {
 			generateAndAddSection();
 			sectionsWidth -= sections.get(0).getWidth();
 			sectionPosition += sections.get(0).getWidth();
-			Log.d("Level", "removing a section");
+			//Log.d("Level", "removing a section");
 			synchronized (sections) {
 				sections.remove(0);	
 			}
 		}
 		else {
-			sectionPosition -= 3;
-			scoreCounter += 3;
+			sectionPosition -= 5;
+			scoreCounter += 5;
 		}
 			
 	}
@@ -92,7 +92,7 @@ public class Level {
 			if (setNewHeight && oldHeight != 0)
 				newHeight = 0;
 			else if (setNewHeight && oldHeight == 0)
-				newHeight = (int)(Math.random()*height);
+				newHeight = (int)(Math.random()*height/2);
 			else
 				newHeight = oldHeight;
 			
