@@ -8,11 +8,15 @@ import java.util.Vector;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Rect;
 import android.util.Log;
 import android.view.View;
 
 public class Player {
+	private static float MAX_JUMP_HEIGHT = 140;
+	private static float MIN_JUMP_HEIGHT = 20;
 	public Bitmap playerImg;
 	private int posX;
 	private int posY;
@@ -28,14 +32,16 @@ public class Player {
 	private boolean aboveGround = true;
 	private int refrenzY;
 	private boolean onZeroBlock = false;
-	private boolean jumpenabled=true;
+	private boolean jumpEnabled=true;
 	private boolean startYset = false;
+	private float velocity = 0;
+	private Rect playerRect;
 	
 
 	public Player(Context context, int ScreenHeight) {
 		
-		posX = 70; // x/y ist bottom left corner von picture
-		posY = 110;
+		posX = 70; // x/y is bottom left corner of picture
+		posY = 200;
 		refrenzY=ScreenHeight;
 		
 		//Queue<Block> blocks;
@@ -45,24 +51,64 @@ public class Player {
 		height=playerImg.getHeight();
 	}
 	
-	public void jump() {
-		if(!jumping && jumpenabled) {
-			jumping = true;
-			jumpStartY = posY;
-			
-		}
-	}
-	public void update() {
-		lastPosY=posY;
+	public void setJump(boolean jump) {
+		if(!jump)
+			reachedPeak = true;
 		
-		if(!jumping) {
-			//if(aboveGround)
-				posY-=fallSpeed;
+		if(reachedPeak) return;
+		
+		jumpStartY = posY;
+		jumping = true;
+		
+	}
+	
+	public boolean update(Vector<Rect> blocks) {
+		
+		
+		if (jumping && velocity >= 0) {
+			if(posY - jumpStartY < MIN_JUMP_HEIGHT || !reachedPeak) {
+				float modifier = (MAX_JUMP_HEIGHT - (posY - jumpStartY))/30;
+				velocity += 0.4981 * modifier;
+			}
+			if(posY - jumpStartY >= MAX_JUMP_HEIGHT) {
+				reachedPeak = true;			
+			}
 		}
-		//TODO
-		//if(poxY<=ScreenHeight)
-			//gameover
+
+			velocity -= 0.4981;
+		
+		posY += velocity;
+		playerRect = new Rect(posX,posY,posX+width,posY-height);
+		
+		for(Rect currentBlock : blocks){
+			if(currentBlock.top==0){
+				continue;
+			}
+			if( checkIntersect(playerRect, currentBlock) ){
+				if(lastPosY-height >= currentBlock.top)
+				{
+					posY=currentBlock.top+height;
+					velocity = 0;
+					reachedPeak = false;
+					jumping = false;
+				}
+				else{
+					return false;
+				}
+					
+			}
+		}
+		
+		lastPosY = posY;
+		
+		
+		if(posY - height < 0)
+			return false;
+		
+		
+		return true;
 	}	
+	
 	public void doJump() {
 		//if(jumpenabled==true){
 			if(jumping == true){
@@ -94,17 +140,16 @@ public class Player {
 			//Rect currentBlock = blocks.get(0);
 			Rect playerRect = new Rect(posX,posY,posX+width,posY-height);
 			
-			
 
 			if(playerRect.right >= currentBlock.left && playerRect.left <= currentBlock.right){
-				//jetzt wissen wir das wir in dem block sind auf dem der spieler ist
+				//jetzt wissen wir, dass wir in dem block sind auf dem der spieler ist
 				if(currentBlock.top!=0){
 
 					if(playerRect.top >= currentBlock.top){ //TODO wieso playerRect.top??
 						//Log.d("coll", "collision greift");
 						aboveGround=true;
 						if(playerRect.top >= currentBlock.top+5)
-							jumpenabled=false;
+							jumpEnabled=false;
 						break;
 					}
 					else if(playerRect.top < currentBlock.top){
@@ -120,7 +165,7 @@ public class Player {
 				}else{ //wenn player über block mit height 0
 					Log.d("coll", "over zeroblock");
 					Log.d("block", Integer.toString(currentBlock.top));
-					jumpenabled=false; 
+					jumpEnabled=false; 
 					onZeroBlock=true;
 					if(playerRect.right+10 <= currentBlock.left && playerRect.top <= currentBlock.top){
 						posX=currentBlock.left;
@@ -148,7 +193,7 @@ public class Player {
 		return true;
 	}
 	public boolean checkCollision(Vector<Rect> blocks) {
-		Rect playerRect = new Rect(posX,posY,posX+width,posY-height);
+		Rect playerRect = new Rect(posX,posY,posX+width,posY+height);
 		
 		/*Rect testRect = new Rect(0,10,10,0);
 		Rect testRect2 = new Rect(2,12,12,0);
@@ -170,26 +215,43 @@ public class Player {
 	}
 	public boolean checkIntersect(Rect playerRect, Rect blockRect) {
 		if(playerRect.bottom >= blockRect.bottom && playerRect.bottom <= blockRect.top)
+		{
 			if(playerRect.right >= blockRect.left && playerRect.right <= blockRect.right )
 				return true;
-		if(playerRect.bottom >= blockRect.bottom && playerRect.bottom <= blockRect.top)
-			if(playerRect.left >= blockRect.left && playerRect.left <= blockRect.right )
+			else if(playerRect.left >= blockRect.left && playerRect.left <= blockRect.right )
 				return true;
-		if(playerRect.top >= blockRect.bottom && playerRect.top <= blockRect.top)
+		}
+		else if(playerRect.top >= blockRect.bottom && playerRect.top <= blockRect.top){
 			if(playerRect.right >= blockRect.left && playerRect.right <= blockRect.right )
 				return true;
-		if(playerRect.top >= blockRect.bottom && playerRect.top <= blockRect.top)
-			if(playerRect.left >= blockRect.left && playerRect.left <= blockRect.right )
+			else if(playerRect.left >= blockRect.left && playerRect.left <= blockRect.right )
 				return true;
+		}
 		//blockrect in playerrect
-		if(blockRect.bottom <=playerRect.bottom && blockRect.top <=playerRect.top)
-			if(blockRect.left <=playerRect.left && blockRect.right <=playerRect.right )
+		if(blockRect.bottom >= playerRect.bottom && blockRect.bottom <= playerRect.top)
+			if(blockRect.right >= playerRect.left && blockRect.right <= playerRect.right )
 				return true;
 		
 		return false;
 	}
-	public void draw(Canvas canvas, int referenzX, int referenzY) {
-		canvas.drawBitmap(playerImg, posX, referenzY-posY-height, null);
+	public void draw(Canvas canvas) {
+		
+		Paint paint = new Paint();
+		paint.setColor(Color.LTGRAY);
+		paint.setStyle(Paint.Style.FILL);
+		paint.setAntiAlias(true);
+		
+		int y = Util.getInstance().toScreenY(posY);
+		int screenTop = Util.getInstance().toScreenY(playerRect.top);
+		int screenBottom = Util.getInstance().toScreenY(playerRect.bottom);
+		
+		canvas.drawLine(playerRect.left, screenTop, playerRect.right, screenTop, paint);
+		canvas.drawLine(playerRect.right, screenTop, playerRect.right, screenBottom, paint);
+		canvas.drawLine(playerRect.right, screenBottom, playerRect.left, screenBottom, paint);
+		canvas.drawLine(playerRect.left, screenBottom, playerRect.left, screenTop, paint);
+		
+		
+		canvas.drawBitmap(playerImg, posX, y, null);
 	}
 	
 	public int getPosX() {

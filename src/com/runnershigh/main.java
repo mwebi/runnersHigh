@@ -17,6 +17,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.TextView;
 
+
 public class main extends Activity {
 		PowerManager.WakeLock wakeLock ;
 		/** Called when the activity is first created. */
@@ -71,6 +72,8 @@ public class main extends Activity {
 			Display display = ((WindowManager) getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
 			width= display.getWidth(); 
 			height= display.getHeight();
+			Util.getInstance().setScreenHeight(height);
+			
 			
 			player = new Player(getApplicationContext(),height);
 			level = new Level(context, width, height);
@@ -85,20 +88,15 @@ public class main extends Activity {
 			while(true){
 				//REM Player update vor collision
 				
-				player.doJump();
-				player.update();
-				player.checkCollision(level.getBlockData());
-				level.update();
+				//player.doJump();
+				if (player.update(level.getBlockData()))
+					level.update();
+				/*player.checkCollision(level.getBlockData());
 				
-				
-				/*if(player.checkCollision(level.getBlockData()) ){
-					
-				}*/
-
-				
+				*/
 				
 				postInvalidate();
-				try{ Thread.sleep(25); }
+				try{ Thread.sleep(10); }
 				catch (InterruptedException e)
 				{
 					e.printStackTrace();
@@ -115,15 +113,19 @@ public class main extends Activity {
 
 			canvas.drawText("Your Score: " + Integer.toString(level.getScoreCounter()), 20, 20, paint);
 			
-			level.draw(canvas, 0, height);
-			player.draw(canvas, 0, height);
+			level.draw(canvas);
+			player.draw(canvas);
 			invalidate();
 		}
 		
 		public boolean onTouchEvent(MotionEvent event) {
-			player.jump();
+			if(event.getAction() == MotionEvent.ACTION_UP)
+				player.setJump(false);
+			
+			else if(event.getAction() == MotionEvent.ACTION_DOWN)
+				player.setJump(true);
+				
 			return true;
 		}
-
 	}
 }

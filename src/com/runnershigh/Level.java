@@ -6,6 +6,8 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Rect;
 import android.util.Log;
 
@@ -51,21 +53,22 @@ public class Level {
 			}
 		}
 		else {
-			sectionPosition -= 10;
+			sectionPosition -= 20;
 			scoreCounter += 10;
 		}
 			
 	}
 	
-	public void draw(Canvas canvas, int referenceX, int referenceY) {
+	public void draw(Canvas canvas) {
+
 		int relativeX = sectionPosition;
 		synchronized (sections) {
 			for (LevelSection section : sections) {
-				section.draw(canvas, referenceX + relativeX, referenceY);
+				section.draw(canvas, relativeX);
 				relativeX += section.getWidth();
 			}
 		}
-		
+
 	}
 	
 	private void generateAndAddSection() {
@@ -106,7 +109,6 @@ public class Level {
 	public Vector<Rect> getBlockData() {
 		Vector<Rect> blockData = new Vector<Rect>();
 		
-		
 		int currentX = sectionPosition;
 		int startX = currentX;
 		
@@ -125,7 +127,6 @@ public class Level {
 			}
 			currentX += section.getWidth();
 		}
-		
 		return blockData;
 	}
 
@@ -163,9 +164,9 @@ public class Level {
 			return height;
 		}
 
-		public void draw(Canvas canvas, int referenceX, int referenceY) {
+		public void draw(Canvas canvas, int referenceX) {
 			for (Tile block : blocks) {
-				block.draw(canvas, referenceX, referenceY);
+				block.draw(canvas, referenceX);
 			}
 		}
 		
@@ -190,8 +191,8 @@ public class Level {
 				return height;
 			}
 			
-			public void draw(Canvas canvas, int referenceX, int referenceY) {
-				canvas.drawBitmap(image, referenceX, referenceY-posY, null);
+			public void draw(Canvas canvas, int referenceX) {
+				canvas.drawBitmap(image, referenceX, Util.getInstance().toScreenY(posY), null);
 			}
 		}
 		
