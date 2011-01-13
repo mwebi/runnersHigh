@@ -74,7 +74,7 @@ public class main extends Activity {
 			width= display.getWidth(); 
 			height= display.getHeight();
 			
-			player = new Player(getApplicationContext());
+			player = new Player(getApplicationContext(),height);
 			level = new Level(context, width, height);
 			
 			Thread rHThread = new Thread(this);
@@ -85,11 +85,12 @@ public class main extends Activity {
 		public void run() {
 			// TODO Auto-generated method stub
 			while(true){
-				player.run();
-				player.doJump();
-				if(player.checkCollision(level.getBlockData()));
-					level.update();
 				
+				player.doJump();
+				level.update();
+				player.update();
+				player.checkCollision(level.getBlockData());
+
 				postInvalidate();
 				try{ Thread.sleep(25); }
 				catch (InterruptedException e)
@@ -102,7 +103,7 @@ public class main extends Activity {
 		
 		public void draw(Canvas canvas) {
 			level.draw(canvas, 0, height);
-			player.draw(canvas);
+			player.draw(canvas, 0, height);
 			invalidate();
 		}
 		
