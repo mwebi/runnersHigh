@@ -4,6 +4,8 @@ import android.R.bool;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.provider.ContactsContract.CommonDataKinds.Event;
@@ -32,7 +34,7 @@ public class main extends Activity {
 			//setContentView(R.layout.runnershigh);	        
 			//(RunnersHighView) findViewById(R.id.runnersHighViewXML);
 			RunnersHighView gameView = new RunnersHighView(getApplicationContext()); 
-			setContentView(gameView);	        
+			setContentView(gameView);	     
 			
 		}	
 		
@@ -65,11 +67,6 @@ public class main extends Activity {
 		public RunnersHighView(Context context) {
 			super(context);
 			
-			TextView counter = (TextView) findViewById(R.id.counter);
-//			
-//			counter.setText("fhhf");
-//			counter.setTextColor(0xFF0000);
-
 			Display display = ((WindowManager) getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
 			width= display.getWidth(); 
 			height= display.getHeight();
@@ -90,7 +87,7 @@ public class main extends Activity {
 				level.update();
 				player.update();
 				player.checkCollision(level.getBlockData());
-
+				
 				postInvalidate();
 				try{ Thread.sleep(25); }
 				catch (InterruptedException e)
@@ -98,10 +95,17 @@ public class main extends Activity {
 					e.printStackTrace();
 				}
 			}
-			
 		}
 		
 		public void draw(Canvas canvas) {
+			Paint paint = new Paint();
+			paint.setColor(Color.LTGRAY);
+			paint.setStyle(Paint.Style.FILL);
+			paint.setAntiAlias(true);
+			paint.setTextSize(18);
+
+			canvas.drawText("Your Score: " + Integer.toString(level.getScoreCounter()), 20, 20, paint);
+			
 			level.draw(canvas, 0, height);
 			player.draw(canvas, 0, height);
 			invalidate();

@@ -47,6 +47,7 @@ public class Player {
 		if(!jumping && jumpenabled) {
 			jumping = true;
 			jumpStartY = posY;
+			
 		}
 	}
 	public void update() {
@@ -82,7 +83,7 @@ public class Player {
 			}
 		//}
 	}
-
+	
 	public void checkCollision(Vector<Rect> blocks) {
 		for(Rect currentBlock : blocks){
 			//Rect currentBlock = blocks.get(0);
@@ -103,8 +104,6 @@ public class Player {
 				jumpenabled=true;
 
 				if(currentBlock.top!=0){
-					
-					
 					if(playerRect.top >= currentBlock.top){ //TODO wieso playerRect.top??
 						//Log.d("coll", "collision greift");
 						aboveGround=true;
@@ -122,10 +121,12 @@ public class Player {
 							break;
 						}
 					}
-				}else{
-					jumpenabled=false; //wenn player über block mit height 0
+				}else{ //wenn player über block mit height 0
+					Log.d("coll", "over zeroblock");
+					Log.d("block", Integer.toString(currentBlock.top));
+					jumpenabled=false; 
 					onZeroBlock=true;
-					if(playerRect.right+5 <= currentBlock.left && playerRect.top <= currentBlock.top){
+					if(playerRect.right+10 <= currentBlock.left && playerRect.top <= currentBlock.top){
 						posX=currentBlock.left;
 						Log.d("coll", "boom game over");
 					}

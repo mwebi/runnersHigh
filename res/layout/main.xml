@@ -4,15 +4,15 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     >
-<View 
-	android:layout_width="fill_parent"
-	android:layout_height="fill_parent"
-	android:background="#FFFFFF"
-	android:id="@+id/runnersHighView"/>  
-  
+
 <TextView  
 	android:id="@+id/counter"
-    android:layout_width="fill_parent" 
+  	android:layout_width="fill_parent" 
     android:layout_height="wrap_content" 
-    />  
+    android:background="#00FF00"
+    android:text="@string/score" 
+/>  
+
+
+
 </LinearLayout>
