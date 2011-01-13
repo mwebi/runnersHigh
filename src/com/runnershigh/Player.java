@@ -16,6 +16,7 @@ public class Player {
 	public Bitmap playerImg;
 	private int posX;
 	private int posY;
+	private int lastPosY;
 	private int width;
 	private int height;
 	private boolean jumping = false;
@@ -29,6 +30,7 @@ public class Player {
 	private boolean onZeroBlock = false;
 	private boolean jumpenabled=true;
 	private boolean startYset = false;
+	
 
 	public Player(Context context, int ScreenHeight) {
 		
@@ -51,8 +53,10 @@ public class Player {
 		}
 	}
 	public void update() {
+		lastPosY=posY;
+		
 		if(!jumping) {
-			if(aboveGround || onZeroBlock)
+			//if(aboveGround)
 				posY-=fallSpeed;
 		}
 		//TODO
@@ -76,34 +80,26 @@ public class Player {
 					else if (posY <= jumpStartY){
 						reachedPeak = false;
 						jumping = false;
-						if(onZeroBlock==true)
-							jumpenabled=false;
+						//if(onZeroBlock==true)
+							//jumpenabled=false;
 					}
 				}						
 			}
 		//}
 	}
 	
-	public void checkCollision(Vector<Rect> blocks) {
+	public boolean OLDcheckCollision(Vector<Rect> blocks) {
+		int currentBlockID=0;
 		for(Rect currentBlock : blocks){
 			//Rect currentBlock = blocks.get(0);
 			Rect playerRect = new Rect(posX,posY,posX+width,posY-height);
-			/*if (currentBlock.top > playerRect.top)
-				if (currentBlock.left < playerRect.right)
-					if (currentBlock.right > playerRect.right){
-						Log.d("contains", "true");
-						inside=true;
-					} else {inside=false;}
-				 else {inside=false;}
-			 else {inside=false;}*/
 			
-			onZeroBlock=false;
+			
 
 			if(playerRect.right >= currentBlock.left && playerRect.left <= currentBlock.right){
-				//jetzt wissen wir das wir im richtigen block sind
-				jumpenabled=true;
-
+				//jetzt wissen wir das wir in dem block sind auf dem der spieler ist
 				if(currentBlock.top!=0){
+
 					if(playerRect.top >= currentBlock.top){ //TODO wieso playerRect.top??
 						//Log.d("coll", "collision greift");
 						aboveGround=true;
@@ -116,7 +112,7 @@ public class Player {
 							//posY=currentBlock.top;
 						if(aboveGround){
 							aboveGround=false;
-							posY +=fallSpeed;
+							posY += fallSpeed;
 							jumpStartY=currentBlock.top;
 							break;
 						}
@@ -132,11 +128,8 @@ public class Player {
 					}
 					break;
 				}
-				
-			}/*else {
-				onGround=false; //weil bodenlos
-				outside=true;
-			}*/
+			}
+			
 			//currentBlock.contains(playerRect)
 			if (false){
 				Log.d("block", Integer.toString(currentBlock.top));
@@ -149,7 +142,51 @@ public class Player {
 				Log.d("player", Integer.toString(playerRect.right));
 				Log.d("player", Integer.toString(playerRect.bottom));	
 			}
+			
+			currentBlockID++;
 		}
+		return true;
+	}
+	public boolean checkCollision(Vector<Rect> blocks) {
+		Rect playerRect = new Rect(posX,posY,posX+width,posY-height);
+		
+		/*Rect testRect = new Rect(0,10,10,0);
+		Rect testRect2 = new Rect(2,12,12,0);
+		if (checkIntersect(testRect, testRect2) )
+			Log.d("coll", "geht");*/
+		
+		for(Rect currentBlock : blocks){
+			if(currentBlock.top==0){
+				continue;
+			}	
+			if( checkIntersect(playerRect, currentBlock) ){
+				Log.d("coll", "geht");
+				if(lastPosY >= currentBlock.top)
+					posY=currentBlock.top;
+
+			}
+		}
+		return true;
+	}
+	public boolean checkIntersect(Rect playerRect, Rect blockRect) {
+		if(playerRect.bottom >= blockRect.bottom && playerRect.bottom <= blockRect.top)
+			if(playerRect.right >= blockRect.left && playerRect.right <= blockRect.right )
+				return true;
+		if(playerRect.bottom >= blockRect.bottom && playerRect.bottom <= blockRect.top)
+			if(playerRect.left >= blockRect.left && playerRect.left <= blockRect.right )
+				return true;
+		if(playerRect.top >= blockRect.bottom && playerRect.top <= blockRect.top)
+			if(playerRect.right >= blockRect.left && playerRect.right <= blockRect.right )
+				return true;
+		if(playerRect.top >= blockRect.bottom && playerRect.top <= blockRect.top)
+			if(playerRect.left >= blockRect.left && playerRect.left <= blockRect.right )
+				return true;
+		//blockrect in playerrect
+		if(blockRect.bottom <=playerRect.bottom && blockRect.top <=playerRect.top)
+			if(blockRect.left <=playerRect.left && blockRect.right <=playerRect.right )
+				return true;
+		
+		return false;
 	}
 	public void draw(Canvas canvas, int referenzX, int referenzY) {
 		canvas.drawBitmap(playerImg, posX, referenzY-posY-height, null);
