@@ -51,8 +51,8 @@ public class Level {
 			}
 		}
 		else {
-			sectionPosition -= 5;
-			scoreCounter += 5;
+			sectionPosition -= 10;
+			scoreCounter += 10;
 		}
 			
 	}

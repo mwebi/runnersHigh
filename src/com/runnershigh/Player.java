@@ -20,15 +20,20 @@ public class Player {
 	private int height;
 	private boolean jumping = false;
 	private boolean reachedPeak = false;
-	private int jumpHeight = 75;
+	private int fallSpeed = 5;
+	private int jumpHeight = 180;
 	private int jumpStartY;
 	private boolean onGround = false;
+	private boolean aboveGround = true;
 	private int refrenzY;
+	private boolean onZeroBlock = false;
+	private boolean jumpenabled=true;
+	private boolean startYset = false;
 
 	public Player(Context context, int ScreenHeight) {
 		
-		posX = 70;
-		posY = 150;
+		posX = 70; // x/y ist bottom left corner von picture
+		posY = 110;
 		refrenzY=ScreenHeight;
 		
 		//Queue<Block> blocks;
@@ -39,7 +44,7 @@ public class Player {
 	}
 	
 	public void jump() {
-		if(!jumping) {
+		if(!jumping && jumpenabled) {
 			jumping = true;
 			jumpStartY = posY;
 			
@@ -47,40 +52,42 @@ public class Player {
 	}
 	public void update() {
 		if(!jumping) {
-			if(!onGround)
-				posY-=2;
+			if(aboveGround || onZeroBlock)
+				posY-=fallSpeed;
 		}
-		
 		//TODO
 		//if(poxY<=ScreenHeight)
 			//gameover
 	}	
 	public void doJump() {
-		if(jumping == true){
-			if(!reachedPeak) {
-				if(posY < jumpStartY + jumpHeight) {
-					posY += 3;
+		//if(jumpenabled==true){
+			if(jumping == true){
+				if(!reachedPeak) {
+					if(posY < jumpStartY + jumpHeight) {
+						posY += 5;
+					}
+					else if (posY >= jumpStartY + jumpHeight){
+						reachedPeak = true;
+					}
 				}
-				else if (posY >= jumpStartY + jumpHeight){
-					reachedPeak = true;
-				}
+				if(reachedPeak) {
+					if(posY > jumpStartY)
+						posY -= 5;
+					else if (posY <= jumpStartY){
+						reachedPeak = false;
+						jumping = false;
+						if(onZeroBlock==true)
+							jumpenabled=false;
+					}
+				}						
 			}
-			if(reachedPeak) {
-				if(posY > jumpStartY)
-					posY -= 3;
-				else if (posY <= jumpStartY){
-					reachedPeak =false;
-					jumping = false;
-				}
-			}						
-		}
+		//}
 	}
 	
 	public void checkCollision(Vector<Rect> blocks) {
 		for(Rect currentBlock : blocks){
 			//Rect currentBlock = blocks.get(0);
-			Rect playerRect = new Rect(posX,posY,posX+width,posY+height);
-			boolean inside=false;
+			Rect playerRect = new Rect(posX,posY,posX+width,posY-height);
 			/*if (currentBlock.top > playerRect.top)
 				if (currentBlock.left < playerRect.right)
 					if (currentBlock.right > playerRect.right){
@@ -90,23 +97,48 @@ public class Player {
 				 else {inside=false;}
 			 else {inside=false;}*/
 			
-			
-			if(playerRect.left > currentBlock.left && playerRect.right < currentBlock.right){
+			onZeroBlock=false;
+
+			if(playerRect.right >= currentBlock.left && playerRect.left <= currentBlock.right){
+				//jetzt wissen wir das wir im richtigen block sind
+				jumpenabled=true;
+
 				if(currentBlock.top!=0){
-					if(playerRect.top <= currentBlock.top){ //TODO wieso playerRect.top??
-						onGround=true;
+					
+					
+					if(playerRect.top >= currentBlock.top){ //TODO wieso playerRect.top??
+						//Log.d("coll", "collision greift");
+						aboveGround=true;
+						if(playerRect.top >= currentBlock.top+5)
+							jumpenabled=false;
 						break;
 					}
-					else {
-						onGround=false;
+					else if(playerRect.top < currentBlock.top){
+						//if(!jumping)
+							//posY=currentBlock.top;
+						if(aboveGround){
+							aboveGround=false;
+							posY +=fallSpeed;
+							jumpStartY=currentBlock.top;
+							break;
+						}
 					}
+				}else{
+					jumpenabled=false; //wenn player über block mit height 0
+					onZeroBlock=true;
+					if(playerRect.right+5 <= currentBlock.left && playerRect.top <= currentBlock.top){
+						posX=currentBlock.left;
+						Log.d("coll", "boom game over");
+					}
+					break;
 				}
-				else {
-					onGround=false; //weil bodenlos
-				}
-			}
+				
+			}/*else {
+				onGround=false; //weil bodenlos
+				outside=true;
+			}*/
 			//currentBlock.contains(playerRect)
-			if (inside){
+			if (false){
 				Log.d("block", Integer.toString(currentBlock.top));
 				Log.d("block", Integer.toString(currentBlock.left));
 				Log.d("block", Integer.toString(currentBlock.right));
