@@ -87,7 +87,8 @@ public class main extends Activity {
 			while(true){
 				player.run();
 				player.doJump();
-				level.update();
+				if(player.checkCollision(level.getBlockData()));
+					level.update();
 				
 				postInvalidate();
 				try{ Thread.sleep(25); }

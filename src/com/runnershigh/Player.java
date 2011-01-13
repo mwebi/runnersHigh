@@ -3,10 +3,13 @@ package com.runnershigh;
 import android.content.Context;
 import java.lang.Object;
 import java.util.Queue;
+import java.util.Vector;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Rect;
+import android.util.Log;
 import android.view.View;
 
 public class Player {
@@ -35,7 +38,6 @@ public class Player {
 		if(!jumping) {
 			jumping = true;
 			jumpStartY = posY;
-			
 		}
 	}
 	
@@ -58,6 +60,21 @@ public class Player {
 				}
 			}						
 		}
+	}
+	
+	public boolean checkCollision(Vector<Rect>  blockVector) {
+		Rect currentBlock = blockVector.get(0);
+		Log.v("left:", Integer.toString(currentBlock.left));
+		Log.v("top:", Integer.toString(currentBlock.top));
+		Log.v("right:", Integer.toString(currentBlock.right));
+		Log.v("bottom:", Integer.toString(currentBlock.bottom));
+		
+		if(currentBlock.contains(posX, posY))
+			Log.v("contains", "true");
+		
+		else Log.v("contains", "false");
+		
+		return true;
 	}
 	
 	public void run() {
