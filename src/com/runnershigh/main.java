@@ -7,6 +7,7 @@ import android.graphics.Canvas;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.provider.ContactsContract.CommonDataKinds.Event;
+import android.util.Log;
 import android.view.Display;
 import android.view.MotionEvent;
 import android.view.View;
@@ -85,11 +86,19 @@ public class main extends Activity {
 		public void run() {
 			// TODO Auto-generated method stub
 			while(true){
+				//REM Player update vor collision
 				
 				player.doJump();
-				level.update();
 				player.update();
 				player.checkCollision(level.getBlockData());
+				level.update();
+				
+				
+				/*if(player.checkCollision(level.getBlockData()) ){
+					
+				}*/
+
+				
 				
 				postInvalidate();
 				try{ Thread.sleep(25); }
