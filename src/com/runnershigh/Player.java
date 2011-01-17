@@ -254,6 +254,12 @@ public class Player {
 		canvas.drawBitmap(playerImg, posX, y, null);
 	}
 	
+	public void reset() {
+		posX = 70; // x/y is bottom left corner of picture
+		posY = 200;
+		velocity = 0;
+	}
+	
 	public int getPosX() {
 		return posX;
 	}

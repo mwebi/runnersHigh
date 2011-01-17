@@ -3,6 +3,8 @@ package com.runnershigh;
 import android.R.bool;
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -65,6 +67,11 @@ public class main extends Activity {
 		private Level level;
 		private int width;
 		private int height;
+		private Bitmap resetButton;
+		private int resetButtonX = 350;
+		private int resetButtonY = 10;
+		private int resetButtonWidth = 100;
+		private int resetButtonHeight = 41;
 	
 		public RunnersHighView(Context context) {
 			super(context);
@@ -77,6 +84,8 @@ public class main extends Activity {
 			
 			player = new Player(getApplicationContext(),height);
 			level = new Level(context, width, height);
+			
+			resetButton = BitmapFactory.decodeResource(context.getResources(), R.drawable.resetbutton);
 			
 			Thread rHThread = new Thread(this);
 			rHThread.start();
@@ -112,9 +121,11 @@ public class main extends Activity {
 			paint.setTextSize(18);
 
 			canvas.drawText("Your Score: " + Integer.toString(level.getScoreCounter()), 20, 20, paint);
-			
+			canvas.drawBitmap(resetButton, resetButtonX, resetButtonY, null);
+
 			level.draw(canvas);
 			player.draw(canvas);
+			
 			invalidate();
 		}
 		
@@ -122,8 +133,16 @@ public class main extends Activity {
 			if(event.getAction() == MotionEvent.ACTION_UP)
 				player.setJump(false);
 			
-			else if(event.getAction() == MotionEvent.ACTION_DOWN)
+			else if(event.getAction() == MotionEvent.ACTION_DOWN){
 				player.setJump(true);
+				if(event.getX() <= resetButtonX+resetButtonWidth && event.getX() > resetButtonX)
+					if(event.getY() <= resetButtonY+resetButtonHeight && event.getY() > resetButtonY){
+						Log.d("reset", "reset pressed");
+						player.reset();
+					}
+			}
+				
+			
 				
 			return true;
 		}
