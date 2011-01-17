@@ -1,6 +1,5 @@
 package com.runnershigh;
 
-import android.R.bool;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -10,14 +9,11 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.os.PowerManager;
-import android.provider.ContactsContract.CommonDataKinds.Event;
-import android.util.Log;
 import android.view.Display;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.TextView;
 
 
 public class main extends Activity {
@@ -68,6 +64,7 @@ public class main extends Activity {
 		private int width;
 		private int height;
 		private Bitmap resetButton;
+		private boolean showResetButton = false;
 		private int resetButtonX = 350;
 		private int resetButtonY = 10;
 		private int resetButtonWidth = 100;
@@ -93,16 +90,14 @@ public class main extends Activity {
 
 		@Override
 		public void run() {
-			// TODO Auto-generated method stub
 			while(true){
-				//REM Player update vor collision
-				
-				//player.doJump();
-				if (player.update(level.getBlockData()))
+				if (player.update(level.getBlockData())) {
 					level.update();
-				/*player.checkCollision(level.getBlockData());
-				
-				*/
+				} else {
+					if(player.getPosY() < 0){
+						showResetButton = true;
+					}
+				}
 				
 				postInvalidate();
 				try{ Thread.sleep(10); }
@@ -121,7 +116,9 @@ public class main extends Activity {
 			paint.setTextSize(18);
 
 			canvas.drawText("Your Score: " + Integer.toString(level.getScoreCounter()), 20, 20, paint);
-			canvas.drawBitmap(resetButton, resetButtonX, resetButtonY, null);
+			
+			if (showResetButton)
+				canvas.drawBitmap(resetButton, resetButtonX, resetButtonY, null);
 
 			level.draw(canvas);
 			player.draw(canvas);
@@ -134,21 +131,20 @@ public class main extends Activity {
 				player.setJump(false);
 			
 			else if(event.getAction() == MotionEvent.ACTION_DOWN){
-				if(event.getX() <= resetButtonX+resetButtonWidth && event.getX() > resetButtonX){
-					if(event.getY() <= resetButtonY+resetButtonHeight && event.getY() > resetButtonY){
-						//Log.d("reset", "reset pressed");
-						if(player.getPosY() < 0){
+				if (showResetButton) {
+					if(event.getX() <= resetButtonX+resetButtonWidth && event.getX() > resetButtonX){
+						if(event.getY() <= resetButtonY+resetButtonHeight && event.getY() > resetButtonY){
 							player.reset();
-							level.resetScoreCounter();
+							level.reset();
+							showResetButton = false;
 						}
-					}else
-						player.setJump(true);
-				}else
+					}
+				}
+				else {
 					player.setJump(true);
+				}
 			}
-				
 			
-				
 			return true;
 		}
 	}

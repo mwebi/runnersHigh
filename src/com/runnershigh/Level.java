@@ -3,8 +3,6 @@ package com.runnershigh;
 import java.util.Vector;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -14,189 +12,128 @@ import android.util.Log;
 
 public class Level {
 	
-	private Vector<LevelSection> sections; 
 	private int width;
 	private int height;
-	private int sectionPosition;
-	private int sectionsWidth;
+	private int levelPosition;
 	private int scoreCounter;
-	private Context context;
+	private Vector<Rect> blockData;
 	
 	public Level(Context context, int width, int heigth) {
 		this.width = width;
 		this.height = heigth;
-		this.sectionPosition = 0;
-		this.sectionsWidth = 0;
-		this.context = context;
+		this.levelPosition = 0;
 		this.scoreCounter = 0;
 		
-		sections = new Vector<LevelSection>();
+		blockData = new Vector<Rect>();
 		
-		while(this.sectionsWidth < this.width)
-			generateAndAddSection();
-		
-		generateAndAddSection();
-		generateAndAddSection();
+		generateAndAddBlock();
 		
 	}
 	
 	public void update() {
 		
-		if (sectionPosition + sections.get(0).getWidth() < 0) {
-		 
-			generateAndAddSection();
-			sectionsWidth -= sections.get(0).getWidth();
-			sectionPosition += sections.get(0).getWidth();
-			//Log.d("Level", "removing a section");
-			synchronized (sections) {
-				sections.remove(0);	
+		synchronized (blockData) {
+			Log.d("debug", "in update");
+			if (blockData.size() == 0)
+			{
+				levelPosition = 0;
+				generateAndAddBlock();
 			}
-		}
-		else {
-			sectionPosition -= 20;
-			scoreCounter += 10;
-		}
+			Log.d("debug", "in update after == 0");
 			
+			if (levelPosition > blockData.get(0).right) {
+				blockData.remove(0);	
+			}
+			Log.d("debug", "in update after > right; blockData.size() -> " + Integer.toString(blockData.size()) );
+			
+			if (blockData.get(blockData.size() -1).left < levelPosition + width)
+				generateAndAddBlock();
+			
+			Log.d("debug", "in update after < levelPosition + width");
+			
+			levelPosition += 5;
+			scoreCounter += 1;
+			Log.d("debug", "in update after value mod");
+		}	
 	}
 	
 	public void draw(Canvas canvas) {
-
-		int relativeX = sectionPosition;
-		synchronized (sections) {
-			for (LevelSection section : sections) {
-				section.draw(canvas, relativeX);
-				relativeX += section.getWidth();
+		
+		synchronized (blockData) {
+			Log.d("debug", "in draw");
+			Paint paint = new Paint();
+			paint.setColor(Color.RED);
+			paint.setStyle(Paint.Style.FILL);
+			
+			canvas.translate(-levelPosition, 0);
+			canvas.scale(1, -1);
+			//canvas.translate(0, height);
+			canvas.translate(0, -height+1);
+			
+		
+			for (Rect block : blockData) {				
+				canvas.drawRect(block, paint);
 			}
+		
+			canvas.translate(0, height-1);
+			canvas.scale(1, -1);
+			canvas.translate(levelPosition, 0);
 		}
-
 	}
 	
-	private void generateAndAddSection() {
-		if (sectionsWidth < width) {
-			LevelSection newSection = new LevelSection(50);
-			sections.add(newSection);
-			sectionsWidth += newSection.getWidth();
+	private void generateAndAddBlock() {
+		Log.d("debug", "in generate");
+		if (blockData.size() == 0) {
+			Rect newRect = new Rect(0, 50, width, 0);
+			blockData.add(newRect);
 		} else {
-			int index = sections.size()-1;
-			int counter = (int)(Math.random()*3)+20;
-			boolean setNewHeight = true;
-			
-			int oldHeight = sections.get(index).getHeight();
-			index--;
-			while(counter > 0) {
-				if (sections.get(index).getHeight() != oldHeight)
-					setNewHeight = false;
-				index--;
-				counter--;
-			}
-			
 			int newHeight;
-			
-			if (setNewHeight && oldHeight != 0)
-				newHeight = 0;
-			else if (setNewHeight && oldHeight == 0)
-				newHeight = (int)(Math.random()*height/2);
+			if (blockData.get(blockData.size() -1 ).top > height/2)
+				newHeight = (int)(Math.random()*height/4*3 + height/8);
 			else
-				newHeight = oldHeight;
+				newHeight = (int)(Math.random()*height/2 + height/8);
 			
-			LevelSection newSection = new LevelSection(newHeight);
-			sections.add(newSection);
-			sectionsWidth += newSection.getWidth();
+			int newWidth = (int)(Math.random()*width/2+width/2);
+			int distance = (int)(Math.random()*width/4+width/8);
+			Rect lastRect = blockData.get(blockData.size() - 1); 
+			int newLeft = lastRect.right + distance;
+			int newRight = newLeft + newWidth;
+			Rect newRect = new Rect(newLeft, newHeight, newRight, 0);
+			blockData.add(newRect);
 		}
-		
 	}
 	
 	public Vector<Rect> getBlockData() {
-		Vector<Rect> blockData = new Vector<Rect>();
 		
-		int currentX = sectionPosition;
-		int startX = currentX;
-		
-		int currentY = sections.firstElement().getHeight();
-		for (LevelSection section : sections) {
-			if (section.getHeight() != currentY) {
-				Rect currentRect = new Rect();
-				currentRect.left = startX;
-				currentRect.right = currentX;
-				currentRect.bottom = 0;
-				currentRect.top = currentY;
-				blockData.add(currentRect);
+		synchronized (blockData) {
+			Log.d("debug", "in getBlockData");
+			Vector<Rect> modifiedBlockData = new Vector<Rect>();
+			
+			for (Rect block : blockData) {				
+				Rect current = new Rect(block);
 				
-				startX = currentX;
-				currentY = section.getHeight();
+				current.left-= levelPosition;
+				current.right -= levelPosition;
+				
+				modifiedBlockData.add(current);
 			}
-			currentX += section.getWidth();
+			
+			return modifiedBlockData;
 		}
-		return blockData;
+		
 	}
 
 	public int getScoreCounter() {
 		return scoreCounter;
 	}
-	public void resetScoreCounter() {
+	
+	public void reset() {
 		scoreCounter=0;
-	}
-	private class LevelSection {
-		private Vector<Tile> blocks;
-		private int width;
-		private int height;
-		
-		public LevelSection(int height) {
-			blocks = new Vector<Tile>();
-			this.height = height;
-			
-			while(height > 0) {
-				Tile newBlock = new Tile(height);
-				blocks.add(newBlock);
-				height -= newBlock.getHeight();
-			}
-			
-			
-			if (this.height == 0)
-				this.width = 10;
-			else
-				this.width = blocks.firstElement().getWidth();
+		synchronized (blockData) {
+			Log.d("debug", "in reset");
+			levelPosition = 0;
+			blockData.clear();
+			generateAndAddBlock();
 		}
-		
-		public int getWidth() {
-			return width;
-		}
-
-		public int getHeight() {
-			return height;
-		}
-
-		public void draw(Canvas canvas, int referenceX) {
-			for (Tile block : blocks) {
-				block.draw(canvas, referenceX);
-			}
-		}
-		
-		private class Tile {
-			private Bitmap image;
-			private int posY;
-			private int width;
-			private int height;
-
-			public Tile(int posY) {
-				this.posY = posY;
-				image = BitmapFactory.decodeResource(context.getResources(), R.drawable.blockpart);
-				this.width = image.getWidth();
-				this.height = image.getHeight();
-			}
-			
-			public int getWidth() {
-				return width;
-			}
-
-			public int getHeight() {
-				return height;
-			}
-			
-			public void draw(Canvas canvas, int referenceX) {
-				canvas.drawBitmap(image, referenceX, Util.getInstance().toScreenY(posY), null);
-			}
-		}
-		
 	}
 }
