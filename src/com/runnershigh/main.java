@@ -134,12 +134,17 @@ public class main extends Activity {
 				player.setJump(false);
 			
 			else if(event.getAction() == MotionEvent.ACTION_DOWN){
-				player.setJump(true);
-				if(event.getX() <= resetButtonX+resetButtonWidth && event.getX() > resetButtonX)
+				if(event.getX() <= resetButtonX+resetButtonWidth && event.getX() > resetButtonX){
 					if(event.getY() <= resetButtonY+resetButtonHeight && event.getY() > resetButtonY){
-						Log.d("reset", "reset pressed");
-						player.reset();
-					}
+						//Log.d("reset", "reset pressed");
+						if(player.getPosY() < 0){
+							player.reset();
+							level.resetScoreCounter();
+						}
+					}else
+						player.setJump(true);
+				}else
+					player.setJump(true);
 			}
 				
 			

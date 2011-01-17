@@ -133,7 +133,9 @@ public class Level {
 	public int getScoreCounter() {
 		return scoreCounter;
 	}
-
+	public void resetScoreCounter() {
+		scoreCounter=0;
+	}
 	private class LevelSection {
 		private Vector<Tile> blocks;
 		private int width;
