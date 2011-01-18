@@ -40,7 +40,6 @@ public class main extends Activity {
 		
 	    @Override
 	    protected void onDestroy() {
-
 			super.onDestroy();
 			wakeLock.release();
 		}
