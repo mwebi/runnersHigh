@@ -7,17 +7,24 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
+import android.media.SoundPool;
 import android.os.Bundle;
 import android.os.PowerManager;
+import android.util.Log;
 import android.view.Display;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.ViewDebug.IntToString;
 
 
 public class main extends Activity {
 		PowerManager.WakeLock wakeLock ;
+		MediaPlayer musicPlayer;
+		
 		/** Called when the activity is first created. */
 	    @Override
 		public void onCreate(Bundle savedInstanceState) {
@@ -27,7 +34,16 @@ public class main extends Activity {
 	    	PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
 			wakeLock = pm.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK, "tag");
 			wakeLock.acquire();	    	
-				        
+			
+			SoundManager.getInstance();
+	        SoundManager.initSounds(this);
+	        SoundManager.loadSounds();
+	        
+	        musicPlayer = MediaPlayer.create(getApplicationContext(), R.raw.toughandcool);
+	        musicPlayer.start();
+	        musicPlayer.setVolume(0.5f, 0.5f);
+
+
 			requestWindowFeature(Window.FEATURE_NO_TITLE);  
 			getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
 			
@@ -35,26 +51,29 @@ public class main extends Activity {
 			//(RunnersHighView) findViewById(R.id.runnersHighViewXML);
 			RunnersHighView gameView = new RunnersHighView(getApplicationContext()); 
 			setContentView(gameView);	     
-			
 		}	
 		
 	    @Override
 	    protected void onDestroy() {
-
 			super.onDestroy();
 			wakeLock.release();
+			//soundPool.stop(musicStreamID);
+			musicPlayer.release();
+			SoundManager.cleanup();
 		}
 		@Override
 		public void onResume() {
-
 			super.onResume();
 			wakeLock.acquire();
+			musicPlayer.start();
 		}
 		@Override
 		public void onPause() {
-
 			super.onResume();
 			wakeLock.release();
+			//soundPool.stop(musicStreamID);
+			musicPlayer.pause();
+			//SoundManager.cleanup(); //asd
 		}
 	    
     
@@ -69,6 +88,10 @@ public class main extends Activity {
 		private int resetButtonY = 10;
 		private int resetButtonWidth = 100;
 		private int resetButtonHeight = 41;
+		
+		/*SoundPool soundPool;
+		int musicID;
+		int musicStreamID;*/
 	
 		public RunnersHighView(Context context) {
 			super(context);
@@ -86,6 +109,13 @@ public class main extends Activity {
 			
 			Thread rHThread = new Thread(this);
 			rHThread.start();
+			
+			/*soundPool = new SoundPool(5, AudioManager.STREAM_MUSIC, 0);
+			
+			musicID = soundPool.load(context, R.raw.toughandcool, 1);
+			Log.d("sound", "musicID:  " + Integer.toString(musicID));
+			musicStreamID = soundPool.play(musicID, 1, 1, 1, 0, 1f);
+			Log.d("sound", "musicStreamID:  " + Integer.toString(musicStreamID));*/
 		}
 
 		@Override
@@ -137,6 +167,7 @@ public class main extends Activity {
 							player.reset();
 							level.reset();
 							showResetButton = false;
+							SoundManager.playSound(1, 1);
 						}
 					}
 				}

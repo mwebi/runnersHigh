@@ -16,6 +16,8 @@ public class Level {
 	private int height;
 	private int levelPosition;
 	private int scoreCounter;
+	private boolean play3k;
+	private boolean threeKwasplayed;
 	private float speed;
 	private Vector<Rect> blockData;
 	
@@ -25,6 +27,9 @@ public class Level {
 		this.levelPosition = 0;
 		this.scoreCounter = 0;
 		this.speed = 0;
+		play3k = false;
+		threeKwasplayed = false;
+		
 		
 		blockData = new Vector<Rect>();
 		
@@ -34,35 +39,40 @@ public class Level {
 	public void update() {
 		
 		synchronized (blockData) {
-			Log.d("debug", "in update");
+			//Log.d("debug", "in update");
 			if (blockData.size() == 0)
 			{
 				levelPosition = 0;
 				generateAndAddBlock();
 			}
-			Log.d("debug", "in update after == 0");
+			//Log.d("debug", "in update after == 0");
 			
 			if (levelPosition > blockData.get(0).right) {
 				blockData.remove(0);	
 			}
-			Log.d("debug", "in update after > right; blockData.size() -> " + Integer.toString(blockData.size()) );
+			//Log.d("debug", "in update after > right; blockData.size() -> " + Integer.toString(blockData.size()) );
 			
 			if (blockData.get(blockData.size() -1).left < levelPosition + width)
 				generateAndAddBlock();
 			
-			Log.d("debug", "in update after < levelPosition + width");
+			//Log.d("debug", "in update after < levelPosition + width");
 			
 			if(speed<5)
 				speed+=0.001;
 			levelPosition += 5 + speed;
 			scoreCounter += 1;
-			Log.d("debug", "in update after value mod");
+			
+			if(scoreCounter>=3000 && threeKwasplayed==false){
+				threeKwasplayed=true;
+				SoundManager.playSound(2, 1);
+			}
+			//Log.d("debug", "in update after value mod");
 		}	
 	}
 	
 	public void draw(Canvas canvas) {
 		synchronized (blockData) {
-			Log.d("debug", "in draw");
+			//Log.d("debug", "in draw");
 			Paint paint = new Paint();
 			paint.setColor(Color.RED);
 			paint.setStyle(Paint.Style.FILL);
@@ -109,7 +119,7 @@ public class Level {
 	public Vector<Rect> getBlockData() {
 		
 		synchronized (blockData) {
-			Log.d("debug", "in getBlockData");
+			//Log.d("debug", "in getBlockData");
 			Vector<Rect> modifiedBlockData = new Vector<Rect>();
 			
 			for (Rect block : blockData) {				
@@ -133,7 +143,7 @@ public class Level {
 	public void reset() {
 		scoreCounter=0;
 		synchronized (blockData) {
-			Log.d("debug", "in reset");
+			//Log.d("debug", "in reset");
 			levelPosition = 0;
 			blockData.clear();
 			this.speed = 0;
