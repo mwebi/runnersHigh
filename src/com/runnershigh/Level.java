@@ -16,6 +16,7 @@ public class Level {
 	private int height;
 	private int levelPosition;
 	private int scoreCounter;
+	private float speed;
 	private Vector<Rect> blockData;
 	
 	public Level(Context context, int width, int heigth) {
@@ -23,11 +24,11 @@ public class Level {
 		this.height = heigth;
 		this.levelPosition = 0;
 		this.scoreCounter = 0;
+		this.speed = 0;
 		
 		blockData = new Vector<Rect>();
 		
 		generateAndAddBlock();
-		
 	}
 	
 	public void update() {
@@ -51,19 +52,21 @@ public class Level {
 			
 			Log.d("debug", "in update after < levelPosition + width");
 			
-			levelPosition += 5;
+			if(speed<5)
+				speed+=0.001;
+			levelPosition += 5 + speed;
 			scoreCounter += 1;
 			Log.d("debug", "in update after value mod");
 		}	
 	}
 	
 	public void draw(Canvas canvas) {
-		
 		synchronized (blockData) {
 			Log.d("debug", "in draw");
 			Paint paint = new Paint();
 			paint.setColor(Color.RED);
 			paint.setStyle(Paint.Style.FILL);
+			canvas.save();
 			
 			canvas.translate(-levelPosition, 0);
 			canvas.scale(1, -1);
@@ -74,22 +77,22 @@ public class Level {
 			for (Rect block : blockData) {				
 				canvas.drawRect(block, paint);
 			}
-		
-			canvas.translate(0, height-1);
+			canvas.restore();
+			/*canvas.translate(0, height-1);
 			canvas.scale(1, -1);
-			canvas.translate(levelPosition, 0);
+			canvas.translate(levelPosition, 0);*/
 		}
 	}
 	
 	private void generateAndAddBlock() {
-		Log.d("debug", "in generate");
+		//Log.d("debug", "in generate");
 		if (blockData.size() == 0) {
 			Rect newRect = new Rect(0, 50, width, 0);
 			blockData.add(newRect);
 		} else {
 			int newHeight;
 			if (blockData.get(blockData.size() -1 ).top > height/2)
-				newHeight = (int)(Math.random()*height/4*3 + height/8);
+				newHeight = (int)(Math.random()*height/3*2 + height/8);
 			else
 				newHeight = (int)(Math.random()*height/2 + height/8);
 			
@@ -133,6 +136,7 @@ public class Level {
 			Log.d("debug", "in reset");
 			levelPosition = 0;
 			blockData.clear();
+			this.speed = 0;
 			generateAndAddBlock();
 		}
 	}

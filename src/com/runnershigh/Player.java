@@ -10,9 +10,9 @@ import android.graphics.Rect;
 
 public class Player {
 	private static float MAX_JUMP_HEIGHT = 140;
-	private static float MIN_JUMP_HEIGHT = 20;
+	private static float MIN_JUMP_HEIGHT = 10;
 	public Bitmap playerImg;
-	private int posX;
+	private float posX;
 	private int posY;
 	private int lastPosY;
 	private int width;
@@ -22,6 +22,7 @@ public class Player {
 	private int jumpStartY;
 	private float velocity = 0;
 	private Rect playerRect;
+	private float speedoffsetX = 0;
 	
 
 	public Player(Context context, int ScreenHeight) {
@@ -68,7 +69,7 @@ public class Player {
 			velocity = 9;
 		
 		posY += velocity;
-		playerRect = new Rect(posX,posY,posX+width,posY-height);
+		playerRect = new Rect((int)posX,posY,(int)posX+width,posY-height);
 		
 		for(Rect currentBlock : blocks){
 			if(currentBlock.top==0){
@@ -92,8 +93,15 @@ public class Player {
 		lastPosY = posY;
 		
 		
-		if(posY - height < 0)
+		if(speedoffsetX<5)
+			speedoffsetX+=0.001;
+		
+		posX=70+speedoffsetX*50;
+		
+		if(posY - height < 0){
+			posY = -1;
 			return false;
+		}
 		
 		
 		return true;
@@ -131,10 +139,11 @@ public class Player {
 		posX = 70; // x/y is bottom left corner of picture
 		posY = 200;
 		velocity = 0;
+		speedoffsetX =0;
 	}
 	
 	public int getPosX() {
-		return posX;
+		return (int)posX;
 	}
 
 	public void setPosX(int posX) {
