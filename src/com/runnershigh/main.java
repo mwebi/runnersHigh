@@ -41,7 +41,7 @@ public class main extends Activity {
 	        
 	        musicPlayer = MediaPlayer.create(getApplicationContext(), R.raw.toughandcool);
 	        musicPlayer.start();
-	        musicPlayer.setVolume(0.5f, 0.5f);
+	        musicPlayer.setVolume(0.6f, 0.6f);
 
 
 			requestWindowFeature(Window.FEATURE_NO_TITLE);  
@@ -69,7 +69,7 @@ public class main extends Activity {
 		}
 		@Override
 		public void onPause() {
-			super.onResume();
+			super.onPause();
 			wakeLock.release();
 			//soundPool.stop(musicStreamID);
 			musicPlayer.pause();
