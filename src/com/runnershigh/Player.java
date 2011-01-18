@@ -1,0 +1,152 @@
+package com.runnershigh;
+
+import android.content.Context;
+import java.util.Vector;
+
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Rect;
+
+public class Player {
+	private static float MAX_JUMP_HEIGHT = 140;
+	private static float MIN_JUMP_HEIGHT = 20;
+	public Bitmap playerImg;
+	private int posX;
+	private int posY;
+	private int lastPosY;
+	private int width;
+	private int height;
+	private boolean jumping = false;
+	private boolean reachedPeak = false;
+	private int jumpStartY;
+	private float velocity = 0;
+	private Rect playerRect;
+	
+
+	public Player(Context context, int ScreenHeight) {
+		
+		posX = 70; // x/y is bottom left corner of picture
+		posY = 200;
+		
+		//Queue<Block> blocks;
+		
+		playerImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.playerimg);
+		width=playerImg.getWidth();
+		height=playerImg.getHeight();
+	}
+	
+	public void setJump(boolean jump) {
+		if(!jump)
+			reachedPeak = true;
+		
+		if(reachedPeak) return;
+		
+		jumpStartY = posY;
+		jumping = true;
+		
+	}
+	
+	public boolean update(Vector<Rect> blocks) {
+		
+		
+		if (jumping && velocity >= 0) {
+			if(posY - jumpStartY < MIN_JUMP_HEIGHT || !reachedPeak) {
+				float modifier = (MAX_JUMP_HEIGHT - (posY - jumpStartY))/30;
+				velocity += 0.4981 * modifier;
+			}
+			if(posY - jumpStartY >= MAX_JUMP_HEIGHT) {
+				reachedPeak = true;			
+			}
+		}
+		
+		velocity -= 0.4981;
+		
+		if (velocity < -9)
+			velocity = -9;
+		else if (velocity > 9)
+			velocity = 9;
+		
+		posY += velocity;
+		playerRect = new Rect(posX,posY,posX+width,posY-height);
+		
+		for(Rect currentBlock : blocks){
+			if(currentBlock.top==0){
+				continue;
+			}
+			if( checkIntersect(playerRect, currentBlock) ){
+				if(lastPosY-height >= currentBlock.top)
+				{
+					posY=currentBlock.top+height;
+					velocity = 0;
+					reachedPeak = false;
+					jumping = false;
+				}
+				else{
+					return false;
+				}
+					
+			}
+		}
+		
+		lastPosY = posY;
+		
+		
+		if(posY - height < 0)
+			return false;
+		
+		
+		return true;
+	}	
+
+	public boolean checkIntersect(Rect playerRect, Rect blockRect) {
+		if(playerRect.bottom >= blockRect.bottom && playerRect.bottom <= blockRect.top)
+		{
+			if(playerRect.right >= blockRect.left && playerRect.right <= blockRect.right )
+				return true;
+			else if(playerRect.left >= blockRect.left && playerRect.left <= blockRect.right )
+				return true;
+		}
+		else if(playerRect.top >= blockRect.bottom && playerRect.top <= blockRect.top){
+			if(playerRect.right >= blockRect.left && playerRect.right <= blockRect.right )
+				return true;
+			else if(playerRect.left >= blockRect.left && playerRect.left <= blockRect.right )
+				return true;
+		}
+		//blockrect in playerrect
+		if(blockRect.bottom >= playerRect.bottom && blockRect.bottom <= playerRect.top)
+			if(blockRect.right >= playerRect.left && blockRect.right <= playerRect.right )
+				return true;
+		
+		return false;
+	}
+	public void draw(Canvas canvas) {
+		
+		int y = Util.getInstance().toScreenY(posY);
+		
+		canvas.drawBitmap(playerImg, posX, y, null);
+	}
+	
+	public void reset() {
+		posX = 70; // x/y is bottom left corner of picture
+		posY = 200;
+		velocity = 0;
+	}
+	
+	public int getPosX() {
+		return posX;
+	}
+
+	public void setPosX(int posX) {
+		this.posX = posX;
+	}
+
+	public int getPosY() {
+		return posY;
+	}
+
+	public void setPosY(int posY) {
+		this.posY = posY;
+	}
+
+}
