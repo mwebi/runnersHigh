@@ -18,6 +18,7 @@ public class Player {
 	private int width;
 	private int height;
 	private boolean jumping = false;
+	private boolean jumpingsoundplayed = true;
 	private boolean reachedPeak = false;
 	private int jumpStartY;
 	private float velocity = 0;
@@ -45,12 +46,16 @@ public class Player {
 		
 		jumpStartY = posY;
 		jumping = true;
-		
+		if(jump)
+			jumpingsoundplayed = false;
 	}
 	
 	public boolean update(Vector<Rect> blocks) {
 		
-		
+		if(jumpingsoundplayed==false){
+			SoundManager.playSound(3, 1);
+			jumpingsoundplayed = true;
+		}
 		if (jumping && velocity >= 0) {
 			if(posY - jumpStartY < MIN_JUMP_HEIGHT || !reachedPeak) {
 				float modifier = (MAX_JUMP_HEIGHT - (posY - jumpStartY))/30;
