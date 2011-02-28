@@ -61,12 +61,14 @@ public class main extends Activity {
 			musicPlayer.release();
 			SoundManager.cleanup();
 		}
+	    
 		@Override
 		public void onResume() {
 			super.onResume();
 			wakeLock.acquire();
 			musicPlayer.start();
 		}
+		
 		@Override
 		public void onPause() {
 			super.onPause();
