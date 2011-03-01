@@ -24,7 +24,7 @@ public class HighscoreAdapter extends DbAdapter {
     public static final String KEY_NAME 		= "name";
     public static final String KEY_SCORE 		= "score";
 
-	protected HighscoreAdapter(Context ctx) {
+	public HighscoreAdapter(Context ctx) {
     	super(ctx);
         this.mCtx = ctx;
 	}
