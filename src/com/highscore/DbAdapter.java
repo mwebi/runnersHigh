@@ -15,7 +15,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.widget.Toast;
 
 public class DbAdapter {
-
+	
 	protected DBManager mDbHelper;
 	protected SQLiteDatabase mDb;
     protected Context mCtx;
@@ -43,19 +43,5 @@ public class DbAdapter {
     // Toast Message
     public void toastMessage(int msg) {
 		Toast.makeText(this.mCtx, msg, Toast.LENGTH_SHORT).show();
-    }
-    
-    // Returns number of table Where row = rowId
-    public int getNumber(String table, String row, int rowId) {
-    	int number = 0;
-
-    	String queryTable = table.length() == 0 ? "sap_todos" : table ;
-    	
-    	Cursor mCursor =
-            mDb.query(false, queryTable, new String[] { "_id" }, row + " = " + rowId, null,
-                    null, null, null, null);
-    	number = mCursor.getCount();
-        mCursor.close();
-        return number;	    	
     }
 }

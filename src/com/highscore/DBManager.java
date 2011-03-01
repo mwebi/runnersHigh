@@ -16,17 +16,17 @@ import android.util.Log;
 
 class DBManager extends SQLiteOpenHelper {
 
-	private static final String DATABASE_NAME = "SAPdb";
+	private static final String DATABASE_NAME = "rHighDb";
 	private static final int DATABASE_VERSION = 1;
 	
 	/**
 	 * Database creation sql statement
 	 */
-	private static final String DB_CREATE_TERMS =
-	    "CREATE TABLE sap_terms " +
-	    "(_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-	    "title TEXT NOT NULL," +
-	    "isActive INTEGER NOT NULL" +
+	private static final String DB_CREATE_HIGHSCORE =
+	    "CREATE TABLE rh_highscore " +
+	    "(_id INTEGER PRIMARY KEY AUTOINCREMENT," +
+	    "name TEXT NOT NULL," +
+	    "score INTEGER NOT NULL" +
 	    ");";
 	
     DBManager(Context context) {
@@ -35,18 +35,14 @@ class DBManager extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-    	db.execSQL(DB_CREATE_TERMS);
-    	
-        // Add term on first creation
-        db.execSQL("INSERT INTO sap_terms (title, isActive) VALUES('Schuljahr', 1)");
+    	db.execSQL(DB_CREATE_HIGHSCORE);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         Log.w("DBManagerClass", "Upgrading database from version " + oldVersion + " to "
                 + newVersion + ", which will destroy all old data");
-        db.execSQL("DROP TABLE IF EXISTS notes");
-        db.execSQL("DROP TABLE IF EXISTS sap_terms");
+        db.execSQL("DROP TABLE IF EXISTS rh_highscore");
         onCreate(db);
     }
 }
