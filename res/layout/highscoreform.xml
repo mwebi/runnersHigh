@@ -13,6 +13,16 @@
 	    android:textSize="26dp"
 	    android:textColor="#FFFFFF"
 	    />
+	 
+	<TextView  
+	 	android:layout_marginTop="15dp" 
+		android:id="@+id/labelTest"
+	  	android:layout_width="fill_parent" 
+	    android:layout_height="wrap_content"    
+	    android:text="(Nur temporär unter Info erreichbar :)" 
+	    android:textSize="12dp"
+	    android:textColor="#FFFFFF"
+	    />	
 	    
 	 <TextView  
 	 	android:layout_marginTop="15dp" 
