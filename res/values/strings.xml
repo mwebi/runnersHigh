@@ -2,5 +2,6 @@
 <resources>
     <string name="hello">Hello World, main!</string>
     <string name="app_name">runnersHigh</string>
-<string name="score">tah score</string>
+	<string name="score">tah score</string>
+	<string name="hs_title">High-Score</string>
 </resources>

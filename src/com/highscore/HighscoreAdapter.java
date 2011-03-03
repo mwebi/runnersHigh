@@ -31,7 +31,7 @@ public class HighscoreAdapter extends DbAdapter {
 	
 	// -------------------------------------------------------
     // Insert new
-    public long createHighscore(int score, String name) {
+    public long createHighscore(String score, String name) {
         ContentValues initialValues = new ContentValues();
         initialValues.put(KEY_NAME, name);
         initialValues.put(KEY_SCORE, score);

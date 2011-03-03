@@ -17,7 +17,7 @@ import android.util.Log;
 class DBManager extends SQLiteOpenHelper {
 
 	private static final String DATABASE_NAME = "rHighDb";
-	private static final int DATABASE_VERSION = 1;
+	private static final int DATABASE_VERSION = 3;
 	
 	/**
 	 * Database creation sql statement
@@ -36,6 +36,8 @@ class DBManager extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
     	db.execSQL(DB_CREATE_HIGHSCORE);
+        db.execSQL("INSERT INTO rh_highscore (name, score) VALUES('Tester', 1231)");
+    	Log.i("SQL", "created tables");
     }
 
     @Override
