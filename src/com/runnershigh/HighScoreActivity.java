@@ -12,6 +12,8 @@ import android.app.ListActivity;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 
 import com.highscore.HighscoreAdapter;
@@ -19,7 +21,7 @@ import com.highscore.HighscoreAdapter;
 public class HighScoreActivity extends ListActivity {
 	
 	private HighscoreAdapter highScoreAdapter = null;
-	private static final String LIMIT = "10";
+	private static final String SHOW_LIMIT = "10";
 	
 	// ---------------------------------------------------
     @Override
@@ -34,10 +36,12 @@ public class HighScoreActivity extends ListActivity {
     }
     
     // ---------------------------------------------------------
+    // Fetch highscore from database table and put it into the listView
     private void fillData() {
-        Cursor cursor = highScoreAdapter.fetchScores(LIMIT);
+        Cursor cursor = highScoreAdapter.fetchScores(SHOW_LIMIT);
         startManagingCursor(cursor);
         Log.i("FILLDATA"," Amount:" + cursor.getCount());
+                
         // Create an array to specify the fields we want to display in the list
         String[] from = new String[]{ highScoreAdapter.KEY_SCORE, highScoreAdapter.KEY_NAME };
 

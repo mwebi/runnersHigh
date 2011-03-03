@@ -3,22 +3,17 @@
  * runnersHigh 1.0
  * 
  * _DESCRIPTION:
- * 	Highscore Activity itself - shows highscores of user 
+ * 	Highscore form Activity - shows input field to save score and name 
  */
 
 package com.runnershigh;
 
-import org.w3c.dom.Text;
-
 import android.app.Activity;
-import android.app.ListActivity;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
 import com.highscore.HighscoreAdapter;
@@ -27,7 +22,7 @@ public class HighScoreForm extends Activity {
 	
 	private HighscoreAdapter highScoreAdapter = null;
 	private EditText nameField;
-	private TextView scoreField;	
+	private TextView scoreField;
 	
 	// ---------------------------------------------------
     @Override
@@ -40,7 +35,7 @@ public class HighScoreForm extends Activity {
         
         nameField = (EditText) findViewById(R.id.title);
         scoreField = (TextView) findViewById(R.id.score);
-        Button confirmButton = (Button) findViewById(R.id.confirm);   
+        Button confirmButton = (Button) findViewById(R.id.confirm);
 
         confirmButton.setOnClickListener(new View.OnClickListener() {
         	public void onClick(View view) {
@@ -50,9 +45,11 @@ public class HighScoreForm extends Activity {
     }
     
     // ---------------------------------------------------
-    // Edit Form -> get data of the entry
+    // Fetch score
     private void populateFields() {
     	/*
+    	 * SCORE WILL BE FETCH HERE
+    	 * 
         if (mRowId != null && mRowId > 0) {        	
             Cursor note = highScoreAdapter.fetchScores(limit).fetchSingle(mRowId);
             startManagingCursor(note);           
@@ -80,7 +77,7 @@ public class HighScoreForm extends Activity {
         }
     }
     
-
+    // ---------------------------------------------------------
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -99,7 +96,6 @@ public class HighScoreForm extends Activity {
         //populateFields();
     }
     
-    // ---------------------------------------------------------
     // Close DatabaseHelper
     @Override    
     protected void onDestroy() {        
