@@ -7,13 +7,13 @@
 		android:layout_marginTop="10dp"
 		android:paddingTop="5dp"
 		>
-<TextView android:id="@+id/text1"
+<TextView android:id="@+id/score"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_marginRight="15dp"
     android:minWidth="80dp"/>
  
- <TextView android:id="@+id/text2"
+ <TextView android:id="@+id/name"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_marginRight="15dp"

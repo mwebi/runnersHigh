@@ -56,7 +56,5 @@ public class HighscoreAdapter extends DbAdapter {
     								  },
     					null, null, null, null,
         				KEY_SCORE + " DESC", limit);
-    }
-	
-	
+    }	
 }

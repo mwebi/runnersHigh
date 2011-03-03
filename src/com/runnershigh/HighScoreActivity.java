@@ -11,6 +11,7 @@ package com.runnershigh;
 import android.app.ListActivity;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.SimpleCursorAdapter;
 
 import com.highscore.HighscoreAdapter;
@@ -36,12 +37,12 @@ public class HighScoreActivity extends ListActivity {
     private void fillData() {
         Cursor cursor = highScoreAdapter.fetchScores(LIMIT);
         startManagingCursor(cursor);
-                
+        Log.i("FILLDATA"," Amount:" + cursor.getCount());
         // Create an array to specify the fields we want to display in the list
         String[] from = new String[]{ highScoreAdapter.KEY_SCORE, highScoreAdapter.KEY_NAME };
 
         // and an array of the fields we want to bind those fields to
-        int[] to = new int[]{ R.id.text1, R.id.text2 };
+        int[] to = new int[]{ R.id.score, R.id.name };
         
         // Creates the backing adapter for the ListView.
         SimpleCursorAdapter adapter

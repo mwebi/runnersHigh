@@ -19,15 +19,17 @@ class DBManager extends SQLiteOpenHelper {
 	private static final String DATABASE_NAME = "rHighDb";
 	private static final int DATABASE_VERSION = 3;
 	
-	/**
-	 * Database creation sql statement
+	/* -----------------------------------------------
+	 * Database TABLES
 	 */
 	private static final String DB_CREATE_HIGHSCORE =
 	    "CREATE TABLE rh_highscore " +
 	    "(_id INTEGER PRIMARY KEY AUTOINCREMENT," +
 	    "name TEXT NOT NULL," +
 	    "score INTEGER NOT NULL" +
-	    ");";
+	    ");";	
+	
+	// -----------------------------------------------
 	
     DBManager(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
