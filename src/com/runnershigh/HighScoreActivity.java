@@ -33,6 +33,8 @@ public class HighScoreActivity extends ListActivity {
         highScoreAdapter.open();
         
         fillData();
+        
+        registerForContextMenu(getListView());
     }
     
     // ---------------------------------------------------------
@@ -52,7 +54,7 @@ public class HighScoreActivity extends ListActivity {
         SimpleCursorAdapter adapter
             = new SimpleCursorAdapter(
                       this,                             // The Context for the ListView
-                      R.layout.list,          			// Points to the XML for a list item
+                      R.layout.list_row,          			// Points to the XML for a list item
                       cursor,                           // The cursor to get items from
                       from,
                       to
