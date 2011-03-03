@@ -45,8 +45,6 @@ public class HighScoreForm extends Activity {
         confirmButton.setOnClickListener(new View.OnClickListener() {
         	public void onClick(View view) {
         		saveState();
-                setResult(RESULT_OK);
-                finish();
         	}
         });        
     }
@@ -67,14 +65,19 @@ public class HighScoreForm extends Activity {
     // ---------------------------------------------------
     // Save Entry
     private void saveState() {
-
     	String name 	=  nameField.getText().toString();
         String score 	=  scoreField.getText().toString();       
         
         Log.i("onSAVE", " name: " + name + " Score: " + score);
             
-        // Insert into Database	    
-	    long id = highScoreAdapter.createHighscore(score, name);	    
+        // Insert into Database
+        if(name.length() > 0) {
+        	long id = highScoreAdapter.createHighscore(score, name);
+            setResult(RESULT_OK);
+            finish();
+        } else {
+        	highScoreAdapter.toastMessage(R.string.hs_error_name_empty);
+        }
     }
     
 

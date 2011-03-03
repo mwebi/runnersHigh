@@ -4,7 +4,6 @@
   android:layout_width="fill_parent"
   android:layout_height="fill_parent"
   android:padding="10dp"
-  android:background="#00ff00"
   android:textColor="#FFFFFF">
   
   <TextView  
@@ -16,9 +15,8 @@
 	    android:textColor="#FFFFFF"
 	    />
   
-    <ListView android:id="@+id/android:list"
-            android:layout_width="wrap_content"
-        	android:layout_height="wrap_content"
-        	 />
-  
+  <ListView android:id="@+id/android:list"
+        android:layout_width="wrap_content"
+      	android:layout_height="wrap_content"
+       	 />  
 </LinearLayout>
