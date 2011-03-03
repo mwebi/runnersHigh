@@ -4,7 +4,7 @@
  * 
  * _DESCRIPTION:
  * 	Creates database tables; Updates database
- * 	To update database table changes increase DATABASE_VERSION + 1
+ * 	To update database table(s): increase DATABASE_VERSION + 1
  */
 
 package com.highscore;

@@ -1,12 +1,14 @@
 /*
- * DbManager
+ * HighScoreAdapater
  * runnersHigh 1.0
  * 
  * _DESCRIPTION:
- * 	Creates database tables; Updates database
- * 	To update database table changes increase DATABASE_VERSION + 1
+ * 	Table operations for 'rh_highscore'
+ * 	Saves and returns highscores from database
  * 
  * 	Child class of DbAdapter
+ * 
+ * 	TODO: Delete entries, if there are more than SHOW_LIMIT
  */
 
 package com.highscore;
@@ -30,7 +32,7 @@ public class HighscoreAdapter extends DbAdapter {
 	}
 	
 	// -------------------------------------------------------
-    // Insert new
+    // Create
     public long createHighscore(String score, String name) {
         ContentValues initialValues = new ContentValues();
         initialValues.put(KEY_NAME, name);
@@ -42,12 +44,11 @@ public class HighscoreAdapter extends DbAdapter {
     // -------------------------------------------------------
     // Delete
     public boolean delete(long rowId) {
-    	Log.i("Delete"," ID: " + rowId);
         return mDb.delete(DATABASE_TABLE, KEY_ROWID + "=" + rowId, null) > 0;
     }
 
     // -------------------------------------------------------
-    // Fetch all scores from database
+    // Show
     public Cursor fetchScores(String limit) {
     	return mDb.query(DATABASE_TABLE, 
         				new String[] { 	KEY_ROWID,
@@ -56,5 +57,5 @@ public class HighscoreAdapter extends DbAdapter {
     								  },
     					null, null, null, null,
         				KEY_SCORE + " DESC", limit);
-    }	
+    }
 }
