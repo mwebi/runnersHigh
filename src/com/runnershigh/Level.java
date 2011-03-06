@@ -71,7 +71,7 @@ public class Level {
 			//Log.d("debug", "in update after < levelPosition + width");
 			
 			if(baseSpeed<5)
-				baseSpeed+=0.1;
+				baseSpeed+=0.025;
 			
 			if(extraSpeed<5)
 				extraSpeed+=0.001;
@@ -88,7 +88,8 @@ public class Level {
 			}
 			
 			levelPosition += baseSpeed + extraSpeed;
-			scoreCounter += 1;
+			//scoreCounter += 1;
+			scoreCounter = levelPosition/10;
 			
 			if(scoreCounter>=3000 && threeKwasplayed==false){
 				threeKwasplayed=true;
