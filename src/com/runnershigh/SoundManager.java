@@ -3,12 +3,7 @@ package com.runnershigh;
 import android.content.Context;
 
 import java.util.HashMap;
-import java.util.Vector;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Rect;
 import android.media.AudioManager;
 import android.media.SoundPool;
 

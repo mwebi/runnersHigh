@@ -42,6 +42,7 @@ public class main extends Activity {
 	        musicPlayer = MediaPlayer.create(getApplicationContext(), R.raw.toughandcool);
 	        musicPlayer.start();
 	        musicPlayer.setVolume(0.6f, 0.6f);
+	        musicPlayer.setLooping(true);
 
 
 			requestWindowFeature(Window.FEATURE_NO_TITLE);  
@@ -57,7 +58,6 @@ public class main extends Activity {
 	    protected void onDestroy() {
 			super.onDestroy();
 			wakeLock.release();
-			//soundPool.stop(musicStreamID);
 			musicPlayer.release();
 			SoundManager.cleanup();
 		}
@@ -73,9 +73,7 @@ public class main extends Activity {
 		public void onPause() {
 			super.onPause();
 			wakeLock.release();
-			//soundPool.stop(musicStreamID);
 			musicPlayer.pause();
-			//SoundManager.cleanup(); //asd
 		}
 	    
     
@@ -91,9 +89,6 @@ public class main extends Activity {
 		private int resetButtonWidth = 100;
 		private int resetButtonHeight = 41;
 		
-		/*SoundPool soundPool;
-		int musicID;
-		int musicStreamID;*/
 	
 		public RunnersHighView(Context context) {
 			super(context);
@@ -111,16 +106,9 @@ public class main extends Activity {
 			
 			Thread rHThread = new Thread(this);
 			rHThread.start();
-			
-			/*soundPool = new SoundPool(5, AudioManager.STREAM_MUSIC, 0);
-			
-			musicID = soundPool.load(context, R.raw.toughandcool, 1);
-			Log.d("sound", "musicID:  " + Integer.toString(musicID));
-			musicStreamID = soundPool.play(musicID, 1, 1, 1, 0, 1f);
-			Log.d("sound", "musicStreamID:  " + Integer.toString(musicStreamID));*/
+
 		}
 
-		@Override
 		public void run() {
 			while(true){
 				if (player.update(level.getBlockData())) {

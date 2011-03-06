@@ -1,8 +1,11 @@
 package com.runnershigh;
 
+import java.util.Random;
 import java.util.Vector;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -16,10 +19,13 @@ public class Level {
 	private int height;
 	private int levelPosition;
 	private int scoreCounter;
-	private boolean play3k;
 	private boolean threeKwasplayed;
 	private float speed;
 	private Vector<Rect> blockData;
+	private Vector<Rect> obstacleData;
+	private Bitmap obstacleImg;
+	private int obstacteWidth;
+	private int obstacteHeight;
 	
 	public Level(Context context, int width, int heigth) {
 		this.width = width;
@@ -27,11 +33,15 @@ public class Level {
 		this.levelPosition = 0;
 		this.scoreCounter = 0;
 		this.speed = 0;
-		play3k = false;
 		threeKwasplayed = false;
 		
 		
 		blockData = new Vector<Rect>();
+		obstacleData = new Vector<Rect>();
+		obstacleImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.obstacle);
+		obstacteWidth=obstacleImg.getWidth();
+		obstacteHeight=obstacleImg.getHeight();
+		
 		
 		generateAndAddBlock();
 	}
@@ -87,6 +97,9 @@ public class Level {
 			for (Rect block : blockData) {				
 				canvas.drawRect(block, paint);
 			}
+			for (Rect obstacle : obstacleData) {				
+				canvas.drawBitmap(obstacleImg, obstacle.left , obstacle.bottom, null);
+			}
 			canvas.restore();
 			/*canvas.translate(0, height-1);
 			canvas.scale(1, -1);
@@ -113,6 +126,19 @@ public class Level {
 			int newRight = newLeft + newWidth;
 			Rect newRect = new Rect(newLeft, newHeight, newRight, 0);
 			blockData.add(newRect);
+
+			// Obstacle creation
+			//double decider = Math.random();
+			Random randomGenerator = new Random();
+			//if (decider<0.5)
+			    //get the range, casting to long to avoid overflow problems
+			    long range = (long)newRight - (long)newLeft + 1;
+			    // compute a fraction of the range, 0 <= frac < range
+			    long fraction = (long)(range * randomGenerator.nextDouble());
+			    int obstacleLeft =  (int)(fraction + newLeft); 
+				
+			    Rect newObstacle = new Rect(obstacleLeft,newHeight+9,obstacleLeft+9,newHeight);
+				obstacleData.add(newObstacle);
 		}
 	}
 	
@@ -146,6 +172,7 @@ public class Level {
 			//Log.d("debug", "in reset");
 			levelPosition = 0;
 			blockData.clear();
+			obstacleData.clear();
 			this.speed = 0;
 			generateAndAddBlock();
 		}
