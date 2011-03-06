@@ -20,19 +20,22 @@ public class Level {
 	private int levelPosition;
 	private int scoreCounter;
 	private boolean threeKwasplayed;
-	private float speed;
+	private float baseSpeed;
+	private float extraSpeed;
 	private Vector<Rect> blockData;
 	private Vector<Rect> obstacleData;
 	private Bitmap obstacleImg;
 	private int obstacteWidth;
 	private int obstacteHeight;
+	private boolean slowDown;
 	
 	public Level(Context context, int width, int heigth) {
 		this.width = width;
 		this.height = heigth;
 		this.levelPosition = 0;
 		this.scoreCounter = 0;
-		this.speed = 0;
+		this.baseSpeed = 5;
+		this.extraSpeed = 0;
 		threeKwasplayed = false;
 		
 		
@@ -41,7 +44,7 @@ public class Level {
 		obstacleImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.obstacle);
 		obstacteWidth=obstacleImg.getWidth();
 		obstacteHeight=obstacleImg.getHeight();
-		
+		slowDown = false;
 		
 		generateAndAddBlock();
 	}
@@ -67,9 +70,24 @@ public class Level {
 			
 			//Log.d("debug", "in update after < levelPosition + width");
 			
-			if(speed<5)
-				speed+=0.001;
-			levelPosition += 5 + speed;
+			if(baseSpeed<5)
+				baseSpeed+=0.1;
+			
+			if(extraSpeed<5)
+				extraSpeed+=0.001;
+			/*if(slowDown && speed>1){
+				speed-=0.5;
+				if(speed <= 1){
+					slowDown = false;
+				}
+			}*/
+			if(slowDown){
+				extraSpeed=0;
+				baseSpeed=1;
+				slowDown=false;
+			}
+			
+			levelPosition += baseSpeed + extraSpeed;
 			scoreCounter += 1;
 			
 			if(scoreCounter>=3000 && threeKwasplayed==false){
@@ -161,9 +179,28 @@ public class Level {
 		}
 		
 	}
-
+	public Vector<Rect> getObstacleData() {
+		synchronized (obstacleData) {
+			Vector<Rect> modifiedObstacleData = new Vector<Rect>();
+			
+			for (Rect obstacle : obstacleData) {				
+				Rect current = new Rect(obstacle);
+				
+				current.left-= levelPosition;
+				current.right -= levelPosition;
+				
+				modifiedObstacleData.add(current);
+			}
+			
+			return modifiedObstacleData;
+		}
+	}
+	
 	public int getScoreCounter() {
 		return scoreCounter;
+	}
+	public void lowerSpeed() {
+		slowDown = true;
 	}
 	
 	public void reset() {
@@ -173,7 +210,8 @@ public class Level {
 			levelPosition = 0;
 			blockData.clear();
 			obstacleData.clear();
-			this.speed = 0;
+			this.baseSpeed = 5;
+			this.extraSpeed = 0;
 			generateAndAddBlock();
 		}
 	}

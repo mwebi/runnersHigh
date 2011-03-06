@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Rect;
+import android.util.Log;
 
 public class Player {
 	private static float MAX_JUMP_HEIGHT = 140;
@@ -51,7 +52,6 @@ public class Player {
 	}
 	
 	public boolean update(Vector<Rect> blocks) {
-		
 		if(jumpingsoundplayed==false){
 			SoundManager.playSound(3, 1);
 			jumpingsoundplayed = true;
@@ -111,7 +111,19 @@ public class Player {
 		
 		return true;
 	}	
+	public boolean collidedWithObstacle(Vector<Rect> obstacles) {
+		for(Rect currentObstacle : obstacles){
+			if( checkIntersect(playerRect, currentObstacle) ){
+				// fuer einen trampolin effekt könnte man einfach velocity raus setzen
+				// damit würds den player wie wenn er auf a trampolin springt rauf katapultiern 
+				// velocity = 5;
 
+				// for now only slow down player fast
+				return true;
+			}
+		}
+		return false;
+	}
 	public boolean checkIntersect(Rect playerRect, Rect blockRect) {
 		if(playerRect.bottom >= blockRect.bottom && playerRect.bottom <= blockRect.top)
 		{

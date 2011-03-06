@@ -118,6 +118,9 @@ public class main extends Activity {
 						showResetButton = true;
 					}
 				}
+				if(player.collidedWithObstacle(level.getObstacleData()) ){
+					level.lowerSpeed();
+				}
 				
 				postInvalidate();
 				try{ Thread.sleep(10); }
@@ -167,6 +170,9 @@ public class main extends Activity {
 			}
 			
 			return true;
+		}
+		public Level getLevel() {
+			return level;
 		}
 	}
 }
