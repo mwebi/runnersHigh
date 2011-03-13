@@ -147,17 +147,19 @@ public class Level {
 			blockData.add(newRect);
 
 			// Obstacle creation
-			//double decider = Math.random();
 			Random randomGenerator = new Random();
-			//if (decider<0.5)
+			if (randomGenerator.nextBoolean()){
 			    //get the range, casting to long to avoid overflow problems
 			    long range = (long)newRight - (long)newLeft + 1;
+			    // get range to be 1/3 of the block length
+			    range*=0.33;
 			    // compute a fraction of the range, 0 <= frac < range
 			    long fraction = (long)(range * randomGenerator.nextDouble());
-			    int obstacleLeft =  (int)(fraction + newLeft); 
+			    int obstacleLeft =  (int)(newRight - obstacteWidth - fraction); 
 				
-			    Rect newObstacle = new Rect(obstacleLeft,newHeight+9,obstacleLeft+9,newHeight);
+			    Rect newObstacle = new Rect(obstacleLeft,newHeight+obstacteHeight,obstacleLeft+obstacteWidth,newHeight);
 				obstacleData.add(newObstacle);
+			}
 		}
 	}
 	
