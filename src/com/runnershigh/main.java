@@ -2,14 +2,11 @@ package com.runnershigh;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.media.SoundPool;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.util.Log;
@@ -18,7 +15,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.view.ViewDebug.IntToString;
 
 
 public class main extends Activity {
@@ -76,6 +72,11 @@ public class main extends Activity {
 			//SoundManager.cleanup(); //asd
 		}
 	    
+		public void saveScore(int score) {			
+			Intent myIntent = new Intent (this, HighScoreForm.class);
+			myIntent.putExtra("score", score);			
+			startActivity (myIntent);			
+		}
     
 	public class RunnersHighView extends View implements Runnable {
 		private Player player;
@@ -176,12 +177,13 @@ public class main extends Activity {
 						player.reset();
 						level.reset();
 						resetButton.setShowButton(false);
+						saveButton.setShowButton(false);
 						SoundManager.playSound(1, 1);
 					}
 					else if(saveButton.isClicked( event.getX(), event.getY() ) ){
 						//save score
-						
-						saveButton.setShowButton(false);
+						saveScore(level.getScoreCounter());						
+						//saveButton.setShowButton(false);
 						//play save sound
 						SoundManager.playSound(4, 1);
 					}

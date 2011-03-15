@@ -23,7 +23,7 @@ public class HighScoreForm extends Activity {
 	private HighscoreAdapter highScoreAdapter = null;
 	private EditText nameField;
 	private TextView scoreField;
-	
+	private Integer score;
 	// ---------------------------------------------------
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -42,22 +42,18 @@ public class HighScoreForm extends Activity {
         		saveState();
         	}
         });        
+        
+        // Get Score
+        Integer score = (savedInstanceState == null) ? null : (Integer) savedInstanceState.getSerializable("score");
+		if (score == null) {
+			Bundle extras = getIntent().getExtras();
+			score = extras != null ? extras.getInt("score") : null;
+		}
+		
+		Log.i("SCORE", score.toString());
+		scoreField.setText(score.toString());        
     }
     
-    // ---------------------------------------------------
-    // Fetch score
-    private void populateFields() {
-    	/*
-    	 * SCORE WILL BE FETCH HERE
-    	 * 
-        if (mRowId != null && mRowId > 0) {        	
-            Cursor note = highScoreAdapter.fetchScores(limit).fetchSingle(mRowId);
-            startManagingCursor(note);           
-            
-            String getTitleValue = note.getString(note.getColumnIndexOrThrow(highScoreAdapter.KEY_TITLE));
-            nameForm.setText(getTitleValue);
-        } */
-    }
     
     // ---------------------------------------------------
     // Save Entry
@@ -93,7 +89,6 @@ public class HighScoreForm extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-        //populateFields();
     }
     
     // Close DatabaseHelper
