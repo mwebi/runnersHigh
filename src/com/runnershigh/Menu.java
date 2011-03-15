@@ -24,7 +24,7 @@ public class Menu extends Activity {
     }
     
     public void showInfo(View view) {
-    	Intent myIntent = new Intent (this, HighScoreForm.class);
+    	Intent myIntent = new Intent (this, Info.class);
     	startActivity (myIntent);
     }
 }
