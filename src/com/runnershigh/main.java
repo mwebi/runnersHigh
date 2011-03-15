@@ -42,7 +42,6 @@ public class main extends Activity {
 	        musicPlayer = MediaPlayer.create(getApplicationContext(), R.raw.toughandcool);
 	        musicPlayer.start();
 	        musicPlayer.setVolume(0.6f, 0.6f);
-	        musicPlayer.setLooping(true);
 
 
 			requestWindowFeature(Window.FEATURE_NO_TITLE);  
@@ -58,22 +57,23 @@ public class main extends Activity {
 	    protected void onDestroy() {
 			super.onDestroy();
 			wakeLock.release();
+			//soundPool.stop(musicStreamID);
 			musicPlayer.release();
 			SoundManager.cleanup();
 		}
-	    
 		@Override
 		public void onResume() {
 			super.onResume();
 			wakeLock.acquire();
 			musicPlayer.start();
 		}
-		
 		@Override
 		public void onPause() {
 			super.onPause();
 			wakeLock.release();
+			//soundPool.stop(musicStreamID);
 			musicPlayer.pause();
+			//SoundManager.cleanup(); //asd
 		}
 	    
     
@@ -82,13 +82,18 @@ public class main extends Activity {
 		private Level level;
 		private int width;
 		private int height;
-		private Bitmap resetButton;
+		private Button resetButton;
+		private Button saveButton;
+		/*private Bitmap resetButton;
 		private boolean showResetButton = false;
 		private int resetButtonX = 350;
 		private int resetButtonY = 10;
 		private int resetButtonWidth = 100;
-		private int resetButtonHeight = 41;
+		private int resetButtonHeight = 41;*/
 		
+		/*SoundPool soundPool;
+		int musicID;
+		int musicStreamID;*/
 	
 		public RunnersHighView(Context context) {
 			super(context);
@@ -102,26 +107,35 @@ public class main extends Activity {
 			player = new Player(getApplicationContext(),height);
 			level = new Level(context, width, height);
 			
-			resetButton = BitmapFactory.decodeResource(context.getResources(), R.drawable.resetbutton);
+			resetButton = new Button(context, R.drawable.resetbutton, 350, 10, 100, 41);
+			saveButton = new Button(context, R.drawable.savebutton, 200, 10, 100, 41);
+			//resetButton = BitmapFactory.decodeResource(context.getResources(), R.drawable.resetbutton);
 			
 			Thread rHThread = new Thread(this);
 			rHThread.start();
-
+			
+			/*soundPool = new SoundPool(5, AudioManager.STREAM_MUSIC, 0);
+			
+			musicID = soundPool.load(context, R.raw.toughandcool, 1);
+			Log.d("sound", "musicID:  " + Integer.toString(musicID));
+			musicStreamID = soundPool.play(musicID, 1, 1, 1, 0, 1f);
+			Log.d("sound", "musicStreamID:  " + Integer.toString(musicStreamID));*/
 		}
 
 		public void run() {
 			while(true){
 				if (player.update(level.getBlockData())) {
-					level.update();
+						level.update();
 				} else {
 					if(player.getPosY() < 0){
-						showResetButton = true;
+						resetButton.setShowButton(true);
+						saveButton.setShowButton(true);
 					}
 				}
 				if(player.collidedWithObstacle(level.getObstacleData()) ){
 					level.lowerSpeed();
 				}
-				
+
 				postInvalidate();
 				try{ Thread.sleep(10); }
 				catch (InterruptedException e)
@@ -140,8 +154,11 @@ public class main extends Activity {
 
 			canvas.drawText("Your Score: " + Integer.toString(level.getScoreCounter()), 20, 20, paint);
 			
-			if (showResetButton)
-				canvas.drawBitmap(resetButton, resetButtonX, resetButtonY, null);
+			if (resetButton.getShowButton())
+				resetButton.drawButton(canvas);
+			if (saveButton.getShowButton())
+				saveButton.drawButton(canvas);
+				//canvas.drawBitmap(resetButton, resetButtonX, resetButtonY, null);
 
 			level.draw(canvas);
 			player.draw(canvas);
@@ -154,14 +171,19 @@ public class main extends Activity {
 				player.setJump(false);
 			
 			else if(event.getAction() == MotionEvent.ACTION_DOWN){
-				if (showResetButton) {
-					if(event.getX() <= resetButtonX+resetButtonWidth && event.getX() > resetButtonX){
-						if(event.getY() <= resetButtonY+resetButtonHeight && event.getY() > resetButtonY){
-							player.reset();
-							level.reset();
-							showResetButton = false;
-							SoundManager.playSound(1, 1);
-						}
+				if (resetButton.getShowButton() || saveButton.getShowButton()) {
+					if(resetButton.isClicked( event.getX(), event.getY() ) ){
+						player.reset();
+						level.reset();
+						resetButton.setShowButton(false);
+						SoundManager.playSound(1, 1);
+					}
+					else if(saveButton.isClicked( event.getX(), event.getY() ) ){
+						//save score
+						
+						saveButton.setShowButton(false);
+						//play save sound
+						SoundManager.playSound(4, 1);
 					}
 				}
 				else {
@@ -170,9 +192,6 @@ public class main extends Activity {
 			}
 			
 			return true;
-		}
-		public Level getLevel() {
-			return level;
 		}
 	}
 }

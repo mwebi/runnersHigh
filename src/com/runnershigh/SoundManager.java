@@ -65,6 +65,7 @@ public class SoundManager {
 		mSoundPoolMap.put(1, mSoundPool.load(mContext, R.raw.reset, 1));
 		mSoundPoolMap.put(2, mSoundPool.load(mContext, R.raw.threek, 1));
 		mSoundPoolMap.put(3, mSoundPool.load(mContext, R.raw.jump, 1));
+		mSoundPoolMap.put(4, mSoundPool.load(mContext, R.raw.save, 1));
 	}
  
 	/**

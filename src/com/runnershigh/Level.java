@@ -82,7 +82,7 @@ public class Level {
 				}
 			}*/
 			if(slowDown){
-				extraSpeed=0;
+				//extraSpeed=0;
 				baseSpeed=1;
 				slowDown=false;
 			}
