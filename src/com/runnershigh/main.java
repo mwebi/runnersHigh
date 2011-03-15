@@ -75,7 +75,7 @@ public class main extends Activity {
 		public void saveScore(int score) {			
 			Intent myIntent = new Intent (this, HighScoreForm.class);
 			myIntent.putExtra("score", score);			
-			startActivity (myIntent);			
+			startActivity (myIntent);
 		}
     
 	public class RunnersHighView extends View implements Runnable {
@@ -85,6 +85,7 @@ public class main extends Activity {
 		private int height;
 		private Button resetButton;
 		private Button saveButton;
+		private boolean scoreWasSaved = false;
 		/*private Bitmap resetButton;
 		private boolean showResetButton = false;
 		private int resetButtonX = 350;
@@ -157,7 +158,7 @@ public class main extends Activity {
 			
 			if (resetButton.getShowButton())
 				resetButton.drawButton(canvas);
-			if (saveButton.getShowButton())
+			if (saveButton.getShowButton() && !scoreWasSaved)
 				saveButton.drawButton(canvas);
 				//canvas.drawBitmap(resetButton, resetButtonX, resetButtonY, null);
 
@@ -178,14 +179,15 @@ public class main extends Activity {
 						level.reset();
 						resetButton.setShowButton(false);
 						saveButton.setShowButton(false);
+						scoreWasSaved=false;
 						SoundManager.playSound(1, 1);
 					}
-					else if(saveButton.isClicked( event.getX(), event.getY() ) ){
+					else if(saveButton.isClicked( event.getX(), event.getY() ) && !scoreWasSaved){
 						//save score
-						saveScore(level.getScoreCounter());						
-						//saveButton.setShowButton(false);
+						saveScore(level.getScoreCounter());
 						//play save sound
 						SoundManager.playSound(4, 1);
+						scoreWasSaved=true;
 					}
 				}
 				else {
