@@ -38,6 +38,7 @@ public class main extends Activity {
 	        musicPlayer = MediaPlayer.create(getApplicationContext(), R.raw.toughandcool);
 	        musicPlayer.start();
 	        musicPlayer.setVolume(0.6f, 0.6f);
+	        musicPlayer.setLooping(true);
 
 
 			requestWindowFeature(Window.FEATURE_NO_TITLE);  
