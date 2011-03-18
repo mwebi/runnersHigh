@@ -48,7 +48,6 @@ public class Level {
 	}
 	
 	public void update() {
-		
 		synchronized (blockData) {
 			//Log.d("debug", "in update");
 			if (blockData.size() == 0)
@@ -154,8 +153,8 @@ public class Level {
 	private void generateAndAddObstacle(int newLeft,int newRight,int newHeight,int newWidth) {
 		// Obstacle creation
 		Random randomGenerator = new Random();
-		int decider = randomGenerator.nextInt(5); //random int 0-4
-		if (decider == 2 || decider == 3){ //create either j or s obstacle
+		int decider = randomGenerator.nextInt(6); //random int 0-4
+		if (decider == 3 || decider == 4){ //create either j or s obstacle
 			char type;
 			Obstacle newObstacle;
 
@@ -182,7 +181,7 @@ public class Level {
 		    newObstacle.setY(newHeight);
 		    newObstacle.setObstacleRect(obstacleLeft, obstacleLeft+newObstacle.getWidth() ,newHeight, newHeight-newObstacle.getHeight());
 			obstacleData.add(newObstacle);
-		}else if (decider == 4){ //create two obstacles
+		}else if (decider == 5){ //create two obstacles
 			char type;
 			int obstacleLeft;
 			//get the range, casting to long to avoid overflow problems

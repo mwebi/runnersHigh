@@ -21,6 +21,7 @@ public class Player {
 	private boolean jumping = false;
 	private boolean jumpingsoundplayed = true;
 	private boolean reachedPeak = false;
+	private boolean slowSoundplayed = false;
 	private int jumpStartY;
 	private float velocity = 0;
 	private Rect playerRect;
@@ -117,12 +118,20 @@ public class Player {
 			modifiedObstacleRect.left -= levelPosition;
 			modifiedObstacleRect.right -= levelPosition;
 			if( checkIntersect(playerRect, modifiedObstacleRect) ){
-				if(currentObstacle.getType()=='s')
-					return true; //slow down player fast		
-				else if(currentObstacle.getType()=='j')
+				if(currentObstacle.getType()=='s'){
+					if(!slowSoundplayed){
+						SoundManager.playSound(5, 1);
+						slowSoundplayed=true;
+					}
+					return true; //slow down player fast
+				}
+				else if(currentObstacle.getType()=='j'){
+					SoundManager.playSound(6, 1);
 					velocity = 10; //katapultiert den player wie ein trampolin nach oben
+				}
 			}
 		}
+		slowSoundplayed=false;
 		return false;
 	}
 	public boolean checkIntersect(Rect playerRect, Rect blockRect) {
