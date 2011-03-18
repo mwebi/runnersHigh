@@ -54,7 +54,6 @@ public class main extends Activity {
 	    protected void onDestroy() {
 			super.onDestroy();
 			wakeLock.release();
-			//soundPool.stop(musicStreamID);
 			musicPlayer.release();
 			SoundManager.cleanup();
 		}
@@ -68,9 +67,7 @@ public class main extends Activity {
 		public void onPause() {
 			super.onPause();
 			wakeLock.release();
-			//soundPool.stop(musicStreamID);
 			musicPlayer.pause();
-			//SoundManager.cleanup(); //asd
 		}
 	    
 		public void saveScore(int score) {			
@@ -87,17 +84,8 @@ public class main extends Activity {
 		private Button resetButton;
 		private Button saveButton;
 		private boolean scoreWasSaved = false;
-		/*private Bitmap resetButton;
-		private boolean showResetButton = false;
-		private int resetButtonX = 350;
-		private int resetButtonY = 10;
-		private int resetButtonWidth = 100;
-		private int resetButtonHeight = 41;*/
+
 		
-		/*SoundPool soundPool;
-		int musicID;
-		int musicStreamID;*/
-	
 		public RunnersHighView(Context context) {
 			super(context);
 			
@@ -112,17 +100,9 @@ public class main extends Activity {
 			
 			resetButton = new Button(context, R.drawable.resetbutton, 350, 10, 100, 41);
 			saveButton = new Button(context, R.drawable.savebutton, 200, 10, 100, 41);
-			//resetButton = BitmapFactory.decodeResource(context.getResources(), R.drawable.resetbutton);
 			
 			Thread rHThread = new Thread(this);
 			rHThread.start();
-			
-			/*soundPool = new SoundPool(5, AudioManager.STREAM_MUSIC, 0);
-			
-			musicID = soundPool.load(context, R.raw.toughandcool, 1);
-			Log.d("sound", "musicID:  " + Integer.toString(musicID));
-			musicStreamID = soundPool.play(musicID, 1, 1, 1, 0, 1f);
-			Log.d("sound", "musicStreamID:  " + Integer.toString(musicStreamID));*/
 		}
 
 		public void run() {
@@ -135,7 +115,7 @@ public class main extends Activity {
 						saveButton.setShowButton(true);
 					}
 				}
-				if(player.collidedWithObstacle(level.getObstacleData()) ){
+				if(player.collidedWithObstacle(level.getObstacleData(),level.getLevelPosition()) ){
 					level.lowerSpeed();
 				}
 
@@ -161,7 +141,6 @@ public class main extends Activity {
 				resetButton.drawButton(canvas);
 			if (saveButton.getShowButton() && !scoreWasSaved)
 				saveButton.drawButton(canvas);
-				//canvas.drawBitmap(resetButton, resetButtonX, resetButtonY, null);
 
 			level.draw(canvas);
 			player.draw(canvas);

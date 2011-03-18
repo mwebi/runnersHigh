@@ -14,7 +14,6 @@ import android.util.Log;
 
 
 public class Level {
-	
 	private int width;
 	private int height;
 	private int levelPosition;
@@ -23,10 +22,9 @@ public class Level {
 	private float baseSpeed;
 	private float extraSpeed;
 	private Vector<Rect> blockData;
-	private Vector<Rect> obstacleData;
-	private Bitmap obstacleImg;
-	private int obstacteWidth;
-	private int obstacteHeight;
+	private Vector<Obstacle> obstacleData;
+	private Bitmap obstacleSlowImg;
+	private Bitmap obstacleJumpImg;
 	private boolean slowDown;
 	
 	public Level(Context context, int width, int heigth) {
@@ -40,10 +38,10 @@ public class Level {
 		
 		
 		blockData = new Vector<Rect>();
-		obstacleData = new Vector<Rect>();
-		obstacleImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.obstacle);
-		obstacteWidth=obstacleImg.getWidth();
-		obstacteHeight=obstacleImg.getHeight();
+		obstacleData = new Vector<Obstacle>();
+		obstacleSlowImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.obstacleslow );
+		obstacleJumpImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.obstaclejump );
+
 		slowDown = false;
 		
 		generateAndAddBlock();
@@ -63,6 +61,13 @@ public class Level {
 			if (levelPosition > blockData.get(0).right) {
 				blockData.remove(0);	
 			}
+			synchronized (obstacleData) {
+				if (obstacleData.size()>0){
+					if (levelPosition > obstacleData.get(0).getObstacleRect().right) {
+						obstacleData.remove(0);	
+					}
+				}
+			}
 			//Log.d("debug", "in update after > right; blockData.size() -> " + Integer.toString(blockData.size()) );
 			
 			if (blockData.get(blockData.size() -1).left < levelPosition + width)
@@ -75,12 +80,6 @@ public class Level {
 			
 			if(extraSpeed<5)
 				extraSpeed+=0.001;
-			/*if(slowDown && speed>1){
-				speed-=0.5;
-				if(speed <= 1){
-					slowDown = false;
-				}
-			}*/
 			if(slowDown){
 				//extraSpeed=0;
 				baseSpeed=1;
@@ -116,8 +115,11 @@ public class Level {
 			for (Rect block : blockData) {				
 				canvas.drawRect(block, paint);
 			}
-			for (Rect obstacle : obstacleData) {				
-				canvas.drawBitmap(obstacleImg, obstacle.left , obstacle.bottom, null);
+			for (Obstacle obstacle : obstacleData) {				
+				if(obstacle.getType()=='s')
+					obstacle.drawObstacle(canvas, obstacleSlowImg);
+				else if(obstacle.getType()=='j')
+					obstacle.drawObstacle(canvas, obstacleJumpImg);
 			}
 			canvas.restore();
 			/*canvas.translate(0, height-1);
@@ -145,21 +147,68 @@ public class Level {
 			int newRight = newLeft + newWidth;
 			Rect newRect = new Rect(newLeft, newHeight, newRight, 0);
 			blockData.add(newRect);
+			
+			generateAndAddObstacle(newLeft, newRight, newHeight, newWidth);
+		}
+	}
+	private void generateAndAddObstacle(int newLeft,int newRight,int newHeight,int newWidth) {
+		// Obstacle creation
+		Random randomGenerator = new Random();
+		int decider = randomGenerator.nextInt(5); //random int 0-4
+		if (decider == 2 || decider == 3){ //create either j or s obstacle
+			char type;
+			Obstacle newObstacle;
 
-			// Obstacle creation
-			Random randomGenerator = new Random();
-			if (randomGenerator.nextBoolean()){
-			    //get the range, casting to long to avoid overflow problems
-			    long range = (long)newRight - (long)newLeft + 1;
-			    // get range to be 1/3 of the block length
-			    range*=0.33;
-			    // compute a fraction of the range, 0 <= frac < range
-			    long fraction = (long)(range * randomGenerator.nextDouble());
-			    int obstacleLeft =  (int)(newRight - obstacteWidth - fraction); 
-				
-			    Rect newObstacle = new Rect(obstacleLeft,newHeight+obstacteHeight,obstacleLeft+obstacteWidth,newHeight);
-				obstacleData.add(newObstacle);
+			int obstacleLeft;
+			//get the range, casting to long to avoid overflow problems
+		    long range = (long)newRight - (long)newLeft + 1;
+		    // get range to be 1/3 of the block length
+		    range*=0.33;
+		    // compute a fraction of the range, 0 <= frac < range
+		    long fraction = (long)(range * randomGenerator.nextDouble());
+
+		    if (randomGenerator.nextBoolean()){
+				type='s'; //make obstacle type slow
+				newObstacle = new Obstacle(0, 0, obstacleSlowImg.getWidth(), obstacleSlowImg.getHeight(),type);
+			    obstacleLeft =  (int)(newRight - newObstacle.getWidth() - fraction); 
+			}else{
+				type='j'; //make obstacle type jumping
+				newObstacle = new Obstacle(0, 0, obstacleJumpImg.getWidth(), obstacleJumpImg.getHeight(),type);
+			    obstacleLeft =  (int)(newLeft + newObstacle.getWidth() + fraction); 
 			}
+
+		    //set new coordinates
+		    newObstacle.setX(obstacleLeft);
+		    newObstacle.setY(newHeight);
+		    newObstacle.setObstacleRect(obstacleLeft, obstacleLeft+newObstacle.getWidth() ,newHeight, newHeight-newObstacle.getHeight());
+			obstacleData.add(newObstacle);
+		}else if (decider == 4){ //create two obstacles
+			char type;
+			int obstacleLeft;
+			//get the range, casting to long to avoid overflow problems
+		    long range = (long)newRight - (long)newLeft + 1;
+		    // get range to be 1/3 of the block length
+		    range*=0.33;
+		    // compute a fraction of the range, 0 <= frac < range
+		    long fraction = (long)(range * randomGenerator.nextDouble());
+
+			type='s'; //make obstacle type slow
+			Obstacle newSlowObstacle = new Obstacle(0, 0, obstacleSlowImg.getWidth(), obstacleSlowImg.getHeight(),type);
+		    obstacleLeft =  (int)(newRight - newSlowObstacle.getWidth() - fraction); 
+		    //set new coordinates
+		    newSlowObstacle.setX(obstacleLeft);
+		    newSlowObstacle.setY(newHeight);
+		    newSlowObstacle.setObstacleRect(obstacleLeft, obstacleLeft+newSlowObstacle.getWidth() ,newHeight, newHeight-newSlowObstacle.getHeight());
+			obstacleData.add(newSlowObstacle);
+			
+			type='j'; //make obstacle type jumping
+			Obstacle newJumpObstacle = new Obstacle(0, 0, obstacleJumpImg.getWidth(), obstacleJumpImg.getHeight(),type);
+		    obstacleLeft =  (int)(newLeft + newJumpObstacle.getWidth() + fraction); 
+		    //set new coordinates
+		    newJumpObstacle.setX(obstacleLeft);
+		    newJumpObstacle.setY(newHeight);
+		    newJumpObstacle.setObstacleRect(obstacleLeft, obstacleLeft+newJumpObstacle.getWidth() ,newHeight, newHeight-newJumpObstacle.getHeight());
+			obstacleData.add(newJumpObstacle);
 		}
 	}
 	
@@ -172,30 +221,18 @@ public class Level {
 			for (Rect block : blockData) {				
 				Rect current = new Rect(block);
 				
-				current.left-= levelPosition;
+				current.left -= levelPosition;
 				current.right -= levelPosition;
 				
 				modifiedBlockData.add(current);
 			}
-			
 			return modifiedBlockData;
 		}
 		
 	}
-	public Vector<Rect> getObstacleData() {
+	public Vector<Obstacle> getObstacleData() {
 		synchronized (obstacleData) {
-			Vector<Rect> modifiedObstacleData = new Vector<Rect>();
-			
-			for (Rect obstacle : obstacleData) {				
-				Rect current = new Rect(obstacle);
-				
-				current.left-= levelPosition;
-				current.right -= levelPosition;
-				
-				modifiedObstacleData.add(current);
-			}
-			
-			return modifiedObstacleData;
+			return obstacleData;
 		}
 	}
 	
@@ -205,7 +242,9 @@ public class Level {
 	public void lowerSpeed() {
 		slowDown = true;
 	}
-	
+	public int getLevelPosition(){
+		return levelPosition;
+	}
 	public void reset() {
 		scoreCounter=0;
 		synchronized (blockData) {

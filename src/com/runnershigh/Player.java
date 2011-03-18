@@ -111,15 +111,16 @@ public class Player {
 		
 		return true;
 	}	
-	public boolean collidedWithObstacle(Vector<Rect> obstacles) {
-		for(Rect currentObstacle : obstacles){
-			if( checkIntersect(playerRect, currentObstacle) ){
-				// fuer einen trampolin effekt könnte man einfach velocity raus setzen
-				// damit würds den player wie wenn er auf a trampolin springt rauf katapultiern 
-				// velocity = 5;
-
-				// for now only slow down player fast
-				return true;
+	public boolean collidedWithObstacle(Vector<Obstacle> obstacles, int levelPosition) {
+		for(Obstacle currentObstacle : obstacles){
+			Rect modifiedObstacleRect= new Rect(currentObstacle.getObstacleRect());
+			modifiedObstacleRect.left -= levelPosition;
+			modifiedObstacleRect.right -= levelPosition;
+			if( checkIntersect(playerRect, modifiedObstacleRect) ){
+				if(currentObstacle.getType()=='s')
+					return true; //slow down player fast		
+				else if(currentObstacle.getType()=='j')
+					velocity = 10; //katapultiert den player wie ein trampolin nach oben
 			}
 		}
 		return false;
@@ -146,9 +147,7 @@ public class Player {
 		return false;
 	}
 	public void draw(Canvas canvas) {
-		
 		int y = Util.getInstance().toScreenY(posY);
-		
 		canvas.drawBitmap(playerImg, posX, y, null);
 	}
 	
