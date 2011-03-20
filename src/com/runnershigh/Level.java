@@ -26,6 +26,9 @@ public class Level {
 	private Bitmap obstacleSlowImg;
 	private Bitmap obstacleJumpImg;
 	private boolean slowDown;
+	Paint paint;
+	Rect blockRect;
+	private int BlockCounter;
 	
 	public Level(Context context, int width, int heigth) {
 		this.width = width;
@@ -35,6 +38,10 @@ public class Level {
 		this.baseSpeed = 5;
 		this.extraSpeed = 0;
 		threeKwasplayed = false;
+		
+		paint = new Paint();
+		paint.setColor(Color.RED);
+		paint.setStyle(Paint.Style.FILL);
 		
 		
 		blockData = new Vector<Rect>();
@@ -100,9 +107,7 @@ public class Level {
 	public void draw(Canvas canvas) {
 		synchronized (blockData) {
 			//Log.d("debug", "in draw");
-			Paint paint = new Paint();
-			paint.setColor(Color.RED);
-			paint.setStyle(Paint.Style.FILL);
+			
 			canvas.save();
 			
 			canvas.translate(-levelPosition, 0);
@@ -144,11 +149,14 @@ public class Level {
 			Rect lastRect = blockData.get(blockData.size() - 1); 
 			int newLeft = lastRect.right + distance;
 			int newRight = newLeft + newWidth;
-			Rect newRect = new Rect(newLeft, newHeight, newRight, 0);
-			blockData.add(newRect);
+			blockRect = new Rect(newLeft, newHeight, newRight, 0);
+			blockData.add(blockRect);
 			
-			generateAndAddObstacle(newLeft, newRight, newHeight, newWidth);
+			//start creating obstacles after the 10th block
+			if(BlockCounter>10)
+				generateAndAddObstacle(newLeft, newRight, newHeight, newWidth);
 		}
+		BlockCounter++;
 	}
 	private void generateAndAddObstacle(int newLeft,int newRight,int newHeight,int newWidth) {
 		// Obstacle creation
@@ -210,9 +218,8 @@ public class Level {
 			obstacleData.add(newJumpObstacle);
 		}
 	}
-	
+	//TODO refactor without temporary vector
 	public Vector<Rect> getBlockData() {
-		
 		synchronized (blockData) {
 			//Log.d("debug", "in getBlockData");
 			Vector<Rect> modifiedBlockData = new Vector<Rect>();
@@ -227,8 +234,8 @@ public class Level {
 			}
 			return modifiedBlockData;
 		}
-		
 	}
+	
 	public Vector<Obstacle> getObstacleData() {
 		synchronized (obstacleData) {
 			return obstacleData;
