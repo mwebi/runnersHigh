@@ -43,7 +43,6 @@ public class Level {
 		paint.setColor(Color.RED);
 		paint.setStyle(Paint.Style.FILL);
 		
-		
 		blockData = new Vector<Rect>();
 		obstacleData = new Vector<Obstacle>();
 		obstacleSlowImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.obstacleslow );

@@ -52,22 +52,22 @@ public class main extends Activity {
 		
 	    @Override
 	    protected void onDestroy() {
-			super.onDestroy();
 			wakeLock.release();
 			musicPlayer.release();
 			SoundManager.cleanup();
+			super.onDestroy();
 		}
 		@Override
 		public void onResume() {
-			super.onResume();
 			wakeLock.acquire();
 			musicPlayer.start();
+			super.onResume();			
 		}
 		@Override
 		public void onPause() {
-			super.onPause();
 			wakeLock.release();
 			musicPlayer.pause();
+			super.onPause();
 		}
 	    
 		public void saveScore(int score) {			
