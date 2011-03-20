@@ -29,7 +29,6 @@ public class Player {
 	
 
 	public Player(Context context, int ScreenHeight) {
-		
 		posX = 70; // x/y is bottom left corner of picture
 		posY = 200;
 		

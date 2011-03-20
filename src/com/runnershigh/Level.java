@@ -260,6 +260,7 @@ public class Level {
 			obstacleData.clear();
 			this.baseSpeed = 5;
 			this.extraSpeed = 0;
+			BlockCounter=0;
 			generateAndAddBlock();
 		}
 	}
