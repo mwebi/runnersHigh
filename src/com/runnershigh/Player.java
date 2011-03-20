@@ -91,12 +91,9 @@ public class Player {
 				else{
 					return false;
 				}
-					
 			}
 		}
-		
 		lastPosY = posY;
-		
 		
 		if(speedoffsetX<5)
 			speedoffsetX+=0.001;
@@ -107,7 +104,6 @@ public class Player {
 			posY = -1;
 			return false;
 		}
-		
 		
 		return true;
 	}	
@@ -163,7 +159,7 @@ public class Player {
 		posX = 70; // x/y is bottom left corner of picture
 		posY = 200;
 		velocity = 0;
-		speedoffsetX =0;
+		speedoffsetX = 0;
 	}
 	
 	public int getPosX() {

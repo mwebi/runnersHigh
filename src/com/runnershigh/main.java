@@ -37,7 +37,7 @@ public class main extends Activity {
 	        
 	        musicPlayer = MediaPlayer.create(getApplicationContext(), R.raw.toughandcool);
 	        musicPlayer.start();
-	        musicPlayer.setVolume(0.6f, 0.6f);
+	        musicPlayer.setVolume(0.5f, 0.5f);
 	        musicPlayer.setLooping(true);
 
 
@@ -84,6 +84,8 @@ public class main extends Activity {
 		private Button resetButton;
 		private Button saveButton;
 		private boolean scoreWasSaved = false;
+		private boolean deathSoundPlayed = false;
+		Paint paint = new Paint();
 
 		
 		public RunnersHighView(Context context) {
@@ -94,6 +96,10 @@ public class main extends Activity {
 			height= display.getHeight();
 			Util.getInstance().setScreenHeight(height);
 			
+			paint.setColor(Color.LTGRAY);
+			paint.setStyle(Paint.Style.FILL);
+			paint.setAntiAlias(true);
+			paint.setTextSize(18);
 			
 			player = new Player(getApplicationContext(),height);
 			level = new Level(context, width, height);
@@ -113,6 +119,10 @@ public class main extends Activity {
 					if(player.getPosY() < 0){
 						resetButton.setShowButton(true);
 						saveButton.setShowButton(true);
+						if(!deathSoundPlayed){
+							SoundManager.playSound(7, 1);
+							deathSoundPlayed=true;
+						}
 					}
 				}
 				if(player.collidedWithObstacle(level.getObstacleData(),level.getLevelPosition()) ){
@@ -129,11 +139,7 @@ public class main extends Activity {
 		}
 		
 		public void draw(Canvas canvas) {
-			Paint paint = new Paint();
-			paint.setColor(Color.LTGRAY);
-			paint.setStyle(Paint.Style.FILL);
-			paint.setAntiAlias(true);
-			paint.setTextSize(18);
+			
 
 			canvas.drawText("Your Score: " + Integer.toString(level.getScoreCounter()), 20, 20, paint);
 			
@@ -155,11 +161,13 @@ public class main extends Activity {
 			else if(event.getAction() == MotionEvent.ACTION_DOWN){
 				if (resetButton.getShowButton() || saveButton.getShowButton()) {
 					if(resetButton.isClicked( event.getX(), event.getY() ) ){
+						System.gc(); //do garbage collection
 						player.reset();
 						level.reset();
 						resetButton.setShowButton(false);
 						saveButton.setShowButton(false);
 						scoreWasSaved=false;
+						deathSoundPlayed=false;
 						SoundManager.playSound(1, 1);
 					}
 					else if(saveButton.isClicked( event.getX(), event.getY() ) && !scoreWasSaved){
