@@ -9,6 +9,7 @@
 package com.runnershigh;
 
 import android.app.Activity;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -44,14 +45,22 @@ public class HighScoreForm extends Activity {
         });        
         
         // Get Score
-        Integer score = (savedInstanceState == null) ? null : (Integer) savedInstanceState.getSerializable("score");
+        score = (savedInstanceState == null) ? null : (Integer) savedInstanceState.getSerializable("score");
 		if (score == null) {
 			Bundle extras = getIntent().getExtras();
 			score = extras != null ? extras.getInt("score") : null;
 		}
 		
-		Log.i("SCORE", score.toString());
-		scoreField.setText(score.toString());        
+		// Get Last Saved Name
+		Cursor cursor = highScoreAdapter.fetchLastEntry();
+		startManagingCursor(cursor);
+
+		if(cursor.getCount() > 0) {
+			nameField.setText(cursor.getString(cursor.getColumnIndexOrThrow(highScoreAdapter.KEY_NAME)));
+		}
+		cursor.close();
+		
+		scoreField.setText(score.toString()); 
     }
     
     
@@ -66,6 +75,7 @@ public class HighScoreForm extends Activity {
         // Insert into Database
         if(name.length() > 0) {
         	long id = highScoreAdapter.createHighscore(score, name);
+        	highScoreAdapter.close();
             setResult(RESULT_OK);
             finish();
         } else {

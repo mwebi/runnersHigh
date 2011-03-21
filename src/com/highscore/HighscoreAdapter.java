@@ -16,6 +16,7 @@ package com.highscore;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.util.Log;
 
 public class HighscoreAdapter extends DbAdapter {
@@ -49,13 +50,38 @@ public class HighscoreAdapter extends DbAdapter {
 
     // -------------------------------------------------------
     // Show
-    public Cursor fetchScores(String limit) {
-    	return mDb.query(DATABASE_TABLE, 
+    public Cursor fetchScores(String limit) throws SQLException {
+    	Cursor mCursor =  mDb.query(DATABASE_TABLE,
         				new String[] { 	KEY_ROWID,
     									KEY_NAME,
     									KEY_SCORE
     								  },
     					null, null, null, null,
         				KEY_SCORE + " DESC", limit);
+    	
+        if (mCursor != null) {
+            mCursor.moveToFirst();
+        }
+        
+        return mCursor;
+    }   
+    
+    
+    // -------------------------------------------------------
+    // Get Last Entries
+    public Cursor fetchLastEntry() throws SQLException {
+    	Cursor mCursor = mDb.query(DATABASE_TABLE, 
+        				new String[] { 	KEY_ROWID,
+    									KEY_NAME,
+    									KEY_SCORE
+    								  },
+    					null, null, null, null,
+        				KEY_ROWID + " DESC", "1");
+    	
+        if (mCursor != null) {
+            mCursor.moveToFirst();
+        }
+        
+        return mCursor;
     }
 }
