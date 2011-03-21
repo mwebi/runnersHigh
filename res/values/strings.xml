@@ -5,4 +5,5 @@
 	<string name="score">tah score</string>
 	<string name="hs_title">High-Score</string>
 	<string name="hs_error_name_empty">Name is empty !</string>
+	<string name="info">runnersHigh was created in 2001 by MultiMedia-Technology09 students of FH-Salzburg in Austria.\n\n- Michael Webersdorfer\n- Christian Winkler\n-Andre Schweighofer\n-Francois Weber\n\nVersion 1.0</string>
 </resources>

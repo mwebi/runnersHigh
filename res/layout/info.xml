@@ -21,8 +21,6 @@
 		android:id="@+id/infoText"
 	  	android:layout_width="fill_parent" 
 	    android:layout_height="wrap_content"    
-	    android:text="Made by MMT09" 
 	    android:textSize="12dp"
-	    android:textColor="#FFFFFF"
-	    />
+	    android:textColor="#FFFFFF" android:text="@string/info"/>
 </LinearLayout>
