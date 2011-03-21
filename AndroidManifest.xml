@@ -9,14 +9,17 @@
                   android:screenOrientation="landscape" >        
         </activity>
 		
-		<activity android:name=".HighScoreActivity" />
-		<activity android:name=".Menu">
+		<activity android:name=".HighScoreActivity" 
+				  android:screenOrientation="landscape"/>
+		<activity android:name=".Menu"
+				  android:screenOrientation="landscape">
 		    <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".HighScoreForm"></activity>
+        <activity android:name=".HighScoreForm"
+        		  android:screenOrientation="landscape"></activity>
 		<activity android:name=".Info"></activity>
     </application>
 	<uses-permission android:name="android.permission.WAKE_LOCK" />
