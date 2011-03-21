@@ -47,6 +47,12 @@ public class HighscoreAdapter extends DbAdapter {
     public boolean delete(long rowId) {
         return mDb.delete(DATABASE_TABLE, KEY_ROWID + "=" + rowId, null) > 0;
     }
+    
+    // -------------------------------------------------------
+    // Clear table
+    public boolean clear() {
+        return mDb.delete(DATABASE_TABLE, null, null) > 0;
+    }
 
     // -------------------------------------------------------
     // Show

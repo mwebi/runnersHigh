@@ -7,15 +7,29 @@
   android:padding="10dp"
   android:textColor="#FFFFFF">
   
+  
+  <LinearLayout
+  android:orientation="horizontal"
+  android:layout_width="fill_parent"
+  android:layout_height="wrap_content"
+  android:layout_marginBottom="25dp" >
+  
   <TextView  
 		android:id="@+id/titleScore"
-	  	android:layout_width="fill_parent" 
+	  	android:layout_width="wrap_content" 
 	    android:layout_height="wrap_content"    
 	    android:text="@string/hs_title" 
 	    android:textSize="26dp"
 	    android:textColor="#FFFFFF"
 	    />
-  
+	
+  <Button android:id="@+id/clearButton"
+		android:layout_marginLeft="15dp" 
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+	    android:text="Clear"
+		/>
+  </LinearLayout>
   <ListView 
   		android:id="@id/android:list"
         android:layout_width="fill_parent"

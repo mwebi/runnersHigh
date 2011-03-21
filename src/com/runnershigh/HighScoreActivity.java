@@ -12,9 +12,11 @@ import android.app.ListActivity;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 
@@ -36,6 +38,15 @@ public class HighScoreActivity extends ListActivity {
         
         highScoreAdapter = new HighscoreAdapter(this);
         highScoreAdapter.open();
+        
+        // Clear Button
+        Button clearButton = (Button) findViewById(R.id.clearButton);
+        clearButton.setOnClickListener(new View.OnClickListener() {
+        	public void onClick(View view) {
+        		highScoreAdapter.clear();
+        		fillData();
+        	}
+        });  
         
         fillData();
         
