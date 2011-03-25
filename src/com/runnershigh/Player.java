@@ -34,7 +34,7 @@ public class Player {
 		
 		//Queue<Block> blocks;
 		
-		playerImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.playerimg);
+		playerImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.playerimg_beta);
 		width=playerImg.getWidth();
 		height=playerImg.getHeight();
 	}
