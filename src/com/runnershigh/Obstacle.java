@@ -7,7 +7,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 
-public class Obstacle {
+public class Obstacle extends Mesh {
 	private int ObstacleX = 0;
 	private int ObstacleY = 0;
 	private int ObstacleWidth = 0;
@@ -23,6 +23,21 @@ public class Obstacle {
 		ObstacleHeight=h;
 		ObstacleType=type;
 		ObstacleRect = new Rect (ObstacleX, ObstacleY, ObstacleX+ObstacleWidth, ObstacleY+ObstacleHeight);
+		
+		float textureCoordinates[] = { 0.0f, 1.0f, //
+				1.0f, 1.0f, //
+				0.0f, 0.0f, //
+				1.0f, 0.0f, //
+		};
+
+		short[] indices = new short[] { 0, 1, 2, 1, 3, 2 };
+
+		float[] vertices = new float[] { 0, 0, 0, w, 0, 0.0f, 0, h,
+				0.0f, w, h, 0.0f };
+
+		setIndices(indices);
+		setVertices(vertices);
+		setTextureCoordinates(textureCoordinates);
 	}
 	public Obstacle(Obstacle GivenObstacle){
 		ObstacleX = GivenObstacle.getX();
@@ -31,6 +46,21 @@ public class Obstacle {
 		ObstacleHeight = GivenObstacle.getHeight();
 		ObstacleRect = GivenObstacle.getObstacleRect();
 		ObstacleType = GivenObstacle.getType();
+		
+		float textureCoordinates[] = { 0.0f, 1.0f, //
+				1.0f, 1.0f, //
+				0.0f, 0.0f, //
+				1.0f, 0.0f, //
+		};
+
+		short[] indices = new short[] { 0, 1, 2, 1, 3, 2 };
+
+		float[] vertices = new float[] { 0, 0, 0, ObstacleWidth, 0, 0.0f, 0, ObstacleHeight,
+				0.0f, ObstacleWidth, ObstacleHeight, 0.0f };
+
+		setIndices(indices);
+		setVertices(vertices);
+		setTextureCoordinates(textureCoordinates);
 	}
 	public int getWidth(){
 		return ObstacleWidth;

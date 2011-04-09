@@ -21,16 +21,21 @@ public class Level {
 	private boolean threeKwasplayed;
 	private float baseSpeed;
 	private float extraSpeed;
-	private Vector<Rect> blockData;
+	private Vector<Block> blockData;
+	private Vector<Block> unusedBlocks;
 	private Vector<Obstacle> obstacleData;
+	private Vector<Obstacle> unusedObstacles;
 	private Bitmap obstacleSlowImg;
 	private Bitmap obstacleJumpImg;
+	private Bitmap blockImg;
 	private boolean slowDown;
 	Paint paint;
 	Rect blockRect;
 	private int BlockCounter;
+	private OpenGLRenderer renderer;
 	
-	public Level(Context context, int width, int heigth) {
+	public Level(Context context, OpenGLRenderer glrenderer, int width, int heigth) {
+		Log.d("debug", "in Level constructor");
 		this.width = width;
 		this.height = heigth;
 		this.levelPosition = 0;
@@ -38,16 +43,19 @@ public class Level {
 		this.baseSpeed = 5;
 		this.extraSpeed = 0;
 		threeKwasplayed = false;
+		renderer = glrenderer;
 		
 		paint = new Paint();
 		paint.setColor(Color.RED);
 		paint.setStyle(Paint.Style.FILL);
 		
-		blockData = new Vector<Rect>();
+		blockData = new Vector<Block>();
+		unusedBlocks = new Vector<Block>();
 		obstacleData = new Vector<Obstacle>();
+		unusedObstacles = new Vector<Obstacle>();
 		obstacleSlowImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.obstacleslow );
 		obstacleJumpImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.obstaclejump );
-
+		blockImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.ground );
 		slowDown = false;
 		
 		generateAndAddBlock();
@@ -61,24 +69,31 @@ public class Level {
 				levelPosition = 0;
 				generateAndAddBlock();
 			}
-			//Log.d("debug", "in update after == 0");
+			// Log.d("debug", "in update after == 0");
 			
 			if (levelPosition > blockData.get(0).right) {
-				blockData.remove(0);	
+				unusedBlocks.add(blockData.firstElement());
+				blockData.remove(0);
 			}
 			synchronized (obstacleData) {
 				if (obstacleData.size()>0){
 					if (levelPosition > obstacleData.get(0).getObstacleRect().right) {
+						unusedObstacles.add(obstacleData.firstElement());
 						obstacleData.remove(0);	
 					}
 				}
 			}
+			
 			//Log.d("debug", "in update after > right; blockData.size() -> " + Integer.toString(blockData.size()) );
+			
+			// Log.d("debug", "left:" + blockData.get(blockData.size() -1).left);
+			//Log.d("debug", "lp + width:" + (levelPosition + width));
+			
 			
 			if (blockData.get(blockData.size() -1).left < levelPosition + width)
 				generateAndAddBlock();
 			
-			//Log.d("debug", "in update after < levelPosition + width");
+			// Log.d("debug", "in update after < levelPosition + width");
 			
 			if(baseSpeed<5)
 				baseSpeed+=0.025;
@@ -95,6 +110,17 @@ public class Level {
 			//scoreCounter += 1;
 			scoreCounter = levelPosition/10;
 			
+			for (Block block : blockData) {
+				block.x -= (baseSpeed + extraSpeed);
+			}
+			
+			synchronized (obstacleData) {
+				for (Obstacle obstacle : obstacleData) {
+					obstacle.x -= (baseSpeed + extraSpeed);
+				}
+			}
+			
+			
 			if(scoreCounter>=3000 && threeKwasplayed==false){
 				threeKwasplayed=true;
 				SoundManager.playSound(2, 1);
@@ -103,6 +129,7 @@ public class Level {
 		}	
 	}
 	
+	/*
 	public void draw(Canvas canvas) {
 		synchronized (blockData) {
 			//Log.d("debug", "in draw");
@@ -125,18 +152,27 @@ public class Level {
 					obstacle.drawObstacle(canvas, obstacleJumpImg);
 			}
 			canvas.restore();
-			/*canvas.translate(0, height-1);
-			canvas.scale(1, -1);
-			canvas.translate(levelPosition, 0);*/
+			
 		}
 	}
+	*/
 	
 	private void generateAndAddBlock() {
-		//Log.d("debug", "in generate");
+		Log.d("debug", "in generate");
+		Log.d("debug", "blockData.size() -> " + Integer.toString(blockData.size()) );		
 		if (blockData.size() == 0) {
-			Rect newRect = new Rect(0, 50, width, 0);
-			blockData.add(newRect);
+			if (unusedBlocks.size() == 0) {
+				Block newBlock = new Block(0, 50, width, 0);
+				blockData.add(newBlock);
+				newBlock.loadBitmap(blockImg);
+				renderer.addMesh(newBlock);
+			} else {
+				blockData.add(unusedBlocks.firstElement());
+				unusedBlocks.remove(0);
+			}
 		} else {
+			Block currentBlock;
+			
 			int newHeight;
 			if (blockData.get(blockData.size() -1 ).top > height/2)
 				newHeight = (int)(Math.random()*height/3*2 + height/8);
@@ -145,11 +181,30 @@ public class Level {
 			
 			int newWidth = (int)(Math.random()*width/2+width/2);
 			int distance = (int)(Math.random()*width/4+width/8);
-			Rect lastRect = blockData.get(blockData.size() - 1); 
-			int newLeft = lastRect.right + distance;
+			Block lastBlock = blockData.get(blockData.size() - 1); 
+			int newLeft = lastBlock.right + distance;
 			int newRight = newLeft + newWidth;
-			blockRect = new Rect(newLeft, newHeight, newRight, 0);
-			blockData.add(blockRect);
+			
+			if (unusedBlocks.size() == 0) {
+				Log.d("debug", "new block needed");
+				currentBlock = new Block(0, 50, width, 0);
+				blockData.add(currentBlock);
+				currentBlock.loadBitmap(blockImg);
+				renderer.addMesh(currentBlock);
+			} else {
+				currentBlock = unusedBlocks.firstElement();
+				blockData.add(currentBlock);
+				unusedBlocks.remove(0);
+			}
+			
+			
+			currentBlock.setLeft(newLeft);
+			currentBlock.setTop(newHeight);
+			currentBlock.setRight(newRight);
+			currentBlock.setBottom(0);
+			
+			currentBlock.x = newLeft - levelPosition;
+			currentBlock.y = 0;
 			
 			//start creating obstacles after the 10th block
 			if(BlockCounter>10)
@@ -223,8 +278,13 @@ public class Level {
 			//Log.d("debug", "in getBlockData");
 			Vector<Rect> modifiedBlockData = new Vector<Rect>();
 			
-			for (Rect block : blockData) {				
-				Rect current = new Rect(block);
+			for (Block block : blockData) {				
+				Rect current = new Rect();
+				
+				current.bottom = block.bottom;
+				current.left = block.left;
+				current.right = block.right;
+				current.top = block.top;
 				
 				current.left -= levelPosition;
 				current.right -= levelPosition;
@@ -263,4 +323,86 @@ public class Level {
 			generateAndAddBlock();
 		}
 	}
+	
+	public class Block extends Mesh {
+		private int left;
+		private int right;
+		private int bottom;
+		private int top;
+		
+		public int getLeft() {
+			return left;
+		}
+
+		public void setLeft(int left) {
+			this.left = left;
+			
+			float[] vertices = new float[] { 0, 0, 0, right-left, 0, 0.0f, 0, top-bottom,
+					0.0f, right-left, top-bottom, 0.0f };
+
+			setVertices(vertices);
+		}
+
+		public int getRight() {
+			return right;
+		}
+
+		public void setRight(int right) {
+			this.right = right;
+			
+			float[] vertices = new float[] { 0, 0, 0, right-left, 0, 0.0f, 0, top-bottom,
+					0.0f, right-left, top-bottom, 0.0f };
+
+			setVertices(vertices);
+		}
+
+		public int getBottom() {
+			return bottom;
+		}
+
+		public void setBottom(int bottom) {
+			this.bottom = bottom;
+			float[] vertices = new float[] { 0, 0, 0, right-left, 0, 0.0f, 0, top-bottom,
+					0.0f, right-left, top-bottom, 0.0f };
+
+			setVertices(vertices);
+		}
+
+		public int getTop() {
+			return top;
+		}
+
+		public void setTop(int top) {
+			this.top = top;
+			float[] vertices = new float[] { 0, 0, 0, right-left, 0, 0.0f, 0, top-bottom,
+					0.0f, right-left, top-bottom, 0.0f };
+
+			setVertices(vertices);
+		}
+
+		public Block(int _left, int _top, int _right, int _bottom) {
+			left = _left;
+			top = _top;
+			right = _right;
+			bottom = _bottom;
+			
+			float textureCoordinates[] = { 0.0f, 1.0f, //
+					1.0f, 1.0f, //
+					0.0f, 0.0f, //
+					1.0f, 0.0f, //
+			};
+
+			short[] indices = new short[] { 0, 1, 2, 1, 3, 2 };
+
+			float[] vertices = new float[] { 0, 0, 0, right-left, 0, 0.0f, 0, top-bottom,
+					0.0f, right-left, top-bottom, 0.0f };
+
+			setIndices(indices);
+			setVertices(vertices);
+			setTextureCoordinates(textureCoordinates);
+		}
+		
+	}
+	
 }
+

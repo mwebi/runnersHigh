@@ -9,34 +9,49 @@ import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.util.Log;
 
-public class Player {
+public class Player extends Mesh {
 	private static float MAX_JUMP_HEIGHT = 140;
 	private static float MIN_JUMP_HEIGHT = 10;
 	public Bitmap playerImg;
-	private float posX;
-	private int posY;
-	private int lastPosY;
+	private float lastPosY;
 	private int width;
 	private int height;
 	private boolean jumping = false;
 	private boolean jumpingsoundplayed = true;
 	private boolean reachedPeak = false;
 	private boolean slowSoundplayed = false;
-	private int jumpStartY;
+	private float jumpStartY;
 	private float velocity = 0;
 	private Rect playerRect;
 	private float speedoffsetX = 0;
 	
 
 	public Player(Context context, int ScreenHeight) {
-		posX = 70; // x/y is bottom left corner of picture
-		posY = 200;
+		x = 70; // x/y is bottom left corner of picture
+		y = 200;
 		
 		//Queue<Block> blocks;
 		
 		playerImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.playerimg_beta);
+		loadBitmap(playerImg);
+		
 		width=playerImg.getWidth();
 		height=playerImg.getHeight();
+		
+		float textureCoordinates[] = { 0.0f, 1.0f, //
+				1.0f, 1.0f, //
+				0.0f, 0.0f, //
+				1.0f, 0.0f, //
+		};
+
+		short[] indices = new short[] { 0, 1, 2, 1, 3, 2 };
+
+		float[] vertices = new float[] { 0, 0, 0, width, 0, 0.0f, 0, height,
+				0.0f, width, height, 0.0f };
+
+		setIndices(indices);
+		setVertices(vertices);
+		setTextureCoordinates(textureCoordinates);
 	}
 	
 	public void setJump(boolean jump) {
@@ -45,7 +60,7 @@ public class Player {
 		
 		if(reachedPeak) return;
 		
-		jumpStartY = posY;
+		jumpStartY = y;
 		jumping = true;
 		if(jump)
 			jumpingsoundplayed = false;
@@ -57,11 +72,11 @@ public class Player {
 			jumpingsoundplayed = true;
 		}
 		if (jumping && velocity >= 0) {
-			if(posY - jumpStartY < MIN_JUMP_HEIGHT || !reachedPeak) {
-				float modifier = (MAX_JUMP_HEIGHT - (posY - jumpStartY))/30;
+			if(y - jumpStartY < MIN_JUMP_HEIGHT || !reachedPeak) {
+				float modifier = (MAX_JUMP_HEIGHT - (y - jumpStartY))/30;
 				velocity += 0.4981 * modifier;
 			}
-			if(posY - jumpStartY >= MAX_JUMP_HEIGHT) {
+			if(y - jumpStartY >= MAX_JUMP_HEIGHT) {
 				reachedPeak = true;			
 			}
 		}
@@ -73,8 +88,9 @@ public class Player {
 		else if (velocity > 9)
 			velocity = 9;
 		
-		posY += velocity;
-		playerRect = new Rect((int)posX,posY,(int)posX+width,posY-height);
+		y += velocity;
+		
+		playerRect = new Rect((int)x,(int)y,(int)x+width,(int)y-height);
 		
 		for(Rect currentBlock : blocks){
 			if(currentBlock.top==0){
@@ -83,7 +99,7 @@ public class Player {
 			if( checkIntersect(playerRect, currentBlock) ){
 				if(lastPosY-height >= currentBlock.top)
 				{
-					posY=currentBlock.top+height;
+					y=currentBlock.top+height;
 					velocity = 0;
 					reachedPeak = false;
 					jumping = false;
@@ -93,15 +109,15 @@ public class Player {
 				}
 			}
 		}
-		lastPosY = posY;
+		lastPosY = y;
 		
 		if(speedoffsetX<5)
 			speedoffsetX+=0.001;
 		
-		posX=70+speedoffsetX*50;
+		x=70+speedoffsetX*50;
 		
-		if(posY - height < 0){
-			posY = -1;
+		if(y + height < 0){
+			y = -height;
 			return false;
 		}
 		
@@ -150,32 +166,28 @@ public class Player {
 		
 		return false;
 	}
-	public void draw(Canvas canvas) {
-		int y = Util.getInstance().toScreenY(posY);
-		canvas.drawBitmap(playerImg, posX, y, null);
-	}
 	
 	public void reset() {
-		posX = 70; // x/y is bottom left corner of picture
-		posY = 200;
+		x = 70; // x/y is bottom left corner of picture
+		y = 200;
 		velocity = 0;
 		speedoffsetX = 0;
 	}
 	
 	public int getPosX() {
-		return (int)posX;
+		return (int)x;
 	}
 
 	public void setPosX(int posX) {
-		this.posX = posX;
+		this.x = posX;
 	}
 
 	public int getPosY() {
-		return posY;
+		return (int)y;
 	}
 
 	public void setPosY(int posY) {
-		this.posY = posY;
+		this.y = posY;
 	}
 
 }

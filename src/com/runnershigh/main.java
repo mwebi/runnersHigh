@@ -1,5 +1,6 @@
 package com.runnershigh;
 
+import com.runnershigh.OpenGLRenderer;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -7,6 +8,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.media.MediaPlayer;
+import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.util.Log;
@@ -76,7 +78,7 @@ public class main extends Activity {
 			startActivity (myIntent);
 		}
     
-	public class RunnersHighView extends View implements Runnable {
+	public class RunnersHighView extends GLSurfaceView implements Runnable {
 		private Player player;
 		private Level level;
 		private int width;
@@ -86,11 +88,12 @@ public class main extends Activity {
 		private boolean scoreWasSaved = false;
 		private boolean deathSoundPlayed = false;
 		Paint paint = new Paint();
+		private OpenGLRenderer mRenderer;
 
 		
 		public RunnersHighView(Context context) {
 			super(context);
-			
+			Log.d("debug", "in RunnersHighView constructor");
 			Display display = ((WindowManager) getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
 			width= display.getWidth(); 
 			height= display.getHeight();
@@ -101,11 +104,17 @@ public class main extends Activity {
 			paint.setAntiAlias(true);
 			paint.setTextSize(18);
 			
+			mRenderer = new OpenGLRenderer();
+			this.setRenderer(mRenderer);
+			
 			player = new Player(getApplicationContext(),height);
-			level = new Level(context, width, height);
+			mRenderer.addMesh(player);
+			
+			level = new Level(context, mRenderer, width, height);
 			
 			resetButton = new Button(context, R.drawable.resetbutton, 350, 10, 100, 41);
 			saveButton = new Button(context, R.drawable.savebutton, 200, 10, 100, 41);
+
 			
 			Thread rHThread = new Thread(this);
 			rHThread.start();
@@ -129,7 +138,7 @@ public class main extends Activity {
 					level.lowerSpeed();
 				}
 
-				postInvalidate();
+				//postInvalidate();
 				try{ Thread.sleep(10); }
 				catch (InterruptedException e)
 				{
@@ -138,7 +147,7 @@ public class main extends Activity {
 			}
 		}
 		
-		public void draw(Canvas canvas) {
+		/*public void draw(Canvas canvas) {
 			
 
 			canvas.drawText("Your Score: " + Integer.toString(level.getScoreCounter()), 20, 20, paint);
@@ -151,8 +160,8 @@ public class main extends Activity {
 			level.draw(canvas);
 			player.draw(canvas);
 			
-			invalidate();
 		}
+		*/
 		
 		public boolean onTouchEvent(MotionEvent event) {
 			if(event.getAction() == MotionEvent.ACTION_UP)
