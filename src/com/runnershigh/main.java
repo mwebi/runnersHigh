@@ -12,6 +12,7 @@ import android.os.PowerManager;
 import android.util.Log;
 import android.view.Display;
 import android.view.MotionEvent;
+import android.view.SurfaceView;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -76,7 +77,7 @@ public class main extends Activity {
 			startActivity (myIntent);
 		}
     
-	public class RunnersHighView extends View implements Runnable {
+	public class RunnersHighView extends SurfaceView implements Runnable {
 		private Player player;
 		private Level level;
 		private int width;
@@ -139,8 +140,7 @@ public class main extends Activity {
 		}
 		
 		public void draw(Canvas canvas) {
-			
-
+			long starttime = System.currentTimeMillis();
 			canvas.drawText("Your Score: " + Integer.toString(level.getScoreCounter()), 20, 20, paint);
 			
 			if (resetButton.getShowButton())
@@ -150,8 +150,9 @@ public class main extends Activity {
 
 			level.draw(canvas);
 			player.draw(canvas);
-			
-			invalidate();
+			long timeToDrawFrame= System.currentTimeMillis()- starttime;
+			Log.d("frametime", "timeToDrawFrame" + Integer.toString((int)timeToDrawFrame));
+			//invalidate();
 		}
 		
 		public boolean onTouchEvent(MotionEvent event) {
