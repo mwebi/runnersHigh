@@ -10,7 +10,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
 import android.util.Log;
 
 
@@ -26,8 +25,6 @@ public class Level {
 	private Vector<Obstacle> obstacleData;
 	private Bitmap obstacleSlowImg;
 	private Bitmap obstacleJumpImg;
-	//private Bitmap BlockImg;
-	private Drawable BlockImg;
 	private boolean slowDown;
 	Paint paint;
 	Rect blockRect;
@@ -50,9 +47,7 @@ public class Level {
 		obstacleData = new Vector<Obstacle>();
 		obstacleSlowImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.obstacleslow );
 		obstacleJumpImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.obstaclejump );
-		//BlockImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.blocktilelow);
-		BlockImg = context.getResources().getDrawable(R.drawable.blocktilelow);
-		
+
 		slowDown = false;
 		
 		generateAndAddBlock();
@@ -121,16 +116,7 @@ public class Level {
 			
 		
 			for (Rect block : blockData) {				
-				//canvas.drawRect(block, paint);
-				BlockImg.setBounds(block.left, 0, block.left+100, 150);
-				BlockImg.draw(canvas);
-				BlockImg.setBounds(block.left+100, 0, block.left+200, 150);
-				BlockImg.draw(canvas);
-				BlockImg.setBounds(block.left+200, 0, block.left+300, 150);
-				BlockImg.draw(canvas);
-				//canvas.drawBitmap(BlockImg, block.left, block.bottom, null);
-				//canvas.drawBitmap(BlockImg, block.left+100, block.bottom, null);
-				//canvas.drawBitmap(BlockImg, block.left+200, block.bottom, null);
+				canvas.drawRect(block, paint);
 			}
 			for (Obstacle obstacle : obstacleData) {				
 				if(obstacle.getType()=='s')
