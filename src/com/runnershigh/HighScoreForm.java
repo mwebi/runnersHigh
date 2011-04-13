@@ -102,7 +102,7 @@ public class HighScoreForm extends Activity {
         		
         		if(!isOnline()) {
         			highScoreAdapter.toastMessage(R.string.hs_error_no_internet);
-        			return;
+        			Log.i("isOffline", "jo");
         		} else {        		
 	        		// Create a new HttpClient and Post Header
 	        	    HttpClient httpclient = new DefaultHttpClient();
