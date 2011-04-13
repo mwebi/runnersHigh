@@ -22,7 +22,9 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 
 import android.app.Activity;
+import android.content.Context;
 import android.database.Cursor;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -96,28 +98,32 @@ public class HighScoreForm extends Activity {
         if(name.length() > 0) {
         	
         	// Save score online
-        	if(checkbox.isChecked()) {
+        	if(checkbox.isChecked()) {        	      		
         		
-        		// Create a new HttpClient and Post Header
-        	    HttpClient httpclient = new DefaultHttpClient();
-        	    HttpPost httppost = new HttpPost("http://rh.fidrelity.at/");
-
-        	    try {
-        	        // Add your data
-        	        List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
-        	        nameValuePairs.add(new BasicNameValuePair("name", name));
-        	        nameValuePairs.add(new BasicNameValuePair("score", score));
-        	        httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-
-        	        // Execute HTTP Post Request
-        	        HttpResponse response = httpclient.execute(httppost);
-        	        Log.i("SEND", httppost.toString());
-        	    } catch (ClientProtocolException e) {
-        	        // TODO Auto-generated catch block
-        	    } catch (IOException e) {
-        	        // TODO Auto-generated catch block
-        	    }    		
-        		
+        		if(!isOnline()) {
+        			highScoreAdapter.toastMessage(R.string.hs_error_no_internet);
+        			return;
+        		} else {        		
+	        		// Create a new HttpClient and Post Header
+	        	    HttpClient httpclient = new DefaultHttpClient();
+	        	    HttpPost httppost = new HttpPost("http://rh.fidrelity.at/");
+	
+	        	    try {
+	        	        // Add your data
+	        	        List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
+	        	        nameValuePairs.add(new BasicNameValuePair("name", name));
+	        	        nameValuePairs.add(new BasicNameValuePair("score", score));
+	        	        httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+	
+	        	        // Execute HTTP Post Request
+	        	        HttpResponse response = httpclient.execute(httppost);
+	
+	        	    } catch (ClientProtocolException e) {
+	        	        // TODO Auto-generated catch block
+	        	    } catch (IOException e) {
+	        	        // TODO Auto-generated catch block
+	        	    }    		
+        		}
         	}
         	
         	// Save score locally
@@ -130,6 +136,11 @@ public class HighScoreForm extends Activity {
         	highScoreAdapter.toastMessage(R.string.hs_error_name_empty);
         }
     }
+    
+	public boolean isOnline() {
+		 ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+		 return cm.getActiveNetworkInfo().isConnectedOrConnecting();
+	}
     
     // ---------------------------------------------------------
     @Override
