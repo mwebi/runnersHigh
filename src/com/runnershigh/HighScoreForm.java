@@ -8,6 +8,19 @@
 
 package com.runnershigh;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+
 import android.app.Activity;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -16,6 +29,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -73,16 +87,45 @@ public class HighScoreForm extends Activity {
     // Save Entry
     private void saveState() {
     	String name 	=  nameField.getText().toString();
-        String score 	=  scoreField.getText().toString();       
+        String score 	=  scoreField.getText().toString();   
+        CheckBox checkbox = (CheckBox) findViewById(R.id.postOnline);
         
         Log.i("onSAVE", " name: " + name + " Score: " + score);
             
         // Insert into Database
         if(name.length() > 0) {
+        	
+        	// Save score online
+        	if(checkbox.isChecked()) {
+        		
+        		// Create a new HttpClient and Post Header
+        	    HttpClient httpclient = new DefaultHttpClient();
+        	    HttpPost httppost = new HttpPost("http://www.yoursite.com/script.php");
+
+        	    try {
+        	        // Add your data
+        	        List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
+        	        nameValuePairs.add(new BasicNameValuePair("name", name));
+        	        nameValuePairs.add(new BasicNameValuePair("score", score));
+        	        httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+
+        	        // Execute HTTP Post Request
+        	        HttpResponse response = httpclient.execute(httppost);
+
+        	    } catch (ClientProtocolException e) {
+        	        // TODO Auto-generated catch block
+        	    } catch (IOException e) {
+        	        // TODO Auto-generated catch block
+        	    }    		
+        		
+        	}
+        	
+        	// Save score locally
         	long id = highScoreAdapter.createHighscore(score, name);
         	highScoreAdapter.close();
-            setResult(RESULT_OK);
-            finish();
+        	
+        	setResult(RESULT_OK);
+        	finish();
         } else {
         	highScoreAdapter.toastMessage(R.string.hs_error_name_empty);
         }
