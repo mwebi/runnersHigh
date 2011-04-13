@@ -111,7 +111,7 @@ public class HighScoreForm extends Activity {
 
         	        // Execute HTTP Post Request
         	        HttpResponse response = httpclient.execute(httppost);
-
+        	        Log.i("SEND", httppost.toString());
         	    } catch (ClientProtocolException e) {
         	        // TODO Auto-generated catch block
         	    } catch (IOException e) {
