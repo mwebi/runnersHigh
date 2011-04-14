@@ -113,6 +113,8 @@ public class Level {
 			
 			for (Block block : blockData) {
 				block.x -= (baseSpeed + extraSpeed);
+				block.setLeft((int)(block.left - (baseSpeed + extraSpeed)));
+				block.setRight((int)(block.right - (baseSpeed + extraSpeed)));
 			}
 			
 			synchronized (obstacleData) {
@@ -206,7 +208,7 @@ public class Level {
 			
 			
 			currentBlock.setLeft(newLeft);
-			currentBlock.setTop(newHeight);
+			//currentBlock.setTop(newHeight);
 			currentBlock.setRight(newRight);
 			currentBlock.setBottom(0);
 			
