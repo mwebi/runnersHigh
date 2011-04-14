@@ -88,7 +88,9 @@ public class main extends Activity {
 		private int width;
 		private int height;
 		private Button resetButton;
+		private Bitmap resetButtonImg;
 		private Button saveButton;
+		private Bitmap saveButtonImg;
 		private boolean scoreWasSaved = false;
 		private boolean deathSoundPlayed = false;
 		Paint paint = new Paint();
@@ -116,14 +118,20 @@ public class main extends Activity {
 			background.loadBitmap(BGImg); 
 			mRenderer.addMesh(background);
 			
+			resetButtonImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.resetbutton);
+			resetButton = new Button(350, 10, -2, resetButtonImg.getWidth(), resetButtonImg.getHeight());
+			//background.loadBitmap(resetButtonImg);
+			mRenderer.addMesh(resetButton);			
+			
+			saveButtonImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.savebutton);
+			saveButton = new Button(200, 10, -2, saveButtonImg.getWidth(), saveButtonImg.getHeight());
+			//background.loadBitmap(saveButtonImg);
+			mRenderer.addMesh(saveButton);
+			
 			player = new Player(getApplicationContext(), mRenderer, height);
 			mRenderer.addMesh(player);
 			
 			level = new Level(context, mRenderer, width, height);
-			
-			resetButton = new Button(context, R.drawable.resetbutton, 350, 10, 100, 41);
-			saveButton = new Button(context, R.drawable.savebutton, 200, 10, 100, 41);
-
 			
 			Thread rHThread = new Thread(this);
 			rHThread.start();
@@ -136,7 +144,9 @@ public class main extends Activity {
 				} else {
 					if(player.getPosY() < 0){
 						resetButton.setShowButton(true);
+						resetButton.z = 1.0f;
 						saveButton.setShowButton(true);
+						saveButton.z = 1.0f;
 						if(!deathSoundPlayed){
 							SoundManager.playSound(7, 1);
 							deathSoundPlayed=true;
@@ -183,12 +193,14 @@ public class main extends Activity {
 						player.reset();
 						level.reset();
 						resetButton.setShowButton(false);
+						resetButton.z = -2.0f;
 						saveButton.setShowButton(false);
+						saveButton.z = -2.0f;
 						scoreWasSaved=false;
 						deathSoundPlayed=false;
 						SoundManager.playSound(1, 1);
 					}
-					else if(saveButton.isClicked( event.getX(), event.getY() ) && !scoreWasSaved){
+					else if(saveButton.isClicked( event.getX(), Util.getInstance().toScreenY((int)event.getY())  ) && !scoreWasSaved){
 						//save score
 						saveScore(level.getScoreCounter());
 						//play save sound
