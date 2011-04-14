@@ -13,10 +13,8 @@ public class Obstacle extends RHDrawable {
 	
 	
 	public Obstacle(float _x, float _y, float _z, float _width, float _height, char type){
-		x =_x;
-		y =_y;
-		width = _width;
-		height = _height;
+		super((int)_x, (int)_y, (int)_z, (int)_width, (int)_height);
+		
 		ObstacleType=type;
 		ObstacleRect = new Rect ((int)x, (int)y, (int)x+(int)width, (int)y+(int)height);
 		
@@ -35,7 +33,9 @@ public class Obstacle extends RHDrawable {
 		setVertices(vertices);
 		setTextureCoordinates(textureCoordinates);
 	}
+	
 	public Obstacle(Obstacle GivenObstacle){
+		super((int)GivenObstacle.getX(), (int)GivenObstacle.getY(), (int)GivenObstacle.z, GivenObstacle.getWidth(), GivenObstacle.getHeight());
 		x = GivenObstacle.getX();
 		y = GivenObstacle.getY();
 		width = GivenObstacle.getWidth();
