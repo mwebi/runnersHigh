@@ -79,6 +79,7 @@ public class Level {
 				if (obstacleData.size()>0){
 					if (levelPosition > obstacleData.get(0).getObstacleRect().right) {
 						unusedObstacles.add(obstacleData.firstElement());
+						unusedObstacles.add(obstacleData.firstElement());
 						obstacleData.remove(0);	
 					}
 				}
@@ -167,8 +168,14 @@ public class Level {
 				newBlock.loadBitmap(blockImg);
 				renderer.addMesh(newBlock);
 			} else {
-				blockData.add(unusedBlocks.firstElement());
+				Block currentBlock = unusedBlocks.firstElement();
+				blockData.add(currentBlock);
+				currentBlock.setLeft(0);
+				currentBlock.setRight(width);
+				currentBlock.setTop(50);
+				currentBlock.setBottom(0);
 				unusedBlocks.remove(0);
+				
 			}
 		} else {
 			Block currentBlock;
@@ -230,11 +237,25 @@ public class Level {
 
 		    if (randomGenerator.nextBoolean()){
 				type='s'; //make obstacle type slow
-				newObstacle = new Obstacle(0, 0, obstacleSlowImg.getWidth(), obstacleSlowImg.getHeight(),type);
+				if (unusedObstacles.size() == 0) {
+					newObstacle = new Obstacle(0, 0, obstacleSlowImg.getWidth(), obstacleSlowImg.getHeight(),type);
+					renderer.addMesh(newObstacle);
+				} else {
+					newObstacle = unusedObstacles.firstElement();
+					unusedObstacles.remove(0);
+				}
+				newObstacle.loadBitmap(obstacleSlowImg);
 			    obstacleLeft =  (int)(newRight - newObstacle.getWidth() - fraction); 
 			}else{
 				type='j'; //make obstacle type jumping
-				newObstacle = new Obstacle(0, 0, obstacleJumpImg.getWidth(), obstacleJumpImg.getHeight(),type);
+				if (unusedObstacles.size() == 0) {
+					newObstacle = new Obstacle(0, 0, obstacleJumpImg.getWidth(), obstacleJumpImg.getHeight(),type);
+					renderer.addMesh(newObstacle);
+				} else {
+					newObstacle = unusedObstacles.firstElement();
+					unusedObstacles.remove(0);
+				}
+				newObstacle.loadBitmap(obstacleJumpImg);
 			    obstacleLeft =  (int)(newLeft + newObstacle.getWidth() + fraction); 
 			}
 
@@ -243,6 +264,7 @@ public class Level {
 		    newObstacle.setY(newHeight);
 		    newObstacle.setObstacleRect(obstacleLeft, obstacleLeft+newObstacle.getWidth() ,newHeight, newHeight-newObstacle.getHeight());
 			obstacleData.add(newObstacle);
+			
 		}else if (decider == 5){ //create two obstacles
 			char type;
 			int obstacleLeft;
@@ -253,18 +275,36 @@ public class Level {
 		    // compute a fraction of the range, 0 <= frac < range
 		    long fraction = (long)(range * randomGenerator.nextDouble());
 
+		    Obstacle newSlowObstacle;
 			type='s'; //make obstacle type slow
-			Obstacle newSlowObstacle = new Obstacle(0, 0, obstacleSlowImg.getWidth(), obstacleSlowImg.getHeight(),type);
+			if (unusedObstacles.size() == 0) {
+				newSlowObstacle  = new Obstacle(0, 0, obstacleSlowImg.getWidth(), obstacleSlowImg.getHeight(),type);
+				renderer.addMesh(newSlowObstacle);
+			} else {
+				newSlowObstacle = unusedObstacles.firstElement();
+				unusedObstacles.remove(0);
+			}
+			
 		    obstacleLeft =  (int)(newRight - newSlowObstacle.getWidth() - fraction); 
+		    newSlowObstacle.setType(type);
 		    //set new coordinates
 		    newSlowObstacle.setX(obstacleLeft);
 		    newSlowObstacle.setY(newHeight);
 		    newSlowObstacle.setObstacleRect(obstacleLeft, obstacleLeft+newSlowObstacle.getWidth() ,newHeight, newHeight-newSlowObstacle.getHeight());
 			obstacleData.add(newSlowObstacle);
 			
+			Obstacle newJumpObstacle;
 			type='j'; //make obstacle type jumping
-			Obstacle newJumpObstacle = new Obstacle(0, 0, obstacleJumpImg.getWidth(), obstacleJumpImg.getHeight(),type);
-		    obstacleLeft =  (int)(newLeft + newJumpObstacle.getWidth() + fraction); 
+			if (unusedObstacles.size() == 0) {
+				newJumpObstacle = new Obstacle(0, 0, obstacleJumpImg.getWidth(), obstacleJumpImg.getHeight(),type);
+				renderer.addMesh(newJumpObstacle);
+			} else {
+				newJumpObstacle = unusedObstacles.firstElement();
+				unusedObstacles.remove(0);
+			}
+			
+		    obstacleLeft =  (int)(newLeft + newJumpObstacle.getWidth() + fraction);
+		    newJumpObstacle.setType(type);
 		    //set new coordinates
 		    newJumpObstacle.setX(obstacleLeft);
 		    newJumpObstacle.setY(newHeight);
@@ -315,6 +355,11 @@ public class Level {
 		synchronized (blockData) {
 			//Log.d("debug", "in reset");
 			levelPosition = 0;
+			while(blockData.size() > 0)
+			{
+				unusedBlocks.add(blockData.firstElement());
+				blockData.remove(0);
+			}
 			blockData.clear();
 			obstacleData.clear();
 			this.baseSpeed = 5;

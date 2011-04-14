@@ -70,7 +70,11 @@ public class Obstacle extends Mesh {
 	}
 	public char getType(){
 		return ObstacleType;
-	}	
+	}
+	public void setType(char type){
+		ObstacleType = type;
+	}
+	
 	public int getX(){
 		return ObstacleX;
 	}
