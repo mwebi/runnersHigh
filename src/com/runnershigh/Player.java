@@ -4,9 +4,7 @@ import android.content.Context;
 import java.util.Vector;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
 import android.graphics.Rect;
-import android.util.Log;
 
 public class Player extends Mesh {
 	private static float MAX_JUMP_HEIGHT = 140;
@@ -46,8 +44,8 @@ public class Player extends Mesh {
 
 		short[] indices = new short[] { 0, 1, 2, 1, 3, 2 };
 
-		float[] vertices = new float[] { 0, 0, 0, -width, 0, 0.0f, 0, -height,
-				0.0f, -width, -height, 0.0f };
+		float[] vertices = new float[] { 0, 0, 0, width, 0, 0.0f, 0, height,
+				0.0f, width, height, 0.0f };
 
 		setIndices(indices);
 		setVertices(vertices);
@@ -91,16 +89,16 @@ public class Player extends Mesh {
 		
 		y += velocity;
 		
-		playerRect = new Rect((int)x,(int)y,(int)x+width,(int)y-height);
+		playerRect = new Rect((int)x,(int)y+height,(int)x+width,(int)y);
 		
 		for(Rect currentBlock : blocks){
 			if(currentBlock.top==0){
 				continue;
 			}
 			if( checkIntersect(playerRect, currentBlock) ){
-				if(lastPosY-height >= currentBlock.top)
+				if(lastPosY >= currentBlock.top)
 				{
-					y=currentBlock.top+height;
+					y=currentBlock.top;
 					velocity = 0;
 					reachedPeak = false;
 					jumping = false;
