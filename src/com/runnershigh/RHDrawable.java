@@ -4,10 +4,10 @@ import android.content.Context;
 import android.graphics.Rect;
 
 public class RHDrawable extends Mesh {
-	private int width;
-	private int height;
+	protected float width;
+	protected float height;
 	
-	public RHDrawable(Context context, OpenGLRenderer glrenderer, int _x, int _y, int _z, int _width, int _height) {
+	public RHDrawable(int _x, int _y, int _z, int _width, int _height) {
 		x = _x;
 		y = _y;
 		z = _z;
@@ -30,7 +30,24 @@ public class RHDrawable extends Mesh {
 		setVertices(vertices);
 		setTextureCoordinates(textureCoordinates);
 	}
+	
 	public Rect getRect() {
-		return new Rect((int)x,(int)y+height,(int)x+width,(int)y);
+		return new Rect((int)x,(int)(y+height),(int)(x+width),(int)y);
+	}
+	
+	public void setWidth(int width)
+	{
+		float[] vertices = new float[] { 0, 0, 0, width, 0, 0.0f, 0, height,
+				0.0f, width, height, 0.0f };
+
+		setVertices(vertices);
+	}
+	
+	public void setHeight(int height)
+	{
+		float[] vertices = new float[] { 0, 0, 0, width, 0, 0.0f, 0, height,
+				0.0f, width, height, 0.0f };
+
+		setVertices(vertices);
 	}
 }
