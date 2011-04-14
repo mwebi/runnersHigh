@@ -2,7 +2,6 @@ package com.runnershigh;
 
 import android.content.Context;
 import java.util.Vector;
-
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -24,19 +23,20 @@ public class Player extends Mesh {
 	private float velocity = 0;
 	private Rect playerRect;
 	private float speedoffsetX = 0;
+	private OpenGLRenderer renderer;
 	
 
-	public Player(Context context, int ScreenHeight) {
+	public Player(Context context, OpenGLRenderer glrenderer, int ScreenHeight) {
 		x = 70; // x/y is bottom left corner of picture
 		y = 200;
 		
-		//Queue<Block> blocks;
+		renderer=glrenderer;
 		
 		playerImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.playerimg_beta);
 		loadBitmap(playerImg);
 		
-		width=playerImg.getWidth();
-		height=playerImg.getHeight();
+		width=72;//playerImg.getWidth();
+		height=74;//playerImg.getHeight();
 		
 		float textureCoordinates[] = { 0.0f, 1.0f, //
 				1.0f, 1.0f, //
@@ -46,12 +46,13 @@ public class Player extends Mesh {
 
 		short[] indices = new short[] { 0, 1, 2, 1, 3, 2 };
 
-		float[] vertices = new float[] { 0, 0, 0, width, 0, 0.0f, 0, height,
-				0.0f, width, height, 0.0f };
+		float[] vertices = new float[] { 0, 0, 0, -width, 0, 0.0f, 0, -height,
+				0.0f, -width, -height, 0.0f };
 
 		setIndices(indices);
 		setVertices(vertices);
 		setTextureCoordinates(textureCoordinates);
+
 	}
 	
 	public void setJump(boolean jump) {

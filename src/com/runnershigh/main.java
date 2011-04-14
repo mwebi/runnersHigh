@@ -107,7 +107,7 @@ public class main extends Activity {
 			mRenderer = new OpenGLRenderer();
 			this.setRenderer(mRenderer);
 			
-			player = new Player(getApplicationContext(),height);
+			player = new Player(getApplicationContext(), mRenderer, height);
 			mRenderer.addMesh(player);
 			
 			level = new Level(context, mRenderer, width, height);
