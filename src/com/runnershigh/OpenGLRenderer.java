@@ -119,4 +119,8 @@ public class OpenGLRenderer implements Renderer {
 	public void addMesh(Mesh mesh) {
 		root.add(mesh);
 	}
+	
+	public void removeMesh(Mesh mesh) {
+		root.remove(mesh);
+	}
 }

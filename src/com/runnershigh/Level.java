@@ -71,14 +71,13 @@ public class Level {
 			}
 			// Log.d("debug", "in update after == 0");
 			
-			if (levelPosition > blockData.get(0).right) {
+			if (0 > blockData.get(0).getRect().right) {
 				unusedBlocks.add(blockData.firstElement());
 				blockData.remove(0);
 			}
 			synchronized (obstacleData) {
 				if (obstacleData.size()>0){
 					if (levelPosition > obstacleData.get(0).getObstacleRect().right) {
-						unusedObstacles.add(obstacleData.firstElement());
 						unusedObstacles.add(obstacleData.firstElement());
 						obstacleData.remove(0);	
 					}
@@ -91,7 +90,7 @@ public class Level {
 			//Log.d("debug", "lp + width:" + (levelPosition + width));
 			
 			
-			if (blockData.get(blockData.size() -1).left < levelPosition + width)
+			if (blockData.get(blockData.size() -1).getRect().left < width)
 				generateAndAddBlock();
 			
 			// Log.d("debug", "in update after < levelPosition + width");
@@ -113,8 +112,6 @@ public class Level {
 			
 			for (Block block : blockData) {
 				block.x -= (baseSpeed + extraSpeed);
-				block.setLeft((int)(block.left - (baseSpeed + extraSpeed)));
-				block.setRight((int)(block.right - (baseSpeed + extraSpeed)));
 			}
 			
 			synchronized (obstacleData) {
@@ -172,10 +169,12 @@ public class Level {
 			} else {
 				Block currentBlock = unusedBlocks.firstElement();
 				blockData.add(currentBlock);
-				currentBlock.setLeft(0);
-				currentBlock.setRight(width);
-				currentBlock.setTop(50);
-				currentBlock.setBottom(0);
+				
+				currentBlock.x = 0;
+				currentBlock.setWidth(width);
+				currentBlock.setHeight(50);
+				currentBlock.y = 0;
+				
 				unusedBlocks.remove(0);
 				
 			}
@@ -183,7 +182,7 @@ public class Level {
 			Block currentBlock;
 			
 			int newHeight;
-			if (blockData.get(blockData.size() -1 ).top > height/2)
+			if (blockData.get(blockData.size() -1 ).getRect().top > height/2)
 				newHeight = (int)(Math.random()*height/3*2 + height/8);
 			else
 				newHeight = (int)(Math.random()*height/2 + height/8);
@@ -191,7 +190,7 @@ public class Level {
 			int newWidth = (int)(Math.random()*width/2+width/2);
 			int distance = (int)(Math.random()*width/4+width/8);
 			Block lastBlock = blockData.get(blockData.size() - 1); 
-			int newLeft = lastBlock.right + distance;
+			int newLeft = lastBlock.getRect().right + distance;
 			int newRight = newLeft + newWidth;
 			
 			if (unusedBlocks.size() == 0) {
@@ -206,13 +205,10 @@ public class Level {
 				unusedBlocks.remove(0);
 			}
 			
+			currentBlock.setHeight(newHeight);
+			currentBlock.setWidth(newWidth);
 			
-			currentBlock.setLeft(newLeft);
-			//currentBlock.setTop(newHeight);
-			currentBlock.setRight(newRight);
-			currentBlock.setBottom(0);
-			
-			currentBlock.x = newLeft - levelPosition;
+			currentBlock.x = newLeft;
 			currentBlock.y = 0;
 			
 			//start creating obstacles after the 10th block
@@ -323,13 +319,13 @@ public class Level {
 			for (Block block : blockData) {				
 				Rect current = new Rect();
 				
-				current.bottom = block.bottom;
-				current.left = block.left;
-				current.right = block.right;
-				current.top = block.top;
+				current.bottom = block.getRect().bottom;
+				current.left = block.getRect().left;
+				current.right = block.getRect().right;
+				current.top = block.getRect().top;
 				
-				current.left -= levelPosition;
-				current.right -= levelPosition;
+				// current.left -= levelPosition;
+				// current.right -= levelPosition;
 				
 				modifiedBlockData.add(current);
 			}

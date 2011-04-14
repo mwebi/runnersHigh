@@ -37,6 +37,8 @@ public class RHDrawable extends Mesh {
 	
 	public void setWidth(int width)
 	{
+		this.width = width;
+		
 		float[] vertices = new float[] { 0, 0, 0, width, 0, 0.0f, 0, height,
 				0.0f, width, height, 0.0f };
 
@@ -45,6 +47,7 @@ public class RHDrawable extends Mesh {
 	
 	public void setHeight(int height)
 	{
+		this.height = height;
 		float[] vertices = new float[] { 0, 0, 0, width, 0, 0.0f, 0, height,
 				0.0f, width, height, 0.0f };
 

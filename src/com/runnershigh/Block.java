@@ -1,66 +1,9 @@
 package com.runnershigh;
 
-public class Block extends Mesh {
-	public int left;
-	public int right;
-	public int bottom;
-	public int top;
+public class Block extends RHDrawable {
 	
-	public int getLeft() {
-		return left;
-	}
-
-	public void setLeft(int left) {
-		this.left = left;
-		
-		float[] vertices = new float[] { 0, 0, 0, right-left, 0, 0.0f, 0, top-bottom,
-				0.0f, right-left, top-bottom, 0.0f };
-
-		setVertices(vertices);
-	}
-
-	public int getRight() {
-		return right;
-	}
-
-	public void setRight(int right) {
-		this.right = right;
-		
-		float[] vertices = new float[] { 0, 0, 0, right-left, 0, 0.0f, 0, top-bottom,
-				0.0f, right-left, top-bottom, 0.0f };
-
-		setVertices(vertices);
-	}
-
-	public int getBottom() {
-		return bottom;
-	}
-
-	public void setBottom(int bottom) {
-		this.bottom = bottom;
-		float[] vertices = new float[] { 0, 0, 0, right-left, 0, 0.0f, 0, top-bottom,
-				0.0f, right-left, top-bottom, 0.0f };
-
-		setVertices(vertices);
-	}
-
-	public int getTop() {
-		return top;
-	}
-
-	public void setTop(int top) {
-		this.top = top;
-		float[] vertices = new float[] { 0, 0, 0, right-left, 0, 0.0f, 0, top-bottom,
-				0.0f, right-left, top-bottom, 0.0f };
-
-		setVertices(vertices);
-	}
-
-	public Block(int _left, int _top, int _right, int _bottom) {
-		left = _left;
-		top = _top;
-		right = _right;
-		bottom = _bottom;
+	public Block(int left, int top, int right, int bottom) {
+		super(left, bottom, 0, right-left, top-bottom);
 		
 		float textureCoordinates[] = { 0.0f, 1.0f, //
 				1.0f, 1.0f, //
