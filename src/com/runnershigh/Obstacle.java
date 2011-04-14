@@ -7,22 +7,18 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 
-public class Obstacle extends Mesh {
-	private int ObstacleX = 0;
-	private int ObstacleY = 0;
-	private int ObstacleWidth = 0;
-	private int ObstacleHeight = 0;
+public class Obstacle extends RHDrawable {
 	private Rect ObstacleRect;
 	private char ObstacleType; //s=slow, 
 	
 	
-	public Obstacle(int x, int y, int w, int h, char type){
-		ObstacleX=x;
-		ObstacleY=y;
-		ObstacleWidth=w;
-		ObstacleHeight=h;
+	public Obstacle(float _x, float _y, float _z, float _width, float _height, char type){
+		x =_x;
+		y =_y;
+		width = _width;
+		height = _height;
 		ObstacleType=type;
-		ObstacleRect = new Rect (ObstacleX, ObstacleY, ObstacleX+ObstacleWidth, ObstacleY+ObstacleHeight);
+		ObstacleRect = new Rect (x, y, x+width, y+height);
 		
 		float textureCoordinates[] = { 0.0f, 1.0f, //
 				1.0f, 1.0f, //
@@ -32,18 +28,18 @@ public class Obstacle extends Mesh {
 
 		short[] indices = new short[] { 0, 1, 2, 1, 3, 2 };
 
-		float[] vertices = new float[] { 0, 0, 0, w, 0, 0.0f, 0, h,
-				0.0f, w, h, 0.0f };
+		float[] vertices = new float[] { 0, 0, 0, width, 0, 0.0f, 0, height,
+				0.0f, width, height, 0.0f };
 
 		setIndices(indices);
 		setVertices(vertices);
 		setTextureCoordinates(textureCoordinates);
 	}
 	public Obstacle(Obstacle GivenObstacle){
-		ObstacleX = GivenObstacle.getX();
-		ObstacleY = GivenObstacle.getY();
-		ObstacleWidth = GivenObstacle.getWidth();
-		ObstacleHeight = GivenObstacle.getHeight();
+		x = GivenObstacle.getX();
+		y = GivenObstacle.getY();
+		width = GivenObstacle.getWidth();
+		height = GivenObstacle.getHeight();
 		ObstacleRect = GivenObstacle.getObstacleRect();
 		ObstacleType = GivenObstacle.getType();
 		
@@ -55,18 +51,18 @@ public class Obstacle extends Mesh {
 
 		short[] indices = new short[] { 0, 1, 2, 1, 3, 2 };
 
-		float[] vertices = new float[] { 0, 0, 0, ObstacleWidth, 0, 0.0f, 0, ObstacleHeight,
-				0.0f, ObstacleWidth, ObstacleHeight, 0.0f };
+		float[] vertices = new float[] { 0, 0, 0, width, 0, 0.0f, 0, height,
+				0.0f, width, height, 0.0f };
 
 		setIndices(indices);
 		setVertices(vertices);
 		setTextureCoordinates(textureCoordinates);
 	}
 	public int getWidth(){
-		return ObstacleWidth;
+		return width;
 	}
 	public int getHeight(){
-		return ObstacleHeight;
+		return height;
 	}
 	public char getType(){
 		return ObstacleType;
@@ -75,17 +71,17 @@ public class Obstacle extends Mesh {
 		ObstacleType = type;
 	}
 	
-	public int getX(){
-		return ObstacleX;
+	public float getX(){
+		return x;
 	}
-	public int getY(){
-		return ObstacleY;
+	public float getY(){
+		return y;
 	}
-	public void setX(int x){
-		ObstacleX=x;
+	public void setX(int _x){
+		x=_x;
 	}
-	public void setY(int y){
-		ObstacleY=y;
+	public void setY(int _y){
+		y=_y;
 	}
 	public void setObstacleRect(int l, int r, int top, int bottom){
 		ObstacleRect.left=l;
@@ -104,14 +100,11 @@ public class Obstacle extends Mesh {
 		ObstacleRect.right -= levelPosition;
 	}
 	public boolean isClicked(float clickX, float clickY){
-		if(clickX <= ObstacleX+ObstacleWidth && clickX > ObstacleX){
-			if(clickY <= ObstacleY+ObstacleHeight && clickY > ObstacleY){
+		if(clickX <= x+width && clickX > x){
+			if(clickY <= y+height && clickY > y){
 				return true;
 			}
 		}
 		return false;
-	}
-	public void drawObstacle(Canvas canvas, Bitmap ObstacleImage){
-		canvas.drawBitmap(ObstacleImage, ObstacleRect.left, ObstacleRect.top, null);
 	}
 }
