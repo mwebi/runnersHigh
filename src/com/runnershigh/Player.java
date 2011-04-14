@@ -50,7 +50,6 @@ public class Player extends Mesh {
 		setIndices(indices);
 		setVertices(vertices);
 		setTextureCoordinates(textureCoordinates);
-
 	}
 	
 	public void setJump(boolean jump) {
@@ -110,10 +109,10 @@ public class Player extends Mesh {
 		}
 		lastPosY = y;
 		
-		if(speedoffsetX<5)
-			speedoffsetX+=0.001;
+		if(speedoffsetX<50)
+			speedoffsetX+=0.01;
 		
-		x=70+speedoffsetX*50;
+		x=70+speedoffsetX;
 		
 		if(y + height < 0){
 			y = -height;

@@ -4,6 +4,8 @@ import com.runnershigh.OpenGLRenderer;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -81,6 +83,8 @@ public class main extends Activity {
 	public class RunnersHighView extends GLSurfaceView implements Runnable {
 		private Player player;
 		private Level level;
+		private RHDrawable background;  
+		private Bitmap BGImg;
 		private int width;
 		private int height;
 		private Button resetButton;
@@ -106,6 +110,11 @@ public class main extends Activity {
 			
 			mRenderer = new OpenGLRenderer();
 			this.setRenderer(mRenderer);
+			
+			BGImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.background);
+			background = new RHDrawable(context, mRenderer, 0, 0, -1, width, height);
+			background.loadBitmap(BGImg); 
+			mRenderer.addMesh(background);
 			
 			player = new Player(getApplicationContext(), mRenderer, height);
 			mRenderer.addMesh(player);
