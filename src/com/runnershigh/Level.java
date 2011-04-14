@@ -240,7 +240,7 @@ public class Level {
 		    if (randomGenerator.nextBoolean()){
 				type='s'; //make obstacle type slow
 				if (unusedObstacles.size() == 0) {
-					newObstacle = new Obstacle(0, 0, obstacleSlowImg.getWidth(), obstacleSlowImg.getHeight(),type);
+					newObstacle = new Obstacle(0.0f, 0.0f, 0.0f, (float)obstacleSlowImg.getWidth(), (float)obstacleSlowImg.getHeight(),type);
 					renderer.addMesh(newObstacle);
 				} else {
 					newObstacle = unusedObstacles.firstElement();
@@ -251,7 +251,7 @@ public class Level {
 			}else{
 				type='j'; //make obstacle type jumping
 				if (unusedObstacles.size() == 0) {
-					newObstacle = new Obstacle(0, 0, obstacleJumpImg.getWidth(), obstacleJumpImg.getHeight(),type);
+					newObstacle = new Obstacle(0.0f, 0.0f, 0.0f, (float)obstacleJumpImg.getWidth(), (float)obstacleJumpImg.getHeight(),type);
 					renderer.addMesh(newObstacle);
 				} else {
 					newObstacle = unusedObstacles.firstElement();
@@ -280,7 +280,7 @@ public class Level {
 		    Obstacle newSlowObstacle;
 			type='s'; //make obstacle type slow
 			if (unusedObstacles.size() == 0) {
-				newSlowObstacle  = new Obstacle(0, 0, obstacleSlowImg.getWidth(), obstacleSlowImg.getHeight(),type);
+				newSlowObstacle  = new Obstacle(0.0f, 0.0f, 0.0f, (float)obstacleSlowImg.getWidth(), (float)obstacleSlowImg.getHeight(),type);
 				renderer.addMesh(newSlowObstacle);
 			} else {
 				newSlowObstacle = unusedObstacles.firstElement();
@@ -298,7 +298,7 @@ public class Level {
 			Obstacle newJumpObstacle;
 			type='j'; //make obstacle type jumping
 			if (unusedObstacles.size() == 0) {
-				newJumpObstacle = new Obstacle(0, 0, obstacleJumpImg.getWidth(), obstacleJumpImg.getHeight(),type);
+				newJumpObstacle = new Obstacle(0.0f, 0.0f, 0.0f, (float)obstacleJumpImg.getWidth(), (float)obstacleJumpImg.getHeight(),type);
 				renderer.addMesh(newJumpObstacle);
 			} else {
 				newJumpObstacle = unusedObstacles.firstElement();
