@@ -18,7 +18,7 @@ public class Obstacle extends RHDrawable {
 		width = _width;
 		height = _height;
 		ObstacleType=type;
-		ObstacleRect = new Rect (x, y, x+width, y+height);
+		ObstacleRect = new Rect ((int)x, (int)y, (int)x+(int)width, (int)y+(int)height);
 		
 		float textureCoordinates[] = { 0.0f, 1.0f, //
 				1.0f, 1.0f, //
@@ -59,10 +59,10 @@ public class Obstacle extends RHDrawable {
 		setTextureCoordinates(textureCoordinates);
 	}
 	public int getWidth(){
-		return width;
+		return (int)width;
 	}
 	public int getHeight(){
-		return height;
+		return (int)height;
 	}
 	public char getType(){
 		return ObstacleType;

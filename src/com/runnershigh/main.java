@@ -112,7 +112,7 @@ public class main extends Activity {
 			this.setRenderer(mRenderer);
 			
 			BGImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.background);
-			background = new RHDrawable(context, mRenderer, 0, 0, -1, width, height);
+			background = new RHDrawable(0, 0, -1, width, height);
 			background.loadBitmap(BGImg); 
 			mRenderer.addMesh(background);
 			
