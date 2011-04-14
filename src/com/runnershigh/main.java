@@ -120,12 +120,12 @@ public class main extends Activity {
 			
 			resetButtonImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.resetbutton);
 			resetButton = new Button(350, 10, -2, resetButtonImg.getWidth(), resetButtonImg.getHeight());
-			//background.loadBitmap(resetButtonImg);
+			resetButton.loadBitmap(resetButtonImg);
 			mRenderer.addMesh(resetButton);			
 			
 			saveButtonImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.savebutton);
 			saveButton = new Button(200, 10, -2, saveButtonImg.getWidth(), saveButtonImg.getHeight());
-			//background.loadBitmap(saveButtonImg);
+			saveButton.loadBitmap(saveButtonImg);
 			mRenderer.addMesh(saveButton);
 			
 			player = new Player(getApplicationContext(), mRenderer, height);
@@ -188,7 +188,7 @@ public class main extends Activity {
 			
 			else if(event.getAction() == MotionEvent.ACTION_DOWN){
 				if (resetButton.getShowButton() || saveButton.getShowButton()) {
-					if(resetButton.isClicked( event.getX(), event.getY() ) ){
+					if(resetButton.isClicked( event.getX(), Util.getInstance().toScreenY((int)event.getY()) ) ){
 						System.gc(); //do garbage collection
 						player.reset();
 						level.reset();
