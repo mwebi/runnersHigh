@@ -9,7 +9,7 @@ import android.graphics.Rect;
 
 public class Obstacle extends RHDrawable {
 	private Rect ObstacleRect;
-	private char ObstacleType; //s=slow, 
+	private char ObstacleType; //s=slow, j=jumper 
 	
 	
 	public Obstacle(float _x, float _y, float _z, float _width, float _height, char type){
