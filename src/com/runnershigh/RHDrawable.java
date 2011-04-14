@@ -7,7 +7,7 @@ public class RHDrawable extends Mesh {
 	protected float width;
 	protected float height;
 	
-	public RHDrawable(Context context, OpenGLRenderer glrenderer, int _x, int _y, int _z, int _width, int _height) {
+	public RHDrawable(int _x, int _y, int _z, int _width, int _height) {
 		x = _x;
 		y = _y;
 		z = _z;
