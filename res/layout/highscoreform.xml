@@ -59,7 +59,7 @@ android:layout_height="wrap_content">
 	<CheckBox android:id="@+id/postOnline"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Push score online" />
+        android:text="Save my score online" />
 	
 	<Button android:id="@+id/confirm"
 		android:layout_marginTop="15dp" 
