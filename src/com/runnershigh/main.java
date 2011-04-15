@@ -1,5 +1,7 @@
 package com.runnershigh;
 
+import javax.microedition.khronos.opengles.GL10;
+
 import com.runnershigh.OpenGLRenderer;
 import android.app.Activity;
 import android.content.Context;
@@ -9,6 +11,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
@@ -84,7 +87,11 @@ public class main extends Activity {
 		private Player player;
 		private Level level;
 		private RHDrawable background;  
+		private RHDrawable Counter;
 		private Bitmap BGImg;
+		private Bitmap CounterBitmap;
+		private Canvas CounterCanvas;
+		private Drawable CounterBackground;
 		private int width;
 		private int height;
 		private Button resetButton;
@@ -95,6 +102,7 @@ public class main extends Activity {
 		private boolean deathSoundPlayed = false;
 		Paint paint = new Paint();
 		private OpenGLRenderer mRenderer;
+		private Context mContext;
 
 		
 		public RunnersHighView(Context context) {
@@ -105,10 +113,11 @@ public class main extends Activity {
 			height= display.getHeight();
 			Util.getInstance().setScreenHeight(height);
 			
-			paint.setColor(Color.LTGRAY);
-			paint.setStyle(Paint.Style.FILL);
+			mContext = context;
+			
+			paint.setARGB(0xff, 0x00, 0x00, 0x00);;
 			paint.setAntiAlias(true);
-			paint.setTextSize(18);
+			paint.setTextSize(16);
 			
 			mRenderer = new OpenGLRenderer();
 			this.setRenderer(mRenderer);
@@ -119,12 +128,12 @@ public class main extends Activity {
 			mRenderer.addMesh(background);
 			
 			resetButtonImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.resetbutton);
-			resetButton = new Button(350, 10, -2, resetButtonImg.getWidth(), resetButtonImg.getHeight());
+			resetButton = new Button(350, height-50-10, -2, 100, 50);
 			resetButton.loadBitmap(resetButtonImg);
 			mRenderer.addMesh(resetButton);			
 			
 			saveButtonImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.savebutton);
-			saveButton = new Button(200, 10, -2, saveButtonImg.getWidth(), saveButtonImg.getHeight());
+			saveButton = new Button(200, height-50-10, -2, 100, 50);
 			saveButton.loadBitmap(saveButtonImg);
 			mRenderer.addMesh(saveButton);
 			
@@ -133,11 +142,26 @@ public class main extends Activity {
 			
 			level = new Level(context, mRenderer, width, height);
 			
+			CounterBackground = context.getResources().getDrawable(R.drawable.counterbg);
+			CounterBackground.setBounds(0, 0, 128, 16);
+			
+			Counter = new RHDrawable(20, height-20-20, 1, 140, 20); //upscaling from 128/16 texture
+			updateCounterTexture(mContext);
+			mRenderer.addMesh(Counter);
+			
+			
 			Thread rHThread = new Thread(this);
 			rHThread.start();
 		}
 
 		public void run() {
+			// wait a bit for everything to load
+			try{ Thread.sleep(750); }
+			catch (InterruptedException e)
+			{
+				e.printStackTrace();
+			}
+			int RunUnitCounterUpdate=20;
 			while(true){
 				if (player.update(level.getBlockData())) {
 						level.update();
@@ -157,6 +181,12 @@ public class main extends Activity {
 					level.lowerSpeed();
 				}
 
+				if(RunUnitCounterUpdate==0){
+					updateCounterTexture(mContext);
+					RunUnitCounterUpdate=20;
+				}
+				RunUnitCounterUpdate--;
+				
 				//postInvalidate();
 				try{ Thread.sleep(10); }
 				catch (InterruptedException e)
@@ -181,6 +211,22 @@ public class main extends Activity {
 			
 		}
 		*/
+		public void updateCounterTexture(Context context){
+			// Create an empty, mutable bitmap
+			CounterBitmap = Bitmap.createBitmap(128, 16, Bitmap.Config.ARGB_4444);
+			// get a canvas to paint over the bitmap
+			CounterCanvas = new Canvas(CounterBitmap);
+			CounterBitmap.eraseColor(0);
+
+			// get a background image from resources
+			// note the image format must match the bitmap format
+			CounterBackground.draw(CounterCanvas); // draw the background to our bitmap
+
+			// draw the text centered
+			CounterCanvas.drawText("Your Score: " + Integer.toString(level.getScoreCounter()), 5, 14, paint);
+			
+			Counter.loadBitmap(CounterBitmap);
+		}
 		
 		public boolean onTouchEvent(MotionEvent event) {
 			if(event.getAction() == MotionEvent.ACTION_UP)

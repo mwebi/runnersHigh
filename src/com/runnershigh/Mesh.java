@@ -241,7 +241,6 @@ public class Mesh {
 
 		// ...and bind it to our array
 		gl.glBindTexture(GL10.GL_TEXTURE_2D, mTextureId);
-
 		// Create Nearest Filtered Texture
 		gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MIN_FILTER,
 				GL10.GL_LINEAR);

@@ -3,6 +3,8 @@ package com.runnershigh;
 import java.util.Random;
 import java.util.Vector;
 
+import javax.microedition.khronos.opengles.GL10;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -10,6 +12,8 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
+import android.opengl.GLUtils;
 import android.util.Log;
 
 
@@ -35,7 +39,7 @@ public class Level {
 	private OpenGLRenderer renderer;
 	
 	public Level(Context context, OpenGLRenderer glrenderer, int width, int heigth) {
-		Log.d("debug", "in Level constructor");
+		//Log.d("debug", "in Level constructor");
 		this.width = width;
 		this.height = heigth;
 		this.levelPosition = 0;
@@ -77,7 +81,7 @@ public class Level {
 			}
 			synchronized (obstacleData) {
 				if (obstacleData.size()>0){
-					if (levelPosition > obstacleData.get(0).getObstacleRect().right) {
+					if (0 > obstacleData.get(0).x+obstacleData.get(0).width) {
 						unusedObstacles.add(obstacleData.firstElement());
 						obstacleData.remove(0);	
 					}
@@ -158,8 +162,8 @@ public class Level {
 	*/
 	
 	private void generateAndAddBlock() {
-		Log.d("debug", "in generate");
-		Log.d("debug", "blockData.size() -> " + Integer.toString(blockData.size()) );		
+		//Log.d("debug", "in generate");
+		//Log.d("debug", "blockData.size() -> " + Integer.toString(blockData.size()) );		
 		if (blockData.size() == 0) {
 			if (unusedBlocks.size() == 0) {
 				Block newBlock = new Block(0, 50, width, 0);
@@ -194,7 +198,7 @@ public class Level {
 			int newRight = newLeft + newWidth;
 			
 			if (unusedBlocks.size() == 0) {
-				Log.d("debug", "new block needed");
+				//Log.d("debug", "new block needed");
 				currentBlock = new Block(0, 50, width, 0);
 				blockData.add(currentBlock);
 				currentBlock.loadBitmap(blockImg);
@@ -223,7 +227,7 @@ public class Level {
 		int decider = randomGenerator.nextInt(6); //random int 0-4
 		if (decider == 3 || decider == 4){ //create either j or s obstacle
 			char type;
-			Obstacle newObstacle;
+			Obstacle newObstacle = null;
 
 			int obstacleLeft;
 			//get the range, casting to long to avoid overflow problems
@@ -236,22 +240,28 @@ public class Level {
 		    if (randomGenerator.nextBoolean()){
 				type='s'; //make obstacle type slow
 				if (unusedObstacles.size() == 0) {
-					newObstacle = new Obstacle(0.0f, 0.0f, 0.0f, (float)obstacleSlowImg.getWidth(), (float)obstacleSlowImg.getHeight(),type);
+					newObstacle = new Obstacle(0.0f, 0.0f, 1.0f, (float)obstacleSlowImg.getWidth(), (float)obstacleSlowImg.getHeight(),type);
 					renderer.addMesh(newObstacle);
-				} else {
+				/*} else {
 					newObstacle = unusedObstacles.firstElement();
 					unusedObstacles.remove(0);
+				}*/
+				} else {
+					newObstacle=checkForExistingObstacle(type);
 				}
 				newObstacle.loadBitmap(obstacleSlowImg);
 			    obstacleLeft =  (int)(newRight - newObstacle.getWidth() - fraction); 
 			}else{
 				type='j'; //make obstacle type jumping
 				if (unusedObstacles.size() == 0) {
-					newObstacle = new Obstacle(0.0f, 0.0f, 0.0f, (float)obstacleJumpImg.getWidth(), (float)obstacleJumpImg.getHeight(),type);
+					newObstacle = new Obstacle(0.0f, 0.0f, 1.0f, (float)obstacleJumpImg.getWidth(), (float)obstacleJumpImg.getHeight(),type);
 					renderer.addMesh(newObstacle);
-				} else {
+				/*} else {
 					newObstacle = unusedObstacles.firstElement();
 					unusedObstacles.remove(0);
+				}*/
+				} else {
+					newObstacle=checkForExistingObstacle(type);
 				}
 				newObstacle.loadBitmap(obstacleJumpImg);
 			    obstacleLeft =  (int)(newLeft + newObstacle.getWidth() + fraction); 
@@ -273,16 +283,16 @@ public class Level {
 		    // compute a fraction of the range, 0 <= frac < range
 		    long fraction = (long)(range * randomGenerator.nextDouble());
 
-		    Obstacle newSlowObstacle;
+		    Obstacle newSlowObstacle = null;
 			type='s'; //make obstacle type slow
 			if (unusedObstacles.size() == 0) {
-				newSlowObstacle  = new Obstacle(0.0f, 0.0f, 0.0f, (float)obstacleSlowImg.getWidth(), (float)obstacleSlowImg.getHeight(),type);
+				newSlowObstacle  = new Obstacle(0.0f, 0.0f, 1.0f, (float)obstacleSlowImg.getWidth(), (float)obstacleSlowImg.getHeight(),type);
 				renderer.addMesh(newSlowObstacle);
 			} else {
-				newSlowObstacle = unusedObstacles.firstElement();
-				unusedObstacles.remove(0);
+				newSlowObstacle=checkForExistingObstacle(type);
 			}
 			
+			newSlowObstacle.loadBitmap(obstacleSlowImg);
 		    obstacleLeft =  (int)(newRight - newSlowObstacle.getWidth() - fraction); 
 		    newSlowObstacle.setType(type);
 		    //set new coordinates
@@ -291,16 +301,16 @@ public class Level {
 		    newSlowObstacle.setObstacleRect(obstacleLeft, obstacleLeft+newSlowObstacle.getWidth() ,newHeight, newHeight-newSlowObstacle.getHeight());
 			obstacleData.add(newSlowObstacle);
 			
-			Obstacle newJumpObstacle;
+			Obstacle newJumpObstacle = null;
 			type='j'; //make obstacle type jumping
 			if (unusedObstacles.size() == 0) {
-				newJumpObstacle = new Obstacle(0.0f, 0.0f, 0.0f, (float)obstacleJumpImg.getWidth(), (float)obstacleJumpImg.getHeight(),type);
+				newJumpObstacle = new Obstacle(0.0f, 0.0f, 1.0f, (float)obstacleJumpImg.getWidth(), (float)obstacleJumpImg.getHeight(),type);
 				renderer.addMesh(newJumpObstacle);
 			} else {
-				newJumpObstacle = unusedObstacles.firstElement();
-				unusedObstacles.remove(0);
+				newJumpObstacle=checkForExistingObstacle(type);
 			}
 			
+			newJumpObstacle.loadBitmap(obstacleJumpImg);
 		    obstacleLeft =  (int)(newLeft + newJumpObstacle.getWidth() + fraction);
 		    newJumpObstacle.setType(type);
 		    //set new coordinates
@@ -355,17 +365,48 @@ public class Level {
 			levelPosition = 0;
 			while(blockData.size() > 0)
 			{
+				blockData.get(0).x = -1000;
 				unusedBlocks.add(blockData.firstElement());
 				blockData.remove(0);
 			}
 			blockData.clear();
+			while(obstacleData.size() > 0)
+			{
+				//TODO obstacles get set outside of screen but continue to exist
+				obstacleData.get(0).x = -100;
+				unusedObstacles.add(obstacleData.firstElement());
+				obstacleData.remove(0);
+			}
 			obstacleData.clear();
+			
 			this.baseSpeed = 5;
 			this.extraSpeed = 0;
 			BlockCounter=0;
 			generateAndAddBlock();
 		}
 	}
+	private Obstacle checkForExistingObstacle(char type){
+		Obstacle ObstacleToReturn = null;
+		boolean foundObstacle=false;
+		int foundObstaclePosition=0;
+		for(int i=0; i<unusedObstacles.size(); i++){
+			if(unusedObstacles.get(i).ObstacleType == type){
+				foundObstacle=true;
+				foundObstaclePosition=i;
+				break;
+			}
+		}
+		if(!foundObstacle){
+			ObstacleToReturn = new Obstacle(0.0f, 0.0f, 1.0f, (float)obstacleSlowImg.getWidth(), (float)obstacleSlowImg.getHeight(),type);
+			renderer.addMesh(ObstacleToReturn);
+		}
+		else{
+			ObstacleToReturn = unusedObstacles.get(foundObstaclePosition);
+			unusedObstacles.remove(foundObstaclePosition);
+		}
+		return ObstacleToReturn;
+	}
+
 
 }
 

@@ -25,7 +25,7 @@ public class Player extends Mesh {
 	
 
 	public Player(Context context, OpenGLRenderer glrenderer, int ScreenHeight) {
-		x = 70; // x/y is bottom left corner of picture
+		x = 70; 
 		y = 200;
 		
 		renderer=glrenderer;
@@ -33,8 +33,8 @@ public class Player extends Mesh {
 		playerImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.playerimg_beta);
 		loadBitmap(playerImg);
 		
-		width=72;//playerImg.getWidth();
-		height=74;//playerImg.getHeight();
+		width=62;//playerImg.getWidth();
+		height=63;//playerImg.getHeight();
 		
 		float textureCoordinates[] = { 0.0f, 1.0f, //
 				1.0f, 1.0f, //
@@ -123,10 +123,12 @@ public class Player extends Mesh {
 	}	
 	public boolean collidedWithObstacle(Vector<Obstacle> obstacles, int levelPosition) {
 		for(Obstacle currentObstacle : obstacles){
-			Rect modifiedObstacleRect= new Rect(currentObstacle.getObstacleRect());
-			modifiedObstacleRect.left -= levelPosition;
-			modifiedObstacleRect.right -= levelPosition;
-			if( checkIntersect(playerRect, modifiedObstacleRect) ){
+			Rect ObstacleRect= new Rect((int)currentObstacle.x, 
+												(int)currentObstacle.y+(int)currentObstacle.height, 
+												(int)currentObstacle.x+(int)currentObstacle.width, 
+												(int)currentObstacle.y
+												);
+			if( checkIntersect(playerRect, ObstacleRect) ){
 				if(currentObstacle.getType()=='s'){
 					if(!slowSoundplayed){
 						SoundManager.playSound(5, 1);
