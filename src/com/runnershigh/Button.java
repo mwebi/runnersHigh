@@ -6,21 +6,17 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 
-public class Button {
+public class Button extends RHDrawable{
 	private Bitmap ButtonImage;
 	private boolean showButton = false;
-	private int ButtonX = 350;
-	private int ButtonY = 10;
-	private int ButtonWidth = 100;
-	private int ButtonHeight = 41;
 	
 	
-	public Button(Context context, int ImageID, int x, int y, int w, int h){
-		ButtonImage = BitmapFactory.decodeResource(context.getResources(), ImageID); //ImageID=R.drawable.resetbutton
-		ButtonX=x;
-		ButtonY=y;
-		ButtonWidth=w;
-		ButtonHeight=h;
+	public Button(int _x, int _y, int _z, int _width, int _height){
+		super((int)_x, (int)_y, (int)_z, (int)_width, (int)_height);
+		x=_x;
+		y=_y;
+		width=_width;
+		height=_height;
 	}
 	public void setShowButton(boolean toSet){
 		showButton=toSet;
@@ -29,26 +25,23 @@ public class Button {
 		return showButton;
 	}
 	public int getWidth(){
-		return ButtonWidth;
+		return (int)width;
 	}
 	public int getHeight(){
-		return ButtonHeight;
+		return (int)height;
 	}
 	public int getX(){
-		return ButtonX;
+		return (int)x;
 	}
 	public int getY(){
-		return ButtonY;
+		return (int)y;
 	}
 	public boolean isClicked(float clickX, float clickY){
-		if(clickX <= ButtonX+ButtonWidth && clickX > ButtonX){
-			if(clickY <= ButtonY+ButtonHeight && clickY > ButtonY){
+		if(clickX <= x+width && clickX > x){
+			if(clickY <= y+height && clickY > y){
 				return true;
 			}
 		}
 		return false;
-	}
-	public void drawButton(Canvas canvas){
-		canvas.drawBitmap(ButtonImage, ButtonX, ButtonY, null);
 	}
 }
