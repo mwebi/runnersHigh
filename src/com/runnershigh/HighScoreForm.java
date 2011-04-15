@@ -103,10 +103,10 @@ public class HighScoreForm extends Activity {
         		if(!isOnline()) {
         			highScoreAdapter.toastMessage(R.string.hs_error_no_internet);
         			Log.i("isOffline", "jo");
-        		} else {        		
+        		} else {
 	        		// Create a new HttpClient and Post Header
 	        	    HttpClient httpclient = new DefaultHttpClient();
-	        	    HttpPost httppost = new HttpPost("http://rh.fidrelity.at/");
+	        	    HttpPost httppost = new HttpPost("http://rh.fidrelity.at/highscore.php");
 	
 	        	    try {
 	        	        // Add your data
