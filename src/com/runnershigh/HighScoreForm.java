@@ -106,7 +106,7 @@ public class HighScoreForm extends Activity {
         		} else {
 	        		// Create a new HttpClient and Post Header
 	        	    HttpClient httpclient = new DefaultHttpClient();
-	        	    HttpPost httppost = new HttpPost("http://rh.fidrelity.at/highscore.php");
+	        	    HttpPost httppost = new HttpPost("http://rh.fidrelity.at/post/post_highscore.php");
 	
 	        	    try {
 	        	        // Add your data
