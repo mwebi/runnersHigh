@@ -1,12 +1,19 @@
 package com.runnershigh;
 
+import javax.microedition.khronos.opengles.GL10;
+
+import com.runnershigh.OpenGLRenderer;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
+import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.util.Log;
@@ -76,49 +83,134 @@ public class main extends Activity {
 			startActivity (myIntent);
 		}
     
-	public class RunnersHighView extends View implements Runnable {
+	public class RunnersHighView extends GLSurfaceView implements Runnable {
 		private Player player;
 		private Level level;
+		private RHDrawable background;  
+		private RHDrawable Counter;
+		private Bitmap BGImg;
+		private Bitmap CounterBitmap;
+		private Canvas CounterCanvas;
+		private Drawable CounterBackground;
 		private int width;
 		private int height;
 		private Button resetButton;
+		private Bitmap resetButtonImg;
 		private Button saveButton;
+		private Bitmap saveButtonImg;
 		private boolean scoreWasSaved = false;
 		private boolean deathSoundPlayed = false;
 		Paint paint = new Paint();
-
+		private OpenGLRenderer mRenderer;
+		private Context mContext;
+		private CounterGroup mCounterGroup;
+		private CounterDigit mCounterDigit1;
+		private CounterDigit mCounterDigit2;
+		private CounterDigit mCounterDigit3;
+		private CounterDigit mCounterDigit4;
+		private Bitmap CounterFont; 
+		public  boolean doUpdateCounter = true;
+		private int CounterDigit2Update=10;
+		private int CounterDigit3Update=100;
+		private int CounterDigit4Update=1000;
 		
 		public RunnersHighView(Context context) {
 			super(context);
-			
+			Log.d("debug", "in RunnersHighView constructor");
 			Display display = ((WindowManager) getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
 			width= display.getWidth(); 
 			height= display.getHeight();
 			Util.getInstance().setScreenHeight(height);
 			
-			paint.setColor(Color.LTGRAY);
-			paint.setStyle(Paint.Style.FILL);
+			mContext = context;
+			
+			paint.setARGB(0xff, 0x00, 0x00, 0x00);;
 			paint.setAntiAlias(true);
-			paint.setTextSize(18);
+			paint.setTextSize(16);
 			
-			player = new Player(getApplicationContext(),height);
-			level = new Level(context, width, height);
+			mRenderer = new OpenGLRenderer();
+			this.setRenderer(mRenderer);
 			
-			resetButton = new Button(context, R.drawable.resetbutton, 350, 10, 100, 41);
-			saveButton = new Button(context, R.drawable.savebutton, 200, 10, 100, 41);
+			BGImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.background);
+			background = new RHDrawable(0, 0, -1, width, height);
+			background.loadBitmap(BGImg); 
+			mRenderer.addMesh(background);
+			
+			resetButtonImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.resetbutton);
+			resetButton = new Button(350, height-50-10, -2, 100, 50);
+			resetButton.loadBitmap(resetButtonImg);
+			mRenderer.addMesh(resetButton);			
+			
+			saveButtonImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.savebutton);
+			saveButton = new Button(200, height-50-10, -2, 100, 50);
+			saveButton.loadBitmap(saveButtonImg);
+			mRenderer.addMesh(saveButton);
+			
+			player = new Player(getApplicationContext(), mRenderer, height);
+			mRenderer.addMesh(player);
+			
+			level = new Level(context, mRenderer, width, height);
+			
+			//old counter
+			CounterBackground = context.getResources().getDrawable(R.drawable.counterbg);
+			CounterBackground.setBounds(0, 0, 128, 16);
+			
+			Counter = new RHDrawable(20, height-20-20, 1, 140, 20); //upscaling from 128/16 texture
+			updateCounterTexture(mContext);
+			mRenderer.addMesh(Counter);
+			
+			//new counter
+			CounterFont = BitmapFactory.decodeResource(context.getResources(), R.drawable.numberfont);
+			mCounterGroup = new CounterGroup(60, height-20-20, 1, 128*4, 20);
+			
+			for(int i=20; i<100; i+=20){
+				if(i==80){
+					mCounterDigit1 = new CounterDigit(i, height-50-20, 1, 16, 20);
+					mCounterDigit1.loadBitmap(CounterFont); 
+					mCounterGroup.add(mCounterDigit1);
+				}
+				if(i==60){
+					mCounterDigit2 = new CounterDigit(i, height-50-20, 1, 16, 20);
+					mCounterDigit2.loadBitmap(CounterFont); 
+					mCounterGroup.add(mCounterDigit2);
+				}
+				if(i==40){
+					mCounterDigit3 = new CounterDigit(i, height-50-20, 1, 16, 20);
+					mCounterDigit3.loadBitmap(CounterFont); 
+					mCounterGroup.add(mCounterDigit3);
+				}
+				if(i==20){
+					mCounterDigit4 = new CounterDigit(i, height-50-20, 1, 16, 20);
+					mCounterDigit4.loadBitmap(CounterFont); 
+					mCounterGroup.add(mCounterDigit4);
+				}
+			}
+			mRenderer.addMesh(mCounterGroup);
 			
 			Thread rHThread = new Thread(this);
 			rHThread.start();
 		}
 
 		public void run() {
+			// wait a bit for everything to load
+			try{ Thread.sleep(750); }
+			catch (InterruptedException e)
+			{
+				e.printStackTrace();
+			}
+			int RunUnitCounterUpdate=20;
+
+
 			while(true){
 				if (player.update(level.getBlockData())) {
 						level.update();
 				} else {
 					if(player.getPosY() < 0){
+						doUpdateCounter=false;
 						resetButton.setShowButton(true);
+						resetButton.z = 1.0f;
 						saveButton.setShowButton(true);
+						saveButton.z = 1.0f;
 						if(!deathSoundPlayed){
 							SoundManager.playSound(7, 1);
 							deathSoundPlayed=true;
@@ -129,7 +221,18 @@ public class main extends Activity {
 					level.lowerSpeed();
 				}
 
-				postInvalidate();
+				if(RunUnitCounterUpdate==0){
+					updateCounterTexture(mContext);
+					RunUnitCounterUpdate=20;
+				}
+				RunUnitCounterUpdate--;
+				
+				if(doUpdateCounter)
+					mCounterGroup.setCounterTo(level.getScoreCounter());
+					//updateCounter();
+
+				
+				//postInvalidate();
 				try{ Thread.sleep(10); }
 				catch (InterruptedException e)
 				{
@@ -138,7 +241,7 @@ public class main extends Activity {
 			}
 		}
 		
-		public void draw(Canvas canvas) {
+		/*public void draw(Canvas canvas) {
 			
 
 			canvas.drawText("Your Score: " + Integer.toString(level.getScoreCounter()), 20, 20, paint);
@@ -151,7 +254,41 @@ public class main extends Activity {
 			level.draw(canvas);
 			player.draw(canvas);
 			
-			invalidate();
+		}
+		*/
+		public void updateCounter() {
+			mCounterDigit1.incrementDigit();
+			if(CounterDigit2Update==0){
+				mCounterDigit2.incrementDigit();
+				CounterDigit2Update=10;
+			}
+			CounterDigit2Update--;
+			if(CounterDigit3Update==0){
+				mCounterDigit3.incrementDigit();
+				CounterDigit3Update=100;
+			}
+			CounterDigit3Update--;
+			if(CounterDigit4Update==0){
+				mCounterDigit4.incrementDigit();
+				CounterDigit4Update=1000;
+			}
+			CounterDigit4Update--;
+		}
+		public void updateCounterTexture(Context context){
+			// Create an empty, mutable bitmap
+			CounterBitmap = Bitmap.createBitmap(128, 16, Bitmap.Config.ARGB_4444);
+			// get a canvas to paint over the bitmap
+			CounterCanvas = new Canvas(CounterBitmap);
+			CounterBitmap.eraseColor(0);
+
+			// get a background image from resources
+			// note the image format must match the bitmap format
+			CounterBackground.draw(CounterCanvas); // draw the background to our bitmap
+
+			// draw the text centered
+			CounterCanvas.drawText("Your Score: " + Integer.toString(level.getScoreCounter()), 5, 14, paint);
+			
+			Counter.loadBitmap(CounterBitmap);
 		}
 		
 		public boolean onTouchEvent(MotionEvent event) {
@@ -160,17 +297,21 @@ public class main extends Activity {
 			
 			else if(event.getAction() == MotionEvent.ACTION_DOWN){
 				if (resetButton.getShowButton() || saveButton.getShowButton()) {
-					if(resetButton.isClicked( event.getX(), event.getY() ) ){
+					if(resetButton.isClicked( event.getX(), Util.getInstance().toScreenY((int)event.getY()) ) ){
 						System.gc(); //do garbage collection
 						player.reset();
 						level.reset();
 						resetButton.setShowButton(false);
+						resetButton.z = -2.0f;
 						saveButton.setShowButton(false);
+						saveButton.z = -2.0f;
+						mCounterGroup.resetCounter();
 						scoreWasSaved=false;
 						deathSoundPlayed=false;
 						SoundManager.playSound(1, 1);
+						doUpdateCounter=true;
 					}
-					else if(saveButton.isClicked( event.getX(), event.getY() ) && !scoreWasSaved){
+					else if(saveButton.isClicked( event.getX(), Util.getInstance().toScreenY((int)event.getY())  ) && !scoreWasSaved){
 						//save score
 						saveScore(level.getScoreCounter());
 						//play save sound
