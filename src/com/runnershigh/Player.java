@@ -21,14 +21,11 @@ public class Player extends Mesh {
 	private float velocity = 0;
 	private Rect playerRect;
 	private float speedoffsetX = 0;
-	private OpenGLRenderer renderer;
 	
 
 	public Player(Context context, OpenGLRenderer glrenderer, int ScreenHeight) {
 		x = 70; 
 		y = 200;
-		
-		renderer=glrenderer;
 		
 		playerImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.playerimg_beta);
 		loadBitmap(playerImg);

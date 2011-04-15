@@ -1,17 +1,12 @@
 package com.runnershigh;
 
-import javax.microedition.khronos.opengles.GL10;
-
 import com.runnershigh.OpenGLRenderer;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
@@ -19,7 +14,6 @@ import android.os.PowerManager;
 import android.util.Log;
 import android.view.Display;
 import android.view.MotionEvent;
-import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 
@@ -98,7 +92,6 @@ public class main extends Activity {
 		private boolean deathSoundPlayed = false;
 		Paint paint = new Paint();
 		private OpenGLRenderer mRenderer;
-		private Context mContext;
 		private CounterGroup mCounterGroup;
 		private CounterDigit mCounterDigit1;
 		private CounterDigit mCounterDigit2;
@@ -119,8 +112,6 @@ public class main extends Activity {
 			width= display.getWidth(); 
 			height= display.getHeight();
 			Util.getInstance().setScreenHeight(height);
-			
-			mContext = context;
 			
 			paint.setARGB(0xff, 0x00, 0x00, 0x00);;
 			paint.setAntiAlias(true);

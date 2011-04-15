@@ -1,6 +1,5 @@
 package com.runnershigh;
 
-import android.content.Context;
 import android.graphics.Rect;
 
 public class CounterDigit extends Mesh {

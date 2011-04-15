@@ -4,14 +4,7 @@ import java.util.Vector;
 
 import javax.microedition.khronos.opengles.GL10;
 
-import android.R.drawable;
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-
 public class CounterGroup extends CounterDigit{
-	private Bitmap FontImage;
 	
 	public CounterGroup(int _x, int _y, int _z, int _width, int _height){
 		super((int)_x, (int)_y, (int)_z, (int)_width, (int)_height);

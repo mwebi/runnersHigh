@@ -3,18 +3,12 @@ package com.runnershigh;
 import java.util.Random;
 import java.util.Vector;
 
-import javax.microedition.khronos.opengles.GL10;
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
-import android.opengl.GLUtils;
-import android.util.Log;
 
 
 public class Level {
