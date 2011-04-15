@@ -87,11 +87,7 @@ public class main extends Activity {
 		private Player player;
 		private Level level;
 		private RHDrawable background;  
-		private RHDrawable Counter;
 		private Bitmap BGImg;
-		private Bitmap CounterBitmap;
-		private Canvas CounterCanvas;
-		private Drawable CounterBackground;
 		private int width;
 		private int height;
 		private Button resetButton;
@@ -109,6 +105,8 @@ public class main extends Activity {
 		private CounterDigit mCounterDigit3;
 		private CounterDigit mCounterDigit4;
 		private Bitmap CounterFont; 
+		private Bitmap CounterYourScoreImg;
+		private RHDrawable CounterYourScoreDrawable;
 		public  boolean doUpdateCounter = true;
 		private int CounterDigit2Update=10;
 		private int CounterDigit3Update=100;
@@ -151,36 +149,34 @@ public class main extends Activity {
 			
 			level = new Level(context, mRenderer, width, height);
 			
-			//old counter
-			CounterBackground = context.getResources().getDrawable(R.drawable.counterbg);
-			CounterBackground.setBounds(0, 0, 128, 16);
-			
-			Counter = new RHDrawable(20, height-20-20, 1, 140, 20); //upscaling from 128/16 texture
-			updateCounterTexture(mContext);
-			mRenderer.addMesh(Counter);
 			
 			//new counter
-			CounterFont = BitmapFactory.decodeResource(context.getResources(), R.drawable.numberfont);
-			mCounterGroup = new CounterGroup(60, height-20-20, 1, 128*4, 20);
+			CounterYourScoreImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.yourscore);
+			CounterYourScoreDrawable = new RHDrawable(20, height-16-20, 1, CounterYourScoreImg.getWidth(), CounterYourScoreImg.getHeight());
+			CounterYourScoreDrawable.loadBitmap(CounterYourScoreImg); 
+			mRenderer.addMesh(CounterYourScoreDrawable);
 			
-			for(int i=20; i<100; i+=20){
-				if(i==80){
-					mCounterDigit1 = new CounterDigit(i, height-50-20, 1, 16, 20);
+			CounterFont = BitmapFactory.decodeResource(context.getResources(), R.drawable.numberfont);
+			mCounterGroup = new CounterGroup(70, height-20-20, 1, 128*4, 20);
+			
+			for(int i=70; i<130; i+=15){
+				if(i==115){
+					mCounterDigit1 = new CounterDigit(i, height-20-20, 1, 16, 20);
 					mCounterDigit1.loadBitmap(CounterFont); 
 					mCounterGroup.add(mCounterDigit1);
 				}
-				if(i==60){
-					mCounterDigit2 = new CounterDigit(i, height-50-20, 1, 16, 20);
+				if(i==100){
+					mCounterDigit2 = new CounterDigit(i, height-20-20, 1, 16, 20);
 					mCounterDigit2.loadBitmap(CounterFont); 
 					mCounterGroup.add(mCounterDigit2);
 				}
-				if(i==40){
-					mCounterDigit3 = new CounterDigit(i, height-50-20, 1, 16, 20);
+				if(i==85){
+					mCounterDigit3 = new CounterDigit(i, height-20-20, 1, 16, 20);
 					mCounterDigit3.loadBitmap(CounterFont); 
 					mCounterGroup.add(mCounterDigit3);
 				}
-				if(i==20){
-					mCounterDigit4 = new CounterDigit(i, height-50-20, 1, 16, 20);
+				if(i==70){
+					mCounterDigit4 = new CounterDigit(i, height-20-20, 1, 16, 20);
 					mCounterDigit4.loadBitmap(CounterFont); 
 					mCounterGroup.add(mCounterDigit4);
 				}
@@ -198,9 +194,6 @@ public class main extends Activity {
 			{
 				e.printStackTrace();
 			}
-			int RunUnitCounterUpdate=20;
-
-
 			while(true){
 				if (player.update(level.getBlockData())) {
 						level.update();
@@ -220,12 +213,6 @@ public class main extends Activity {
 				if(player.collidedWithObstacle(level.getObstacleData(),level.getLevelPosition()) ){
 					level.lowerSpeed();
 				}
-
-				if(RunUnitCounterUpdate==0){
-					updateCounterTexture(mContext);
-					RunUnitCounterUpdate=20;
-				}
-				RunUnitCounterUpdate--;
 				
 				if(doUpdateCounter)
 					mCounterGroup.setCounterTo(level.getScoreCounter());
@@ -274,23 +261,7 @@ public class main extends Activity {
 			}
 			CounterDigit4Update--;
 		}
-		public void updateCounterTexture(Context context){
-			// Create an empty, mutable bitmap
-			CounterBitmap = Bitmap.createBitmap(128, 16, Bitmap.Config.ARGB_4444);
-			// get a canvas to paint over the bitmap
-			CounterCanvas = new Canvas(CounterBitmap);
-			CounterBitmap.eraseColor(0);
 
-			// get a background image from resources
-			// note the image format must match the bitmap format
-			CounterBackground.draw(CounterCanvas); // draw the background to our bitmap
-
-			// draw the text centered
-			CounterCanvas.drawText("Your Score: " + Integer.toString(level.getScoreCounter()), 5, 14, paint);
-			
-			Counter.loadBitmap(CounterBitmap);
-		}
-		
 		public boolean onTouchEvent(MotionEvent event) {
 			if(event.getAction() == MotionEvent.ACTION_UP)
 				player.setJump(false);
