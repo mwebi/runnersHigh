@@ -180,7 +180,6 @@ public class Level {
 				currentBlock.y = 0;
 				
 				unusedBlocks.remove(0);
-				
 			}
 		} else {
 			Block currentBlock;

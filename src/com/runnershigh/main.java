@@ -103,7 +103,16 @@ public class main extends Activity {
 		Paint paint = new Paint();
 		private OpenGLRenderer mRenderer;
 		private Context mContext;
-
+		private CounterGroup mCounterGroup;
+		private CounterDigit mCounterDigit1;
+		private CounterDigit mCounterDigit2;
+		private CounterDigit mCounterDigit3;
+		private CounterDigit mCounterDigit4;
+		private Bitmap CounterFont; 
+		public  boolean doUpdateCounter = true;
+		private int CounterDigit2Update=10;
+		private int CounterDigit3Update=100;
+		private int CounterDigit4Update=1000;
 		
 		public RunnersHighView(Context context) {
 			super(context);
@@ -142,6 +151,7 @@ public class main extends Activity {
 			
 			level = new Level(context, mRenderer, width, height);
 			
+			//old counter
 			CounterBackground = context.getResources().getDrawable(R.drawable.counterbg);
 			CounterBackground.setBounds(0, 0, 128, 16);
 			
@@ -149,6 +159,33 @@ public class main extends Activity {
 			updateCounterTexture(mContext);
 			mRenderer.addMesh(Counter);
 			
+			//new counter
+			CounterFont = BitmapFactory.decodeResource(context.getResources(), R.drawable.numberfont);
+			mCounterGroup = new CounterGroup(60, height-20-20, 1, 128*4, 20);
+			
+			for(int i=20; i<100; i+=20){
+				if(i==80){
+					mCounterDigit1 = new CounterDigit(i, height-50-20, 1, 16, 20);
+					mCounterDigit1.loadBitmap(CounterFont); 
+					mCounterGroup.add(mCounterDigit1);
+				}
+				if(i==60){
+					mCounterDigit2 = new CounterDigit(i, height-50-20, 1, 16, 20);
+					mCounterDigit2.loadBitmap(CounterFont); 
+					mCounterGroup.add(mCounterDigit2);
+				}
+				if(i==40){
+					mCounterDigit3 = new CounterDigit(i, height-50-20, 1, 16, 20);
+					mCounterDigit3.loadBitmap(CounterFont); 
+					mCounterGroup.add(mCounterDigit3);
+				}
+				if(i==20){
+					mCounterDigit4 = new CounterDigit(i, height-50-20, 1, 16, 20);
+					mCounterDigit4.loadBitmap(CounterFont); 
+					mCounterGroup.add(mCounterDigit4);
+				}
+			}
+			mRenderer.addMesh(mCounterGroup);
 			
 			Thread rHThread = new Thread(this);
 			rHThread.start();
@@ -162,11 +199,14 @@ public class main extends Activity {
 				e.printStackTrace();
 			}
 			int RunUnitCounterUpdate=20;
+
+
 			while(true){
 				if (player.update(level.getBlockData())) {
 						level.update();
 				} else {
 					if(player.getPosY() < 0){
+						doUpdateCounter=false;
 						resetButton.setShowButton(true);
 						resetButton.z = 1.0f;
 						saveButton.setShowButton(true);
@@ -186,6 +226,11 @@ public class main extends Activity {
 					RunUnitCounterUpdate=20;
 				}
 				RunUnitCounterUpdate--;
+				
+				if(doUpdateCounter)
+					mCounterGroup.setCounterTo(level.getScoreCounter());
+					//updateCounter();
+
 				
 				//postInvalidate();
 				try{ Thread.sleep(10); }
@@ -211,6 +256,24 @@ public class main extends Activity {
 			
 		}
 		*/
+		public void updateCounter() {
+			mCounterDigit1.incrementDigit();
+			if(CounterDigit2Update==0){
+				mCounterDigit2.incrementDigit();
+				CounterDigit2Update=10;
+			}
+			CounterDigit2Update--;
+			if(CounterDigit3Update==0){
+				mCounterDigit3.incrementDigit();
+				CounterDigit3Update=100;
+			}
+			CounterDigit3Update--;
+			if(CounterDigit4Update==0){
+				mCounterDigit4.incrementDigit();
+				CounterDigit4Update=1000;
+			}
+			CounterDigit4Update--;
+		}
 		public void updateCounterTexture(Context context){
 			// Create an empty, mutable bitmap
 			CounterBitmap = Bitmap.createBitmap(128, 16, Bitmap.Config.ARGB_4444);
@@ -242,9 +305,11 @@ public class main extends Activity {
 						resetButton.z = -2.0f;
 						saveButton.setShowButton(false);
 						saveButton.z = -2.0f;
+						mCounterGroup.resetCounter();
 						scoreWasSaved=false;
 						deathSoundPlayed=false;
 						SoundManager.playSound(1, 1);
+						doUpdateCounter=true;
 					}
 					else if(saveButton.isClicked( event.getX(), Util.getInstance().toScreenY((int)event.getY())  ) && !scoreWasSaved){
 						//save score
