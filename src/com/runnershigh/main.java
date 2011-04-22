@@ -79,6 +79,7 @@ public class main extends Activity {
     
 	public class RunnersHighView extends GLSurfaceView implements Runnable {
 		private Player player;
+
 		private Level level;
 		private RHDrawable background;  
 		private Bitmap BGImg;
@@ -101,13 +102,10 @@ public class main extends Activity {
 		private Bitmap CounterYourScoreImg;
 		private RHDrawable CounterYourScoreDrawable;
 		public  boolean doUpdateCounter = true;
-		private int CounterDigit2Update=10;
-		private int CounterDigit3Update=100;
-		private int CounterDigit4Update=1000;
 		
 		public RunnersHighView(Context context) {
 			super(context);
-			Log.d("debug", "in RunnersHighView constructor");
+			
 			Display display = ((WindowManager) getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
 			width= display.getWidth(); 
 			height= display.getHeight();
@@ -136,7 +134,6 @@ public class main extends Activity {
 			mRenderer.addMesh(saveButton);
 			
 			player = new Player(getApplicationContext(), mRenderer, height);
-			mRenderer.addMesh(player);
 			
 			level = new Level(context, mRenderer, width, height);
 			
@@ -148,7 +145,7 @@ public class main extends Activity {
 			mRenderer.addMesh(CounterYourScoreDrawable);
 			
 			CounterFont = BitmapFactory.decodeResource(context.getResources(), R.drawable.numberfont);
-			mCounterGroup = new CounterGroup(70, height-20-20, 1, 128*4, 20);
+			mCounterGroup = new CounterGroup(70, height-20-20, 1, 128*4, 20, 50);
 			
 			for(int i=70; i<130; i+=15){
 				if(i==115){
@@ -186,6 +183,8 @@ public class main extends Activity {
 				e.printStackTrace();
 			}
 			while(true){
+				
+				player.playerSprite.setFrameUpdateTime( (level.baseSpeedMax+level.extraSpeedMax)*10 -((level.baseSpeed+level.extraSpeed)*10) );
 				if (player.update(level.getBlockData())) {
 						level.update();
 				} else {
@@ -205,9 +204,9 @@ public class main extends Activity {
 					level.lowerSpeed();
 				}
 				
+				
 				if(doUpdateCounter)
-					mCounterGroup.setCounterTo(level.getScoreCounter());
-					//updateCounter();
+					mCounterGroup.tryoToSetCounterTo(level.getScoreCounter());
 
 				
 				//postInvalidate();
@@ -234,24 +233,7 @@ public class main extends Activity {
 			
 		}
 		*/
-		public void updateCounter() {
-			mCounterDigit1.incrementDigit();
-			if(CounterDigit2Update==0){
-				mCounterDigit2.incrementDigit();
-				CounterDigit2Update=10;
-			}
-			CounterDigit2Update--;
-			if(CounterDigit3Update==0){
-				mCounterDigit3.incrementDigit();
-				CounterDigit3Update=100;
-			}
-			CounterDigit3Update--;
-			if(CounterDigit4Update==0){
-				mCounterDigit4.incrementDigit();
-				CounterDigit4Update=1000;
-			}
-			CounterDigit4Update--;
-		}
+
 
 		public boolean onTouchEvent(MotionEvent event) {
 			if(event.getAction() == MotionEvent.ACTION_UP)
