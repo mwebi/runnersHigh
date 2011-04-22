@@ -1,6 +1,7 @@
 package com.runnershigh;
 
 import android.graphics.Rect;
+import android.util.Log;
 
 public class CounterDigit extends Mesh {
 	protected float width;
@@ -78,11 +79,13 @@ public class CounterDigit extends Mesh {
 	}
 	public void setDigitTo(int value) {
 		digitValue=value;
+		
 		float textureCoordinates[] = {0.0625f*digitValue, 1.0f, //
 				0.0625f*digitValue+0.0625f, 1.0f, //
 				0.0625f*digitValue, 0.0f, //
 				0.0625f*digitValue+0.0625f, 0.0f, //
 		};
 		setTextureCoordinates(textureCoordinates);
+		
 	}
 }

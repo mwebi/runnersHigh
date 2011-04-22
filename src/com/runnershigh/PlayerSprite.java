@@ -24,7 +24,6 @@ public class PlayerSprite extends Mesh {
 		FrameUpdateTime = _FrameUpdateTime;
 		numberOfFrames = _numberOfFrames;
 		textureWidthOfOneFrame = 1 / numberOfFrames;
-		Log.d("debug", "textureWidthOfOneFrame: " + textureWidthOfOneFrame);
 		
 		float textureCoordinates[] = { 0.0f, 1.0f, //
 				textureWidthOfOneFrame, 1.0f, //

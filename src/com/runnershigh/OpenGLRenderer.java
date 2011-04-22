@@ -22,9 +22,12 @@ import com.runnershigh.Group;
 import com.runnershigh.Mesh;
 import android.opengl.GLU;
 import android.opengl.GLSurfaceView.Renderer;
+import android.util.Log;
 
 public class OpenGLRenderer implements Renderer {
 	private final Group root;
+	private long timeAtLastSecond;
+	private int fpsCounter;
 
 	public OpenGLRenderer() {
 		// Initialize our root.
@@ -57,6 +60,9 @@ public class OpenGLRenderer implements Renderer {
 		//gl.glEnable(GL10.GL_ALPHA);
         gl.glEnable(GL10.GL_BLEND);
         gl.glBlendFunc(GL10.GL_ONE, GL10.GL_ONE_MINUS_SRC_ALPHA); 
+        
+        timeAtLastSecond = System.currentTimeMillis();
+        fpsCounter=0;
 	}
 
 	/*
@@ -68,6 +74,7 @@ public class OpenGLRenderer implements Renderer {
 	 */
 
 	public void onDrawFrame(GL10 gl) {
+		//long starttime = System.currentTimeMillis();
 		// Clears the screen and depth buffer.
 		gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
 		// Replace the current matrix with the identity matrix
@@ -78,6 +85,14 @@ public class OpenGLRenderer implements Renderer {
 		// gl.glScalef(10, 10, 1);
 		// Draw our scene.
 		root.draw(gl);
+		fpsCounter++;
+		
+		//long timeForOneCycle= System.currentTimeMillis()- starttime;
+		if((System.currentTimeMillis() - timeAtLastSecond) > 1000){
+			timeAtLastSecond = System.currentTimeMillis();
+			Log.d("frametime", "draws per second: " + Integer.toString(fpsCounter));
+			fpsCounter=0;
+		}
 	}
 
 	/*

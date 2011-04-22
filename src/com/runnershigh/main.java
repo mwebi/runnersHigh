@@ -102,6 +102,8 @@ public class main extends Activity {
 		private Bitmap CounterYourScoreImg;
 		private RHDrawable CounterYourScoreDrawable;
 		public  boolean doUpdateCounter = true;
+		private long timeAtLastSecond;
+		private int runCycleCounter;
 		
 		public RunnersHighView(Context context) {
 			super(context);
@@ -145,7 +147,7 @@ public class main extends Activity {
 			mRenderer.addMesh(CounterYourScoreDrawable);
 			
 			CounterFont = BitmapFactory.decodeResource(context.getResources(), R.drawable.numberfont);
-			mCounterGroup = new CounterGroup(70, height-20-20, 1, 128*4, 20, 50);
+			mCounterGroup = new CounterGroup(70, height-20-20, 1, 128*4, 20, 25);
 			
 			for(int i=70; i<130; i+=15){
 				if(i==115){
@@ -171,7 +173,10 @@ public class main extends Activity {
 			}
 			mRenderer.addMesh(mCounterGroup);
 			
-			Thread rHThread = new Thread(this);
+			timeAtLastSecond = System.currentTimeMillis();
+	        runCycleCounter=0;
+			
+	        Thread rHThread = new Thread(this);
 			rHThread.start();
 		}
 
@@ -183,7 +188,7 @@ public class main extends Activity {
 				e.printStackTrace();
 			}
 			while(true){
-				
+				long starttime = System.currentTimeMillis();
 				player.playerSprite.setFrameUpdateTime( (level.baseSpeedMax+level.extraSpeedMax)*10 -((level.baseSpeed+level.extraSpeed)*10) );
 				if (player.update(level.getBlockData())) {
 						level.update();
@@ -206,14 +211,24 @@ public class main extends Activity {
 				
 				
 				if(doUpdateCounter)
-					mCounterGroup.tryoToSetCounterTo(level.getScoreCounter());
+					mCounterGroup.tryToSetCounterTo(level.getScoreCounter());
 
+				long timeForOneCycle= System.currentTimeMillis()- starttime;
+				//Log.d("runtime", "timeForOneCycle: " + Integer.toString((int)timeForOneCycle));
 				
 				//postInvalidate();
 				try{ Thread.sleep(10); }
 				catch (InterruptedException e)
 				{
 					e.printStackTrace();
+				}
+				runCycleCounter++;
+				
+				//long timeForOneCycle= System.currentTimeMillis()- starttime;
+				if((System.currentTimeMillis() - timeAtLastSecond) > 1000){
+					timeAtLastSecond = System.currentTimeMillis();
+					Log.d("runtime", "run cycles per second: " + Integer.toString(runCycleCounter));
+					runCycleCounter=0;
 				}
 			}
 		}

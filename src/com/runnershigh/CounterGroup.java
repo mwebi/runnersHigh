@@ -21,6 +21,10 @@ public class CounterGroup extends CounterDigit{
 		height=_height;
 		FrameUpdateTime = _FrameUpdateTime;
 		LastFrameChangeTime = System.currentTimeMillis();
+		lastCounterValueOnes = 0;
+		lastCounterValueTens = 0;
+		lastCounterValueHundreds = 0;
+		lastCounterValueThousands = 0;
 	}
 	private final Vector<CounterDigit> mChildren = new Vector<CounterDigit>();
 
@@ -97,25 +101,33 @@ public class CounterGroup extends CounterDigit{
 		for (int i = 0; i < size; i++)
 			mChildren.get(i).setDigitToZero();
 	}
-	public void tryoToSetCounterTo(int counterValue) {
+	public void tryToSetCounterTo(int counterValue) {
 		if(  System.currentTimeMillis() > (LastFrameChangeTime+FrameUpdateTime) ){
 			LastFrameChangeTime=System.currentTimeMillis();
 			
 			int counterValueOnes = counterValue % 10; 
-			if(lastCounterValueOnes != counterValueOnes)
+			if(lastCounterValueOnes != counterValueOnes){
 				mChildren.get(3).setDigitTo(counterValueOnes);
+				lastCounterValueOnes = counterValueOnes;
+			}
 			
 			int counterValueTens = (counterValue % 100) / 10 ;
-			if(lastCounterValueTens != counterValueTens)
+			if(lastCounterValueTens != counterValueTens){
 				mChildren.get(2).setDigitTo(counterValueTens);
-			
+				lastCounterValueTens = counterValueTens;
+			}			
 			int counterValueHundreds = (counterValue % 1000 ) / 100;
-			if(lastCounterValueHundreds != counterValueHundreds)
+			if(lastCounterValueHundreds != counterValueHundreds){
 				mChildren.get(1).setDigitTo(counterValueHundreds);
+				lastCounterValueHundreds = counterValueHundreds;
+			}
 			
 			int counterValueThousands = counterValue / 1000;
-			if(lastCounterValueThousands != counterValueThousands)
+			if(lastCounterValueThousands != counterValueThousands){
 				mChildren.get(0).setDigitTo(counterValueThousands);
+				lastCounterValueThousands = counterValueThousands;
+			}
+
 		}
 	}
 	
