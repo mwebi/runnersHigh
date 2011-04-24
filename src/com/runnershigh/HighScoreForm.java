@@ -55,10 +55,11 @@ public class HighScoreForm extends Activity {
         highScoreAdapter = new HighscoreAdapter(this);
         highScoreAdapter.open();
         
+        // Find form elements
         nameField = (EditText) findViewById(R.id.title);
         scoreField = (TextView) findViewById(R.id.score);
         Button confirmButton = (Button) findViewById(R.id.confirm);
-
+     
         confirmButton.setOnClickListener(new View.OnClickListener() {
         	public void onClick(View view) {
         		saveState();
@@ -71,30 +72,24 @@ public class HighScoreForm extends Activity {
 			Bundle extras = getIntent().getExtras();
 			score = extras != null ? extras.getInt("score") : null;
 		}
+		scoreField.setText(score.toString()); 
 		
 		// Get Last Saved Name
 		Cursor cursor = highScoreAdapter.fetchLastEntry();
 		startManagingCursor(cursor);
-
 		if(cursor.getCount() > 0) {
 			nameField.setText(cursor.getString(cursor.getColumnIndexOrThrow(highScoreAdapter.KEY_NAME)));
 		}
-		cursor.close();
-		
-		scoreField.setText(score.toString()); 
+		cursor.close();		
     }
-    
     
     // ---------------------------------------------------
     // Save Entry
     private void saveState() {
     	String name 	=  nameField.getText().toString();
-        String score 	=  scoreField.getText().toString();   
+        String score 	=  scoreField.getText().toString();
         CheckBox checkbox = (CheckBox) findViewById(R.id.postOnline);
-        
-        Log.i("onSAVE", " name: " + name + " Score: " + score);
             
-        // Insert into Database
         if(name.length() > 0) {
         	
         	// Save score online
@@ -109,7 +104,7 @@ public class HighScoreForm extends Activity {
 	        	    HttpPost httppost = new HttpPost("http://rh.fidrelity.at/post/post_highscore.php");
 	
 	        	    try {
-	        	        // Add your data
+	        	        // Add data
 	        	        List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
 	        	        nameValuePairs.add(new BasicNameValuePair("name", name));
 	        	        nameValuePairs.add(new BasicNameValuePair("score", score));
@@ -137,6 +132,7 @@ public class HighScoreForm extends Activity {
         }
     }
     
+    // Check if user is connected to the internet
 	public boolean isOnline() {
 		 ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 		 return cm.getActiveNetworkInfo().isConnectedOrConnecting();
@@ -152,15 +148,13 @@ public class HighScoreForm extends Activity {
     @Override
     protected void onPause() {
         super.onPause();
-       // saveState();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
     }
-    
-    // Close DatabaseHelper
+
     @Override    
     protected void onDestroy() {        
         super.onDestroy();
