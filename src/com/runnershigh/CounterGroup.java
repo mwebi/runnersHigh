@@ -4,21 +4,27 @@ import java.util.Vector;
 
 import javax.microedition.khronos.opengles.GL10;
 
-import android.R.drawable;
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-
 public class CounterGroup extends CounterDigit{
-	private Bitmap FontImage;
+	private long LastFrameChangeTime;
+	private int FrameUpdateTime;
+	private int lastCounterValueOnes;
+	private int lastCounterValueTens;
+	private int lastCounterValueHundreds;
+	private int lastCounterValueThousands;
 	
-	public CounterGroup(int _x, int _y, int _z, int _width, int _height){
+	
+	public CounterGroup(int _x, int _y, int _z, int _width, int _height, int _FrameUpdateTime){
 		super((int)_x, (int)_y, (int)_z, (int)_width, (int)_height);
 		x=_x;
 		y=_y;
 		width=_width;
 		height=_height;
+		FrameUpdateTime = _FrameUpdateTime;
+		LastFrameChangeTime = System.currentTimeMillis();
+		lastCounterValueOnes = 0;
+		lastCounterValueTens = 0;
+		lastCounterValueHundreds = 0;
+		lastCounterValueThousands = 0;
 	}
 	private final Vector<CounterDigit> mChildren = new Vector<CounterDigit>();
 
@@ -95,18 +101,34 @@ public class CounterGroup extends CounterDigit{
 		for (int i = 0; i < size; i++)
 			mChildren.get(i).setDigitToZero();
 	}
-	public void setCounterTo(int counterValue) {
-		int counterValueOnes = counterValue % 10; 
-		mChildren.get(3).setDigitTo(counterValueOnes);
-		
-		int counterValueTens = (counterValue % 100) / 10 ; 
-		mChildren.get(2).setDigitTo(counterValueTens);
-		
-		int counterValueHundreds = (counterValue % 1000 ) / 100; 
-		mChildren.get(1).setDigitTo(counterValueHundreds);
-		
-		int counterValueThousands = counterValue / 1000; 
-		mChildren.get(0).setDigitTo(counterValueThousands);
+	public void tryToSetCounterTo(int counterValue) {
+		if(  System.currentTimeMillis() > (LastFrameChangeTime+FrameUpdateTime) ){
+			LastFrameChangeTime=System.currentTimeMillis();
+			
+			int counterValueOnes = counterValue % 10; 
+			if(lastCounterValueOnes != counterValueOnes){
+				mChildren.get(3).setDigitTo(counterValueOnes);
+				lastCounterValueOnes = counterValueOnes;
+			}
+			
+			int counterValueTens = (counterValue % 100) / 10 ;
+			if(lastCounterValueTens != counterValueTens){
+				mChildren.get(2).setDigitTo(counterValueTens);
+				lastCounterValueTens = counterValueTens;
+			}			
+			int counterValueHundreds = (counterValue % 1000 ) / 100;
+			if(lastCounterValueHundreds != counterValueHundreds){
+				mChildren.get(1).setDigitTo(counterValueHundreds);
+				lastCounterValueHundreds = counterValueHundreds;
+			}
+			
+			int counterValueThousands = counterValue / 1000;
+			if(lastCounterValueThousands != counterValueThousands){
+				mChildren.get(0).setDigitTo(counterValueThousands);
+				lastCounterValueThousands = counterValueThousands;
+			}
+
+		}
 	}
 	
 }

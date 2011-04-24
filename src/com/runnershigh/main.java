@@ -1,17 +1,12 @@
 package com.runnershigh;
 
-import javax.microedition.khronos.opengles.GL10;
-
 import com.runnershigh.OpenGLRenderer;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
@@ -19,7 +14,6 @@ import android.os.PowerManager;
 import android.util.Log;
 import android.view.Display;
 import android.view.MotionEvent;
-import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 
@@ -85,13 +79,10 @@ public class main extends Activity {
     
 	public class RunnersHighView extends GLSurfaceView implements Runnable {
 		private Player player;
+
 		private Level level;
 		private RHDrawable background;  
-		private RHDrawable Counter;
 		private Bitmap BGImg;
-		private Bitmap CounterBitmap;
-		private Canvas CounterCanvas;
-		private Drawable CounterBackground;
 		private int width;
 		private int height;
 		private Button resetButton;
@@ -102,27 +93,25 @@ public class main extends Activity {
 		private boolean deathSoundPlayed = false;
 		Paint paint = new Paint();
 		private OpenGLRenderer mRenderer;
-		private Context mContext;
 		private CounterGroup mCounterGroup;
 		private CounterDigit mCounterDigit1;
 		private CounterDigit mCounterDigit2;
 		private CounterDigit mCounterDigit3;
 		private CounterDigit mCounterDigit4;
 		private Bitmap CounterFont; 
+		private Bitmap CounterYourScoreImg;
+		private RHDrawable CounterYourScoreDrawable;
 		public  boolean doUpdateCounter = true;
-		private int CounterDigit2Update=10;
-		private int CounterDigit3Update=100;
-		private int CounterDigit4Update=1000;
+		private long timeAtLastSecond;
+		private int runCycleCounter;
 		
 		public RunnersHighView(Context context) {
 			super(context);
-			Log.d("debug", "in RunnersHighView constructor");
+			
 			Display display = ((WindowManager) getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
 			width= display.getWidth(); 
 			height= display.getHeight();
 			Util.getInstance().setScreenHeight(height);
-			
-			mContext = context;
 			
 			paint.setARGB(0xff, 0x00, 0x00, 0x00);;
 			paint.setAntiAlias(true);
@@ -147,47 +136,47 @@ public class main extends Activity {
 			mRenderer.addMesh(saveButton);
 			
 			player = new Player(getApplicationContext(), mRenderer, height);
-			mRenderer.addMesh(player);
 			
 			level = new Level(context, mRenderer, width, height);
 			
-			//old counter
-			CounterBackground = context.getResources().getDrawable(R.drawable.counterbg);
-			CounterBackground.setBounds(0, 0, 128, 16);
-			
-			Counter = new RHDrawable(20, height-20-20, 1, 140, 20); //upscaling from 128/16 texture
-			updateCounterTexture(mContext);
-			mRenderer.addMesh(Counter);
 			
 			//new counter
-			CounterFont = BitmapFactory.decodeResource(context.getResources(), R.drawable.numberfont);
-			mCounterGroup = new CounterGroup(60, height-20-20, 1, 128*4, 20);
+			CounterYourScoreImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.yourscore);
+			CounterYourScoreDrawable = new RHDrawable(20, height-16-20, 1, CounterYourScoreImg.getWidth(), CounterYourScoreImg.getHeight());
+			CounterYourScoreDrawable.loadBitmap(CounterYourScoreImg); 
+			mRenderer.addMesh(CounterYourScoreDrawable);
 			
-			for(int i=20; i<100; i+=20){
-				if(i==80){
-					mCounterDigit1 = new CounterDigit(i, height-50-20, 1, 16, 20);
+			CounterFont = BitmapFactory.decodeResource(context.getResources(), R.drawable.numberfont);
+			mCounterGroup = new CounterGroup(70, height-20-20, 1, 128*4, 20, 25);
+			
+			for(int i=70; i<130; i+=15){
+				if(i==115){
+					mCounterDigit1 = new CounterDigit(i, height-20-20, 1, 16, 20);
 					mCounterDigit1.loadBitmap(CounterFont); 
 					mCounterGroup.add(mCounterDigit1);
 				}
-				if(i==60){
-					mCounterDigit2 = new CounterDigit(i, height-50-20, 1, 16, 20);
+				if(i==100){
+					mCounterDigit2 = new CounterDigit(i, height-20-20, 1, 16, 20);
 					mCounterDigit2.loadBitmap(CounterFont); 
 					mCounterGroup.add(mCounterDigit2);
 				}
-				if(i==40){
-					mCounterDigit3 = new CounterDigit(i, height-50-20, 1, 16, 20);
+				if(i==85){
+					mCounterDigit3 = new CounterDigit(i, height-20-20, 1, 16, 20);
 					mCounterDigit3.loadBitmap(CounterFont); 
 					mCounterGroup.add(mCounterDigit3);
 				}
-				if(i==20){
-					mCounterDigit4 = new CounterDigit(i, height-50-20, 1, 16, 20);
+				if(i==70){
+					mCounterDigit4 = new CounterDigit(i, height-20-20, 1, 16, 20);
 					mCounterDigit4.loadBitmap(CounterFont); 
 					mCounterGroup.add(mCounterDigit4);
 				}
 			}
 			mRenderer.addMesh(mCounterGroup);
 			
-			Thread rHThread = new Thread(this);
+			timeAtLastSecond = System.currentTimeMillis();
+	        runCycleCounter=0;
+			
+	        Thread rHThread = new Thread(this);
 			rHThread.start();
 		}
 
@@ -198,10 +187,9 @@ public class main extends Activity {
 			{
 				e.printStackTrace();
 			}
-			int RunUnitCounterUpdate=20;
-
-
 			while(true){
+				long starttime = System.currentTimeMillis();
+				player.playerSprite.setFrameUpdateTime( (level.baseSpeedMax+level.extraSpeedMax)*10 -((level.baseSpeed+level.extraSpeed)*10) );
 				if (player.update(level.getBlockData())) {
 						level.update();
 				} else {
@@ -220,23 +208,27 @@ public class main extends Activity {
 				if(player.collidedWithObstacle(level.getObstacleData(),level.getLevelPosition()) ){
 					level.lowerSpeed();
 				}
-
-				if(RunUnitCounterUpdate==0){
-					updateCounterTexture(mContext);
-					RunUnitCounterUpdate=20;
-				}
-				RunUnitCounterUpdate--;
+				
 				
 				if(doUpdateCounter)
-					mCounterGroup.setCounterTo(level.getScoreCounter());
-					//updateCounter();
+					mCounterGroup.tryToSetCounterTo(level.getScoreCounter());
 
+				long timeForOneCycle= System.currentTimeMillis()- starttime;
+				//Log.d("runtime", "timeForOneCycle: " + Integer.toString((int)timeForOneCycle));
 				
 				//postInvalidate();
 				try{ Thread.sleep(10); }
 				catch (InterruptedException e)
 				{
 					e.printStackTrace();
+				}
+				runCycleCounter++;
+				
+				//long timeForOneCycle= System.currentTimeMillis()- starttime;
+				if((System.currentTimeMillis() - timeAtLastSecond) > 1000){
+					timeAtLastSecond = System.currentTimeMillis();
+					Log.d("runtime", "run cycles per second: " + Integer.toString(runCycleCounter));
+					runCycleCounter=0;
 				}
 			}
 		}
@@ -256,41 +248,8 @@ public class main extends Activity {
 			
 		}
 		*/
-		public void updateCounter() {
-			mCounterDigit1.incrementDigit();
-			if(CounterDigit2Update==0){
-				mCounterDigit2.incrementDigit();
-				CounterDigit2Update=10;
-			}
-			CounterDigit2Update--;
-			if(CounterDigit3Update==0){
-				mCounterDigit3.incrementDigit();
-				CounterDigit3Update=100;
-			}
-			CounterDigit3Update--;
-			if(CounterDigit4Update==0){
-				mCounterDigit4.incrementDigit();
-				CounterDigit4Update=1000;
-			}
-			CounterDigit4Update--;
-		}
-		public void updateCounterTexture(Context context){
-			// Create an empty, mutable bitmap
-			CounterBitmap = Bitmap.createBitmap(128, 16, Bitmap.Config.ARGB_4444);
-			// get a canvas to paint over the bitmap
-			CounterCanvas = new Canvas(CounterBitmap);
-			CounterBitmap.eraseColor(0);
 
-			// get a background image from resources
-			// note the image format must match the bitmap format
-			CounterBackground.draw(CounterCanvas); // draw the background to our bitmap
 
-			// draw the text centered
-			CounterCanvas.drawText("Your Score: " + Integer.toString(level.getScoreCounter()), 5, 14, paint);
-			
-			Counter.loadBitmap(CounterBitmap);
-		}
-		
 		public boolean onTouchEvent(MotionEvent event) {
 			if(event.getAction() == MotionEvent.ACTION_UP)
 				player.setJump(false);
