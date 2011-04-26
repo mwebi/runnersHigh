@@ -20,9 +20,12 @@ import android.view.Window;
 import android.view.WindowManager;
 
 
+
 public class main extends Activity {
 		PowerManager.WakeLock wakeLock ;
 		MediaPlayer musicPlayer;
+		
+		boolean RHDEBUG = false;
 		
 		/** Called when the activity is first created. */
 	    @Override
@@ -238,7 +241,7 @@ public class main extends Activity {
 				runCycleCounter++;
 				
 				//long timeForOneCycle= System.currentTimeMillis()- starttime;
-				if((System.currentTimeMillis() - timeAtLastSecond) > 1000){
+				if((System.currentTimeMillis() - timeAtLastSecond) > 1000 && RHDEBUG){
 					timeAtLastSecond = System.currentTimeMillis();
 					Log.d("runtime", "run cycles per second: " + Integer.toString(runCycleCounter));
 					runCycleCounter=0;
