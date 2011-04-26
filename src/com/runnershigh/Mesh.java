@@ -50,6 +50,9 @@ public class Mesh {
 
 	// Indicates if we need to load the texture.
 	private boolean mShouldLoadTexture = false; // New variable.
+	
+	private int mWrapS;
+	private int mWrapT;
 
 	// The number of indices.
 	private int mNumOfIndices = -1;
@@ -223,9 +226,18 @@ public class Mesh {
 	 * 
 	 * @param bitmap
 	 */
-	public void loadBitmap(Bitmap bitmap) { // New function.
+	public void loadBitmap(Bitmap bitmap) {
 		this.mBitmap = bitmap;
 		mShouldLoadTexture = true;
+		mWrapS = GL10.GL_CLAMP_TO_EDGE;
+		mWrapT = GL10.GL_CLAMP_TO_EDGE;
+	}
+	
+	public void loadBitmap(Bitmap bitmap, int wrapS, int wrapT) {
+		this.mBitmap = bitmap;
+		mShouldLoadTexture = true;
+		mWrapS = wrapS;
+		mWrapT = wrapT;
 	}
 
 	/**
@@ -246,12 +258,12 @@ public class Mesh {
 				GL10.GL_LINEAR);
 		gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MAG_FILTER,
 				GL10.GL_LINEAR);
-
+		
 		// Different possible texture parameters, e.g. GL10.GL_CLAMP_TO_EDGE
 		gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_WRAP_S,
-				GL10.GL_CLAMP_TO_EDGE);
+				mWrapS);
 		gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_WRAP_T,
-				GL10.GL_REPEAT);
+				mWrapT);
 
 		// Use the Android GLUtils to specify a two-dimensional texture image
 		// from our bitmap

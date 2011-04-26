@@ -1,6 +1,7 @@
 package com.runnershigh;
 
 import android.graphics.Rect;
+import android.util.Log;
 
 public class RHDrawable extends Mesh {
 	protected float width;
@@ -51,5 +52,10 @@ public class RHDrawable extends Mesh {
 				0.0f, width, height, 0.0f };
 
 		setVertices(vertices);
+	}
+	
+	public void setTextureCoords(float textureCoordinates[])
+	{
+		setTextureCoordinates(textureCoordinates);
 	}
 }

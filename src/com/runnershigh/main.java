@@ -1,5 +1,7 @@
 package com.runnershigh;
 
+import javax.microedition.khronos.opengles.GL10;
+
 import com.runnershigh.OpenGLRenderer;
 import android.app.Activity;
 import android.content.Context;
@@ -81,8 +83,7 @@ public class main extends Activity {
 		private Player player;
 
 		private Level level;
-		private RHDrawable background;  
-		private Bitmap BGImg;
+		private ParalaxBackground background;
 		private int width;
 		private int height;
 		private Button resetButton;
@@ -120,10 +121,21 @@ public class main extends Activity {
 			mRenderer = new OpenGLRenderer();
 			this.setRenderer(mRenderer);
 			
-			BGImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.background);
-			background = new RHDrawable(0, 0, -1, width, height);
-			background.loadBitmap(BGImg); 
+			background = new ParalaxBackground(width, height);
+			
+
+			background.loadLayerFar(BitmapFactory.decodeResource(context.getResources(),
+					R.drawable.backgroundlayer3));
+			background.loadLayerMiddle(BitmapFactory.decodeResource(context.getResources(),
+					R.drawable.backgroundlayer2));
+			background.loadLayerNear(BitmapFactory.decodeResource(context.getResources(),
+					R.drawable.backgroundlayer1));
+
+			
+
+			Log.d("debug", "before addMesh");
 			mRenderer.addMesh(background);
+			
 			
 			resetButtonImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.resetbutton);
 			resetButton = new Button(350, height-50-10, -2, 100, 50);
@@ -192,6 +204,7 @@ public class main extends Activity {
 				player.playerSprite.setFrameUpdateTime( (level.baseSpeedMax+level.extraSpeedMax)*10 -((level.baseSpeed+level.extraSpeed)*10) );
 				if (player.update(level.getBlockData())) {
 						level.update();
+						background.updat();
 				} else {
 					if(player.getPosY() < 0){
 						doUpdateCounter=false;

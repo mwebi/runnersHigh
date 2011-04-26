@@ -79,10 +79,7 @@ public class OpenGLRenderer implements Renderer {
 		gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
 		// Replace the current matrix with the identity matrix
 		gl.glLoadIdentity();
-		// Translates 4 units into the screen.
-		// gl.glTranslatef(-1, 1, 0);
-		// gl.glScalef(1, 0.5f, 1);
-		// gl.glScalef(10, 10, 1);
+		
 		// Draw our scene.
 		root.draw(gl);
 		fpsCounter++;
@@ -111,7 +108,9 @@ public class OpenGLRenderer implements Renderer {
 		gl.glViewport(0, 0, width, height);
 		gl.glMatrixMode(GL10.GL_PROJECTION);
 		gl.glLoadIdentity();
+		//GLU.gluOrtho2D(gl, 0, 1, 0, 2);
 		GLU.gluOrtho2D(gl, 0, width, 0, height);
+		//gl.glOrthox(0, width, 0, height, -5, 5);
 		// gl.glOrthox(0, width, 0, height, -100, 100);
 		gl.glMatrixMode(GL10.GL_MODELVIEW);
 		gl.glLoadIdentity();
