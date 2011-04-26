@@ -38,7 +38,7 @@ public class main extends Activity {
 	        SoundManager.initSounds(this);
 	        SoundManager.loadSounds();
 	        
-	        musicPlayer = MediaPlayer.create(getApplicationContext(), R.raw.toughandcool);
+	        musicPlayer = MediaPlayer.create(getApplicationContext(), R.raw.nyan);
 	        musicPlayer.start();
 	        musicPlayer.setVolume(0.5f, 0.5f);
 	        musicPlayer.setLooping(true);

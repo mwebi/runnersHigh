@@ -31,11 +31,11 @@ public class Player{
 		x = 70; 
 		y = 200;
 		
-		width = 62;
-		height = 63;
+		width = 60; //62; playersprite settings
+		height = 42; //63; playersprite settings
 		
-		playerSpriteImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.playersprite);
-		playerSprite = new PlayerSprite(x, y, 1, width, height, 25, 5); 
+		playerSpriteImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.nyansprite);
+		playerSprite = new PlayerSprite(x, y, 1, width, height, 25, 6); 
 		playerSprite.loadBitmap(playerSpriteImg); 
 		glrenderer.addMesh(playerSprite);
 	}
