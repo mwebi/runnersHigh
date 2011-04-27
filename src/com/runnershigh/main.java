@@ -1,7 +1,5 @@
 package com.runnershigh;
 
-import javax.microedition.khronos.opengles.GL10;
-
 import com.runnershigh.OpenGLRenderer;
 import android.app.Activity;
 import android.content.Context;
@@ -23,7 +21,8 @@ import android.view.WindowManager;
 
 public class main extends Activity {
 		PowerManager.WakeLock wakeLock ;
-		MediaPlayer musicPlayer;
+		MediaPlayer musicPlayerIntro;
+		MediaPlayer musicPlayerLoop;
 		
 		boolean RHDEBUG = false;
 		
@@ -41,12 +40,14 @@ public class main extends Activity {
 	        SoundManager.initSounds(this);
 	        SoundManager.loadSounds();
 	        
-	        musicPlayer = MediaPlayer.create(getApplicationContext(), R.raw.nyan);
-	        musicPlayer.start();
-	        musicPlayer.setVolume(0.5f, 0.5f);
-	        musicPlayer.setLooping(true);
-
-
+	        musicPlayerIntro = MediaPlayer.create(getApplicationContext(), R.raw.nyanintro);
+	        musicPlayerIntro.start();
+	        musicPlayerIntro.setVolume(0.5f, 0.5f);
+	        musicPlayerIntro.setLooping(false);
+	        
+	        musicPlayerLoop= MediaPlayer.create(getApplicationContext(), R.raw.nyanloop);
+	        musicPlayerLoop.setVolume(0, 0);
+	        
 			requestWindowFeature(Window.FEATURE_NO_TITLE);  
 			getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
 			
@@ -59,20 +60,21 @@ public class main extends Activity {
 	    @Override
 	    protected void onDestroy() {
 			wakeLock.release();
-			musicPlayer.release();
+			musicPlayerIntro.release();
+			musicPlayerLoop.release();
 			SoundManager.cleanup();
 			super.onDestroy();
 		}
 		@Override
 		public void onResume() {
 			wakeLock.acquire();
-			musicPlayer.start();
+			musicPlayerLoop.start();
 			super.onResume();			
 		}
 		@Override
 		public void onPause() {
 			wakeLock.release();
-			musicPlayer.pause();
+			musicPlayerLoop.pause();
 			super.onPause();
 		}
 	    
@@ -196,14 +198,25 @@ public class main extends Activity {
 		}
 
 		public void run() {
-			// wait a bit for everything to load
-			try{ Thread.sleep(750); }
+			// wait until the intro is over
+			// this gives the app enough time to load
+			try{
+				//Thread.sleep(500);
+				while(musicPlayerIntro.isPlaying())
+					Thread.sleep(2);
+			}
 			catch (InterruptedException e)
 			{
 				e.printStackTrace();
 			}
+			
+			musicPlayerLoop.seekTo(0);
+			musicPlayerLoop.setVolume(0.5f, 0.5f);
+	        musicPlayerLoop.setLooping(true);
+	        
+	        
 			while(true){
-				long starttime = System.currentTimeMillis();
+				//long starttime = System.currentTimeMillis();
 				player.playerSprite.setFrameUpdateTime( (level.baseSpeedMax+level.extraSpeedMax)*10 -((level.baseSpeed+level.extraSpeed)*10) );
 				if (player.update(level.getBlockData())) {
 						level.update();
@@ -229,7 +242,7 @@ public class main extends Activity {
 				if(doUpdateCounter)
 					mCounterGroup.tryToSetCounterTo(level.getScoreCounter());
 
-				long timeForOneCycle= System.currentTimeMillis()- starttime;
+				//long timeForOneCycle= System.currentTimeMillis()- starttime;
 				//Log.d("runtime", "timeForOneCycle: " + Integer.toString((int)timeForOneCycle));
 				
 				//postInvalidate();
