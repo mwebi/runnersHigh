@@ -29,8 +29,7 @@ class DBManager extends SQLiteOpenHelper {
 	    "score INTEGER NOT NULL" +
 	    ");";	
 	
-	// -----------------------------------------------
-	
+	// -----------------------------------------------	
     DBManager(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }

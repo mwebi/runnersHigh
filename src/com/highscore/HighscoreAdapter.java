@@ -17,7 +17,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
-import android.util.Log;
 
 public class HighscoreAdapter extends DbAdapter {
 	

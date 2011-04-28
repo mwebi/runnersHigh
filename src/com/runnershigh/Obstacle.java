@@ -1,10 +1,5 @@
 package com.runnershigh;
 
-import android.R.drawable;
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
 import android.graphics.Rect;
 
 public class Obstacle extends RHDrawable {

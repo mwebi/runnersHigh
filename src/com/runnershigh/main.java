@@ -1,17 +1,12 @@
 package com.runnershigh;
 
-import javax.microedition.khronos.opengles.GL10;
-
 import com.runnershigh.OpenGLRenderer;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
@@ -19,14 +14,17 @@ import android.os.PowerManager;
 import android.util.Log;
 import android.view.Display;
 import android.view.MotionEvent;
-import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 
 
+
 public class main extends Activity {
 		PowerManager.WakeLock wakeLock ;
-		MediaPlayer musicPlayer;
+		MediaPlayer musicPlayerIntro;
+		MediaPlayer musicPlayerLoop;
+		
+		boolean RHDEBUG = false;
 		
 		/** Called when the activity is first created. */
 	    @Override
@@ -42,12 +40,14 @@ public class main extends Activity {
 	        SoundManager.initSounds(this);
 	        SoundManager.loadSounds();
 	        
-	        musicPlayer = MediaPlayer.create(getApplicationContext(), R.raw.toughandcool);
-	        musicPlayer.start();
-	        musicPlayer.setVolume(0.5f, 0.5f);
-	        musicPlayer.setLooping(true);
-
-
+	        musicPlayerIntro = MediaPlayer.create(getApplicationContext(), R.raw.nyanintro);
+	        musicPlayerIntro.start();
+	        musicPlayerIntro.setVolume(0.5f, 0.5f);
+	        musicPlayerIntro.setLooping(false);
+	        
+	        musicPlayerLoop= MediaPlayer.create(getApplicationContext(), R.raw.nyanloop);
+	        musicPlayerLoop.setVolume(0, 0);
+	        
 			requestWindowFeature(Window.FEATURE_NO_TITLE);  
 			getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
 			
@@ -60,20 +60,21 @@ public class main extends Activity {
 	    @Override
 	    protected void onDestroy() {
 			wakeLock.release();
-			musicPlayer.release();
+			musicPlayerIntro.release();
+			musicPlayerLoop.release();
 			SoundManager.cleanup();
 			super.onDestroy();
 		}
 		@Override
 		public void onResume() {
 			wakeLock.acquire();
-			musicPlayer.start();
+			musicPlayerLoop.start();
 			super.onResume();			
 		}
 		@Override
 		public void onPause() {
 			wakeLock.release();
-			musicPlayer.pause();
+			musicPlayerLoop.pause();
 			super.onPause();
 		}
 	    
@@ -85,13 +86,9 @@ public class main extends Activity {
     
 	public class RunnersHighView extends GLSurfaceView implements Runnable {
 		private Player player;
+
 		private Level level;
-		private RHDrawable background;  
-		private RHDrawable Counter;
-		private Bitmap BGImg;
-		private Bitmap CounterBitmap;
-		private Canvas CounterCanvas;
-		private Drawable CounterBackground;
+		private ParalaxBackground background;
 		private int width;
 		private int height;
 		private Button resetButton;
@@ -102,18 +99,25 @@ public class main extends Activity {
 		private boolean deathSoundPlayed = false;
 		Paint paint = new Paint();
 		private OpenGLRenderer mRenderer;
-		private Context mContext;
-
+		private CounterGroup mCounterGroup;
+		private CounterDigit mCounterDigit1;
+		private CounterDigit mCounterDigit2;
+		private CounterDigit mCounterDigit3;
+		private CounterDigit mCounterDigit4;
+		private Bitmap CounterFont; 
+		private Bitmap CounterYourScoreImg;
+		private RHDrawable CounterYourScoreDrawable;
+		public  boolean doUpdateCounter = true;
+		private long timeAtLastSecond;
+		private int runCycleCounter;
 		
 		public RunnersHighView(Context context) {
 			super(context);
-			Log.d("debug", "in RunnersHighView constructor");
+			
 			Display display = ((WindowManager) getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
 			width= display.getWidth(); 
 			height= display.getHeight();
 			Util.getInstance().setScreenHeight(height);
-			
-			mContext = context;
 			
 			paint.setARGB(0xff, 0x00, 0x00, 0x00);;
 			paint.setAntiAlias(true);
@@ -122,10 +126,21 @@ public class main extends Activity {
 			mRenderer = new OpenGLRenderer();
 			this.setRenderer(mRenderer);
 			
-			BGImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.background);
-			background = new RHDrawable(0, 0, -1, width, height);
-			background.loadBitmap(BGImg); 
+			background = new ParalaxBackground(width, height);
+			
+
+			background.loadLayerFar(BitmapFactory.decodeResource(context.getResources(),
+					R.drawable.backgroundlayer3));
+			background.loadLayerMiddle(BitmapFactory.decodeResource(context.getResources(),
+					R.drawable.backgroundlayer2));
+			background.loadLayerNear(BitmapFactory.decodeResource(context.getResources(),
+					R.drawable.backgroundlayer1));
+
+			
+
+			Log.d("debug", "before addMesh");
 			mRenderer.addMesh(background);
+			
 			
 			resetButtonImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.resetbutton);
 			resetButton = new Button(350, height-50-10, -2, 100, 50);
@@ -138,35 +153,77 @@ public class main extends Activity {
 			mRenderer.addMesh(saveButton);
 			
 			player = new Player(getApplicationContext(), mRenderer, height);
-			mRenderer.addMesh(player);
 			
 			level = new Level(context, mRenderer, width, height);
 			
-			CounterBackground = context.getResources().getDrawable(R.drawable.counterbg);
-			CounterBackground.setBounds(0, 0, 128, 16);
 			
-			Counter = new RHDrawable(20, height-20-20, 1, 140, 20); //upscaling from 128/16 texture
-			updateCounterTexture(mContext);
-			mRenderer.addMesh(Counter);
+			//new counter
+			CounterYourScoreImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.yourscore);
+			CounterYourScoreDrawable = new RHDrawable(20, height-16-20, 1, CounterYourScoreImg.getWidth(), CounterYourScoreImg.getHeight());
+			CounterYourScoreDrawable.loadBitmap(CounterYourScoreImg); 
+			mRenderer.addMesh(CounterYourScoreDrawable);
 			
+			CounterFont = BitmapFactory.decodeResource(context.getResources(), R.drawable.numberfont);
+			mCounterGroup = new CounterGroup(70, height-20-20, 1, 128*4, 20, 25);
 			
-			Thread rHThread = new Thread(this);
+			for(int i=70; i<130; i+=15){
+				if(i==115){
+					mCounterDigit1 = new CounterDigit(i, height-20-20, 1, 16, 20);
+					mCounterDigit1.loadBitmap(CounterFont); 
+					mCounterGroup.add(mCounterDigit1);
+				}
+				if(i==100){
+					mCounterDigit2 = new CounterDigit(i, height-20-20, 1, 16, 20);
+					mCounterDigit2.loadBitmap(CounterFont); 
+					mCounterGroup.add(mCounterDigit2);
+				}
+				if(i==85){
+					mCounterDigit3 = new CounterDigit(i, height-20-20, 1, 16, 20);
+					mCounterDigit3.loadBitmap(CounterFont); 
+					mCounterGroup.add(mCounterDigit3);
+				}
+				if(i==70){
+					mCounterDigit4 = new CounterDigit(i, height-20-20, 1, 16, 20);
+					mCounterDigit4.loadBitmap(CounterFont); 
+					mCounterGroup.add(mCounterDigit4);
+				}
+			}
+			mRenderer.addMesh(mCounterGroup);
+			
+			timeAtLastSecond = System.currentTimeMillis();
+	        runCycleCounter=0;
+			
+	        Thread rHThread = new Thread(this);
 			rHThread.start();
 		}
 
 		public void run() {
-			// wait a bit for everything to load
-			try{ Thread.sleep(750); }
+			// wait until the intro is over
+			// this gives the app enough time to load
+			try{
+				//Thread.sleep(500);
+				while(musicPlayerIntro.isPlaying())
+					Thread.sleep(2);
+			}
 			catch (InterruptedException e)
 			{
 				e.printStackTrace();
 			}
-			int RunUnitCounterUpdate=20;
+			
+			musicPlayerLoop.seekTo(0);
+			musicPlayerLoop.setVolume(0.5f, 0.5f);
+	        musicPlayerLoop.setLooping(true);
+	        
+	        
 			while(true){
+				//long starttime = System.currentTimeMillis();
+				player.playerSprite.setFrameUpdateTime( (level.baseSpeedMax+level.extraSpeedMax)*10 -((level.baseSpeed+level.extraSpeed)*10) );
 				if (player.update(level.getBlockData())) {
 						level.update();
+						background.updat();
 				} else {
 					if(player.getPosY() < 0){
+						doUpdateCounter=false;
 						resetButton.setShowButton(true);
 						resetButton.z = 1.0f;
 						saveButton.setShowButton(true);
@@ -180,18 +237,27 @@ public class main extends Activity {
 				if(player.collidedWithObstacle(level.getObstacleData(),level.getLevelPosition()) ){
 					level.lowerSpeed();
 				}
+				
+				
+				if(doUpdateCounter)
+					mCounterGroup.tryToSetCounterTo(level.getScoreCounter());
 
-				if(RunUnitCounterUpdate==0){
-					updateCounterTexture(mContext);
-					RunUnitCounterUpdate=20;
-				}
-				RunUnitCounterUpdate--;
+				//long timeForOneCycle= System.currentTimeMillis()- starttime;
+				//Log.d("runtime", "timeForOneCycle: " + Integer.toString((int)timeForOneCycle));
 				
 				//postInvalidate();
 				try{ Thread.sleep(10); }
 				catch (InterruptedException e)
 				{
 					e.printStackTrace();
+				}
+				runCycleCounter++;
+				
+				//long timeForOneCycle= System.currentTimeMillis()- starttime;
+				if((System.currentTimeMillis() - timeAtLastSecond) > 1000 && RHDEBUG){
+					timeAtLastSecond = System.currentTimeMillis();
+					Log.d("runtime", "run cycles per second: " + Integer.toString(runCycleCounter));
+					runCycleCounter=0;
 				}
 			}
 		}
@@ -211,23 +277,8 @@ public class main extends Activity {
 			
 		}
 		*/
-		public void updateCounterTexture(Context context){
-			// Create an empty, mutable bitmap
-			CounterBitmap = Bitmap.createBitmap(128, 16, Bitmap.Config.ARGB_4444);
-			// get a canvas to paint over the bitmap
-			CounterCanvas = new Canvas(CounterBitmap);
-			CounterBitmap.eraseColor(0);
 
-			// get a background image from resources
-			// note the image format must match the bitmap format
-			CounterBackground.draw(CounterCanvas); // draw the background to our bitmap
 
-			// draw the text centered
-			CounterCanvas.drawText("Your Score: " + Integer.toString(level.getScoreCounter()), 5, 14, paint);
-			
-			Counter.loadBitmap(CounterBitmap);
-		}
-		
 		public boolean onTouchEvent(MotionEvent event) {
 			if(event.getAction() == MotionEvent.ACTION_UP)
 				player.setJump(false);
@@ -242,9 +293,11 @@ public class main extends Activity {
 						resetButton.z = -2.0f;
 						saveButton.setShowButton(false);
 						saveButton.z = -2.0f;
+						mCounterGroup.resetCounter();
 						scoreWasSaved=false;
 						deathSoundPlayed=false;
 						SoundManager.playSound(1, 1);
+						doUpdateCounter=true;
 					}
 					else if(saveButton.isClicked( event.getX(), Util.getInstance().toScreenY((int)event.getY())  ) && !scoreWasSaved){
 						//save score

@@ -1,13 +1,6 @@
 package com.runnershigh;
 
-import android.R.drawable;
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-
 public class Button extends RHDrawable{
-	private Bitmap ButtonImage;
 	private boolean showButton = false;
 	
 	

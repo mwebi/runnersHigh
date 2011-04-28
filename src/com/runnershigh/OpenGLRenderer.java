@@ -22,9 +22,14 @@ import com.runnershigh.Group;
 import com.runnershigh.Mesh;
 import android.opengl.GLU;
 import android.opengl.GLSurfaceView.Renderer;
+import android.util.Log;
 
 public class OpenGLRenderer implements Renderer {
 	private final Group root;
+	private long timeAtLastSecond;
+	private int fpsCounter;
+	
+	boolean RHDEBUG = false;
 
 	public OpenGLRenderer() {
 		// Initialize our root.
@@ -57,6 +62,9 @@ public class OpenGLRenderer implements Renderer {
 		//gl.glEnable(GL10.GL_ALPHA);
         gl.glEnable(GL10.GL_BLEND);
         gl.glBlendFunc(GL10.GL_ONE, GL10.GL_ONE_MINUS_SRC_ALPHA); 
+        
+        timeAtLastSecond = System.currentTimeMillis();
+        fpsCounter=0;
 	}
 
 	/*
@@ -68,16 +76,22 @@ public class OpenGLRenderer implements Renderer {
 	 */
 
 	public void onDrawFrame(GL10 gl) {
+		//long starttime = System.currentTimeMillis();
 		// Clears the screen and depth buffer.
 		gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
 		// Replace the current matrix with the identity matrix
 		gl.glLoadIdentity();
-		// Translates 4 units into the screen.
-		// gl.glTranslatef(-1, 1, 0);
-		// gl.glScalef(1, 0.5f, 1);
-		// gl.glScalef(10, 10, 1);
+		
 		// Draw our scene.
 		root.draw(gl);
+		fpsCounter++;
+		
+		//long timeForOneCycle= System.currentTimeMillis()- starttime;
+		if((System.currentTimeMillis() - timeAtLastSecond) > 1000 && RHDEBUG){
+			timeAtLastSecond = System.currentTimeMillis();
+			Log.d("frametime", "draws per second: " + Integer.toString(fpsCounter));
+			fpsCounter=0;
+		}
 	}
 
 	/*
@@ -96,7 +110,9 @@ public class OpenGLRenderer implements Renderer {
 		gl.glViewport(0, 0, width, height);
 		gl.glMatrixMode(GL10.GL_PROJECTION);
 		gl.glLoadIdentity();
+		//GLU.gluOrtho2D(gl, 0, 1, 0, 2);
 		GLU.gluOrtho2D(gl, 0, width, 0, height);
+		//gl.glOrthox(0, width, 0, height, -5, 5);
 		// gl.glOrthox(0, width, 0, height, -100, 100);
 		gl.glMatrixMode(GL10.GL_MODELVIEW);
 		gl.glLoadIdentity();

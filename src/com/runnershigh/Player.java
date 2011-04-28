@@ -6,13 +6,15 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
 
-public class Player extends Mesh {
+public class Player{
 	private static float MAX_JUMP_HEIGHT = 140;
 	private static float MIN_JUMP_HEIGHT = 10;
 	public Bitmap playerImg;
 	private float lastPosY;
 	private int width;
 	private int height;
+	private float x;
+	private float y;
 	private boolean jumping = false;
 	private boolean jumpingsoundplayed = true;
 	private boolean reachedPeak = false;
@@ -21,35 +23,21 @@ public class Player extends Mesh {
 	private float velocity = 0;
 	private Rect playerRect;
 	private float speedoffsetX = 0;
-	private OpenGLRenderer renderer;
+	private Bitmap playerSpriteImg; 
+	public PlayerSprite playerSprite;
 	
 
 	public Player(Context context, OpenGLRenderer glrenderer, int ScreenHeight) {
 		x = 70; 
 		y = 200;
 		
-		renderer=glrenderer;
+		width = 60; //62; playersprite settings
+		height = 42; //63; playersprite settings
 		
-		playerImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.playerimg_beta);
-		loadBitmap(playerImg);
-		
-		width=62;//playerImg.getWidth();
-		height=63;//playerImg.getHeight();
-		
-		float textureCoordinates[] = { 0.0f, 1.0f, //
-				1.0f, 1.0f, //
-				0.0f, 0.0f, //
-				1.0f, 0.0f, //
-		};
-
-		short[] indices = new short[] { 0, 1, 2, 1, 3, 2 };
-
-		float[] vertices = new float[] { 0, 0, 0, width, 0, 0.0f, 0, height,
-				0.0f, width, height, 0.0f };
-
-		setIndices(indices);
-		setVertices(vertices);
-		setTextureCoordinates(textureCoordinates);
+		playerSpriteImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.nyansprite);
+		playerSprite = new PlayerSprite(x, y, 1, width, height, 25, 6); 
+		playerSprite.loadBitmap(playerSpriteImg); 
+		glrenderer.addMesh(playerSprite);
 	}
 	
 	public void setJump(boolean jump) {
@@ -65,6 +53,9 @@ public class Player extends Mesh {
 	}
 	
 	public boolean update(Vector<Rect> blocks) {
+		playerSprite.updatePosition(x, y);
+		playerSprite.tryToSetNextFrame();
+		
 		if(jumpingsoundplayed==false){
 			SoundManager.playSound(3, 1);
 			jumpingsoundplayed = true;
@@ -72,14 +63,14 @@ public class Player extends Mesh {
 		if (jumping && velocity >= 0) {
 			if(y - jumpStartY < MIN_JUMP_HEIGHT || !reachedPeak) {
 				float modifier = (MAX_JUMP_HEIGHT - (y - jumpStartY))/30;
-				velocity += 0.4981 * modifier;
+				velocity += 0.4981f * modifier;
 			}
 			if(y - jumpStartY >= MAX_JUMP_HEIGHT) {
 				reachedPeak = true;			
 			}
 		}
 		
-		velocity -= 0.4981;
+		velocity -= 0.4981f;
 		
 		if (velocity < -9)
 			velocity = -9;

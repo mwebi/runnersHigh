@@ -3,11 +3,12 @@ package com.runnershigh;
 import android.graphics.Rect;
 import android.util.Log;
 
-public class RHDrawable extends Mesh {
+public class CounterDigit extends Mesh {
 	protected float width;
 	protected float height;
+	protected int digitValue;
 	
-	public RHDrawable(int _x, int _y, int _z, int _width, int _height) {
+	public CounterDigit(int _x, int _y, int _z, int _width, int _height) {
 		x = _x;
 		y = _y;
 		z = _z;
@@ -15,10 +16,12 @@ public class RHDrawable extends Mesh {
 		width= _width;
 		height= _height;
 		
+		digitValue=0;
+		
 		float textureCoordinates[] = { 0.0f, 1.0f, //
-				1.0f, 1.0f, //
+				0.0625f, 1.0f, //
 				0.0f, 0.0f, //
-				1.0f, 0.0f, //
+				0.0625f, 0.0f, //
 		};
 
 		short[] indices = new short[] { 0, 1, 2, 1, 3, 2 };
@@ -53,9 +56,36 @@ public class RHDrawable extends Mesh {
 
 		setVertices(vertices);
 	}
-	
-	public void setTextureCoords(float textureCoordinates[])
-	{
+	public void incrementDigit() {
+		digitValue++;
+		if(digitValue==10)
+			digitValue=0;
+		
+		float textureCoordinates[] = {0.0625f*digitValue, 1.0f, //
+				0.0625f*digitValue+0.0625f, 1.0f, //
+				0.0625f*digitValue, 0.0f, //
+				0.0625f*digitValue+0.0625f, 0.0f, //
+		};
 		setTextureCoordinates(textureCoordinates);
+	}
+	public void setDigitToZero() {
+		digitValue=0;
+		float textureCoordinates[] = { 0.0f, 1.0f, //
+				0.0625f, 1.0f, //
+				0.0f, 0.0f, //
+				0.0625f, 0.0f, //
+		};
+		setTextureCoordinates(textureCoordinates);
+	}
+	public void setDigitTo(int value) {
+		digitValue=value;
+		
+		float textureCoordinates[] = {0.0625f*digitValue, 1.0f, //
+				0.0625f*digitValue+0.0625f, 1.0f, //
+				0.0625f*digitValue, 0.0f, //
+				0.0625f*digitValue+0.0625f, 0.0f, //
+		};
+		setTextureCoordinates(textureCoordinates);
+		
 	}
 }

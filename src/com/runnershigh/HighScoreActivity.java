@@ -15,9 +15,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 
 import com.highscore.HighscoreAdapter;
@@ -70,7 +68,7 @@ public class HighScoreActivity extends ListActivity {
         SimpleCursorAdapter adapter
             = new SimpleCursorAdapter(
                       this,                             // The Context for the ListView
-                      R.layout.list_row,          			// Points to the XML for a list item
+                      R.layout.list_row,          		// Points to the XML for a list item
                       cursor,                           // The cursor to get items from
                       from,
                       to
@@ -81,7 +79,6 @@ public class HighScoreActivity extends ListActivity {
     }
     
     // ---------------------------------------------------------
-    // Close DatabaseHelper
     @Override    
     protected void onDestroy() {        
         super.onDestroy();

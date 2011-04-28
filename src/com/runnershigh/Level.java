@@ -3,18 +3,12 @@ package com.runnershigh;
 import java.util.Random;
 import java.util.Vector;
 
-import javax.microedition.khronos.opengles.GL10;
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
-import android.opengl.GLUtils;
-import android.util.Log;
 
 
 public class Level {
@@ -23,8 +17,11 @@ public class Level {
 	private int levelPosition;
 	private int scoreCounter;
 	private boolean threeKwasplayed;
-	private float baseSpeed;
-	private float extraSpeed;
+	public float baseSpeed;
+	public float baseSpeedMax;
+	public float baseSpeedStart;
+	public float extraSpeed;
+	public float extraSpeedMax;
 	private Vector<Block> blockData;
 	private Vector<Block> unusedBlocks;
 	private Vector<Obstacle> obstacleData;
@@ -38,14 +35,17 @@ public class Level {
 	private int BlockCounter;
 	private OpenGLRenderer renderer;
 	
-	public Level(Context context, OpenGLRenderer glrenderer, int width, int heigth) {
+	public Level(Context context, OpenGLRenderer glrenderer, int _width, int _heigth) {
 		//Log.d("debug", "in Level constructor");
-		this.width = width;
-		this.height = heigth;
-		this.levelPosition = 0;
-		this.scoreCounter = 0;
-		this.baseSpeed = 5;
-		this.extraSpeed = 0;
+		width = _width;
+		height = _heigth;
+		levelPosition = 0;
+		scoreCounter = 0;
+		baseSpeedStart = 2;
+		baseSpeed = baseSpeedStart;
+		baseSpeedMax = 5;
+		extraSpeed = 0;
+		extraSpeedMax = 5;
 		threeKwasplayed = false;
 		renderer = glrenderer;
 		
@@ -99,11 +99,11 @@ public class Level {
 			
 			// Log.d("debug", "in update after < levelPosition + width");
 			
-			if(baseSpeed<5)
-				baseSpeed+=0.025;
+			if(baseSpeed < baseSpeedMax)
+				baseSpeed+=0.025; //baseSpeed+=0.025;
 			
-			if(extraSpeed<5)
-				extraSpeed+=0.001;
+			if(extraSpeed < extraSpeedMax)
+				extraSpeed+=0.001; //extraSpeed+=0.001;
 			if(slowDown){
 				//extraSpeed=0;
 				baseSpeed=1;
@@ -125,7 +125,7 @@ public class Level {
 			}
 			
 			
-			if(scoreCounter>=3000 && threeKwasplayed==false){
+			if(scoreCounter>=2000 && threeKwasplayed==false){
 				threeKwasplayed=true;
 				SoundManager.playSound(2, 1);
 			}
@@ -180,7 +180,6 @@ public class Level {
 				currentBlock.y = 0;
 				
 				unusedBlocks.remove(0);
-				
 			}
 		} else {
 			Block currentBlock;
@@ -379,7 +378,7 @@ public class Level {
 			}
 			obstacleData.clear();
 			
-			this.baseSpeed = 5;
+			this.baseSpeed = baseSpeedStart;
 			this.extraSpeed = 0;
 			BlockCounter=0;
 			generateAndAddBlock();
