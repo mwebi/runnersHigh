@@ -95,6 +95,9 @@ public class main extends Activity {
 		private Bitmap resetButtonImg;
 		private Button saveButton;
 		private Bitmap saveButtonImg;
+		private RHDrawable blackRHD;
+		private Bitmap blackImg;
+		private float blackImgAlpha;
 		private boolean scoreWasSaved = false;
 		private boolean deathSoundPlayed = false;
 		Paint paint = new Paint();
@@ -129,7 +132,6 @@ public class main extends Activity {
 			this.setRenderer(mRenderer);
 			
 			background = new ParalaxBackground(width, height);
-			
 
 			background.loadLayerFar(BitmapFactory.decodeResource(context.getResources(),
 					R.drawable.backgroundlayer3));
@@ -140,7 +142,9 @@ public class main extends Activity {
 
 			Log.d("debug", "before addMesh");
 			mRenderer.addMesh(background);
+
 			
+
 			
 			resetButtonImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.resetbutton);
 			resetButton = new Button(350, height-50-10, -2, 100, 50);
@@ -190,6 +194,15 @@ public class main extends Activity {
 			}
 			mRenderer.addMesh(mCounterGroup);
 			
+			blackImg = Bitmap.createBitmap(16, 16, Bitmap.Config.ARGB_4444);
+			//blackImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.resetbutton);
+			blackRHD = new RHDrawable(0, 0, 1, width, height);
+			blackImg.eraseColor(-16777216);
+			blackImgAlpha=1;
+			blackRHD.setColor(0, 0, 0, blackImgAlpha);
+			blackRHD.loadBitmap(blackImg);
+			mRenderer.addMesh(blackRHD);
+			
 			timeAtLastSecond = System.currentTimeMillis();
 	        runCycleCounter=0;
 			
@@ -202,13 +215,18 @@ public class main extends Activity {
 			// this gives the app enough time to load
 			try{
 				//Thread.sleep(500);
-				while(musicPlayerIntro.isPlaying())
+				while(musicPlayerIntro.isPlaying()){
+					blackImgAlpha-=0.0005;
+					blackRHD.setColor(0, 0, 0, blackImgAlpha);
 					Thread.sleep(2);
+				}
 			}
 			catch (InterruptedException e)
 			{
 				e.printStackTrace();
 			}
+			
+			mRenderer.removeMesh(blackRHD);
 			
 			musicPlayerLoop.seekTo(0);
 			musicPlayerLoop.setVolume(0.5f, 0.5f);
