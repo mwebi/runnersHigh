@@ -216,7 +216,7 @@ public class main extends Activity {
 			try{
 				//Thread.sleep(500);
 				while(musicPlayerIntro.isPlaying()){
-					blackImgAlpha-=0.0005;
+					blackImgAlpha-=0.0005; 
 					blackRHD.setColor(0, 0, 0, blackImgAlpha);
 					Thread.sleep(2);
 				}
