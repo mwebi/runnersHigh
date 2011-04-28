@@ -53,9 +53,4 @@ public class RHDrawable extends Mesh {
 
 		setVertices(vertices);
 	}
-	
-	public void setTextureCoords(float textureCoordinates[])
-	{
-		setTextureCoordinates(textureCoordinates);
-	}
 }

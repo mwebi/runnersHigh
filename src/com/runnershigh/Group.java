@@ -31,9 +31,17 @@ public class Group extends Mesh {
 
 	@Override
 	public void draw(GL10 gl) {
+		
 		int size = mChildren.size();
+		gl.glPushMatrix();
+		gl.glTranslatef(x, y, z);
+		gl.glRotatef(rx, 1, 0, 0);
+		gl.glRotatef(ry, 0, 1, 0);
+		gl.glRotatef(rz, 0, 0, 1);
+
 		for (int i = 0; i < size; i++)
 			mChildren.get(i).draw(gl);
+		gl.glPopMatrix();
 	}
 
 	/**
