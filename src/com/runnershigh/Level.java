@@ -28,7 +28,7 @@ public class Level {
 	private Vector<Obstacle> unusedObstacles;
 	private Bitmap obstacleSlowImg;
 	private Bitmap obstacleJumpImg;
-	private Bitmap blockImg;
+	private Bitmap blockTexture;
 	private boolean slowDown;
 	Paint paint;
 	Rect blockRect;
@@ -59,7 +59,18 @@ public class Level {
 		unusedObstacles = new Vector<Obstacle>();
 		obstacleSlowImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.obstacleslow );
 		obstacleJumpImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.obstaclejump );
-		blockImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.blocktilelow );
+		
+		
+		Block.setTextureLeft(
+				BitmapFactory.decodeResource(
+						context.getResources(), R.drawable.blockleft ));
+		Block.setTextureMiddle(
+				BitmapFactory.decodeResource(
+						context.getResources(), R.drawable.blockmiddle ));
+		Block.setTextureRight(
+				BitmapFactory.decodeResource(
+						context.getResources(), R.drawable.blockright ));
+		
 		slowDown = false;
 		
 		generateAndAddBlock();
@@ -166,9 +177,13 @@ public class Level {
 		//Log.d("debug", "blockData.size() -> " + Integer.toString(blockData.size()) );		
 		if (blockData.size() == 0) {
 			if (unusedBlocks.size() == 0) {
-				Block newBlock = new Block(0, 50, width, 0);
+				Block newBlock = new Block();
+				
+				newBlock.x = 0;
+				newBlock.setWidth(width);
+				newBlock.setHeight(50);
+				
 				blockData.add(newBlock);
-				newBlock.loadBitmap(blockImg);
 				renderer.addMesh(newBlock);
 			} else {
 				Block currentBlock = unusedBlocks.firstElement();
@@ -177,7 +192,6 @@ public class Level {
 				currentBlock.x = 0;
 				currentBlock.setWidth(width);
 				currentBlock.setHeight(50);
-				currentBlock.y = 0;
 				
 				unusedBlocks.remove(0);
 			}
@@ -185,22 +199,23 @@ public class Level {
 			Block currentBlock;
 			
 			int newHeight;
+			
 			if (blockData.get(blockData.size() -1 ).getRect().top > height/2)
 				newHeight = (int)(Math.random()*height/3*2 + height/8);
 			else
 				newHeight = (int)(Math.random()*height/2 + height/8);
 			
 			int newWidth = (int)(Math.random()*width/2+width/2);
+			newWidth -= (newWidth - Block.getTextureLeftWidth() - Block.getTextureRightWidth()) % (Block.getTextureMiddleWidth());
+			
 			int distance = (int)(Math.random()*width/4+width/8);
 			Block lastBlock = blockData.get(blockData.size() - 1); 
 			int newLeft = lastBlock.getRect().right + distance;
 			int newRight = newLeft + newWidth;
 			
 			if (unusedBlocks.size() == 0) {
-				//Log.d("debug", "new block needed");
-				currentBlock = new Block(0, 50, width, 0);
+				currentBlock = new Block();
 				blockData.add(currentBlock);
-				currentBlock.loadBitmap(blockImg);
 				renderer.addMesh(currentBlock);
 			} else {
 				currentBlock = unusedBlocks.firstElement();
@@ -212,7 +227,6 @@ public class Level {
 			currentBlock.setWidth(newWidth);
 			
 			currentBlock.x = newLeft;
-			currentBlock.y = 0;
 			
 			//start creating obstacles after the 10th block
 			if(BlockCounter>10)

@@ -1,9 +1,12 @@
 package com.runnershigh;
 
+import android.content.Context;
+
 
 public class Util {
 	private static Util mInstance =  null;
 	private int mScreenHeight = 0;
+	private Context mContext = null;
 	
 	public static synchronized Util getInstance() {
 		if(mInstance == null)
@@ -26,5 +29,16 @@ public class Util {
 		y += mScreenHeight;
 		
 		return y;
-	}	
+	}
+	
+	public void setAppContext(Context context)
+	{
+		mContext = context;
+	}
+	
+	public Context getAppContext()
+	{
+		assert(mContext != null);
+		return mContext;
+	}
 }

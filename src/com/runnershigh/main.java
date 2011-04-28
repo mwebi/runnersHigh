@@ -118,6 +118,8 @@ public class main extends Activity {
 			width= display.getWidth(); 
 			height= display.getHeight();
 			Util.getInstance().setScreenHeight(height);
+			Util.getInstance().setAppContext(context);
+			
 			
 			paint.setARGB(0xff, 0x00, 0x00, 0x00);;
 			paint.setAntiAlias(true);
@@ -135,8 +137,6 @@ public class main extends Activity {
 					R.drawable.backgroundlayer2));
 			background.loadLayerNear(BitmapFactory.decodeResource(context.getResources(),
 					R.drawable.backgroundlayer1));
-
-			
 
 			Log.d("debug", "before addMesh");
 			mRenderer.addMesh(background);
