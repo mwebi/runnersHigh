@@ -234,7 +234,7 @@ public class main extends Activity {
 	        
 	        
 			while(true){
-				//long starttime = System.currentTimeMillis();
+				long starttime = System.currentTimeMillis();
 				player.playerSprite.setFrameUpdateTime( (level.baseSpeedMax+level.extraSpeedMax)*10 -((level.baseSpeed+level.extraSpeed)*10) );
 				if (player.update(level.getBlockData())) {
 						level.update();
@@ -260,11 +260,14 @@ public class main extends Activity {
 				if(doUpdateCounter)
 					mCounterGroup.tryToSetCounterTo(level.getScoreCounter());
 
-				//long timeForOneCycle= System.currentTimeMillis()- starttime;
+				long timeForOneCycle= System.currentTimeMillis()- starttime;
 				//Log.d("runtime", "timeForOneCycle: " + Integer.toString((int)timeForOneCycle));
 				
 				//postInvalidate();
-				try{ Thread.sleep(10); }
+				if(timeForOneCycle>9)
+					timeForOneCycle=9;
+				
+				try{ Thread.sleep(10-timeForOneCycle); }
 				catch (InterruptedException e)
 				{
 					e.printStackTrace();
@@ -311,6 +314,7 @@ public class main extends Activity {
 						resetButton.z = -2.0f;
 						saveButton.setShowButton(false);
 						saveButton.z = -2.0f;
+						saveButton.x = saveButton.lastX;
 						mCounterGroup.resetCounter();
 						scoreWasSaved=false;
 						deathSoundPlayed=false;
@@ -319,7 +323,13 @@ public class main extends Activity {
 					}
 					else if(saveButton.isClicked( event.getX(), Util.getInstance().toScreenY((int)event.getY())  ) && !scoreWasSaved){
 						//save score
+						saveButton.setShowButton(false);
+						saveButton.z = -2.0f;
+						saveButton.lastX = saveButton.x;
+						saveButton.x = -500;
+						
 						saveScore(level.getScoreCounter());
+
 						//play save sound
 						SoundManager.playSound(4, 1);
 						scoreWasSaved=true;

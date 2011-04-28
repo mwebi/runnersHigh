@@ -2,6 +2,7 @@ package com.runnershigh;
 
 public class Button extends RHDrawable{
 	private boolean showButton = false;
+	public float lastX;
 	
 	
 	public Button(int _x, int _y, int _z, int _width, int _height){
