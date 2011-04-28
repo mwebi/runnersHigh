@@ -147,16 +147,21 @@ public class HighScoreForm extends Activity {
             HttpClient client = new DefaultHttpClient();  
             String getURL = "http://rh.fidrelity.at/best.php";
             HttpGet get = new HttpGet(getURL);
+            // query data from server
             HttpResponse responseGet = client.execute(get); 
             HttpEntity resEntityGet = responseGet.getEntity();  
-            if (resEntityGet != null) {  
-                        //do something with the response
-            			String jsonOnlineHS = EntityUtils.toString(resEntityGet); 
-            			JSONArray jArray;
-            			jArray = new JSONArray(jsonOnlineHS);
-            			Log.i("GET RESPONSE", jArray.getJSONObject(0).get("score").toString());
-                        
-                    }
+            if (resEntityGet != null) {
+    			JSONArray jArray = new JSONArray(EntityUtils.toString(resEntityGet));
+    			
+            	for(int i = 0; i < jArray.length(); i++) {
+            		String name;
+            		int score;
+            		name = jArray.getJSONObject(i).getString("name");
+            		score = Integer.parseInt(jArray.getJSONObject(i).getString("score"));
+         			Log.i("GET ONLINE HS", name + " with the score " + score);	
+         			//TODO: ADD TO DB (OR JUST RETURN IT?)
+            	}             
+            }
     	} catch (Exception e) {
     		e.printStackTrace();
     	}
