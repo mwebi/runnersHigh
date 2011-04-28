@@ -6,6 +6,12 @@ public class Obstacle extends RHDrawable {
 	private Rect ObstacleRect;
 	public char ObstacleType; //s=slow, j=jumper //b=bonus
 	public boolean didTrigger;
+	private int radX;
+	private int radY;
+	public float centerX;
+	public float centerY;
+	private float angle;
+	private float orbitSpeed;
 	
 	
 	public Obstacle(float _x, float _y, float _z, float _width, float _height, char type){
@@ -28,7 +34,13 @@ public class Obstacle extends RHDrawable {
 		setIndices(indices);
 		setVertices(vertices);
 		setTextureCoordinates(textureCoordinates);
+		
 		didTrigger=false;
+		radX=radY=50;
+		angle=0;
+		orbitSpeed=0.05f; 
+		centerX=x;
+		centerY=y;
 	}
 	
 	public Obstacle(Obstacle GivenObstacle){
@@ -75,10 +87,10 @@ public class Obstacle extends RHDrawable {
 		return y;
 	}
 	public void setX(int _x){
-		x=_x;
+		x=centerX=_x;
 	}
 	public void setY(int _y){
-		y=_y;
+		y=centerY=_y;
 	}
 	public void setObstacleRect(int l, int r, int top, int bottom){
 		ObstacleRect.left=l;
@@ -104,4 +116,9 @@ public class Obstacle extends RHDrawable {
 		}
 		return false;
 	}
+	public void updateObstacleCircleMovement(){
+		x = centerX+(float)Math.cos(angle)*radX;
+		y = centerY+(float)Math.sin(angle)*radY;
+		angle += orbitSpeed;
+	}	
 }

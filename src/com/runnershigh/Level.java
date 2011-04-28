@@ -133,7 +133,13 @@ public class Level {
 			
 			synchronized (obstacleData) {
 				for (Obstacle obstacle : obstacleData) {
-					obstacle.x -= deltaLevelPosition;
+					
+					if(obstacle.ObstacleType == 'b'){
+						obstacle.updateObstacleCircleMovement();
+						obstacle.centerX -= deltaLevelPosition;
+					}
+					else
+						obstacle.x -= deltaLevelPosition;
 				}
 			}
 			
@@ -239,18 +245,20 @@ public class Level {
 		// bonus Obstacle creation
 		Random randomGenerator = new Random();
 		//get the range, casting to long to avoid overflow problems
-		long range = (long)newRight - (long)newLeft + 1;
+		int range = newRight - newLeft + 1;
 		// get range to be 1/3 of the block length
-	    range*=0.33;
+		double limitLeft=newLeft+range*0.20;
+		//range*=0.60;
+	    
 		
 		int Bonusdecider = randomGenerator.nextInt(5);
 		Obstacle newBonus = null;
-		//if (Bonusdecider == 0){
+		//if (0 == 0){
 		if (Bonusdecider == 3){
 			int bonusLeft;
 
 		    // compute a fraction of the range, 0 <= frac < range
-		    long fraction = (long)(range * randomGenerator.nextDouble());
+		    double fraction = range * randomGenerator.nextDouble();
 		    
 		    int newBonusWidth= 50;
 		    int newBonusHeight= 50;
@@ -265,16 +273,22 @@ public class Level {
 			    newBonus.setHeight(newBonusHeight );
 			    newBonus.setType('b');
 			    newBonus.didTrigger=false;
+			    newBonus.z=1;
 			}
 		    newBonus.loadBitmap(bonusImg); //TODO: way to not load bitmap for every object at runtime
-		    bonusLeft =  (int)(newRight - newBonus.getWidth() - fraction); 
+		    bonusLeft = (int)(newLeft + fraction ); 
 		    //set new coordinates
 		    
 		    newBonus.setX(bonusLeft);
-		    newBonus.setY(newHeight+100);
+		    newBonus.setY(newHeight+50+randomGenerator.nextInt(75));
 		    newBonus.setObstacleRect(bonusLeft, bonusLeft+newBonus.getWidth() ,newHeight, newHeight-newBonus.getHeight());
 			obstacleData.add(newBonus);
 		}
+		
+		//get the range, casting to long to avoid overflow problems
+		range = newRight - newLeft + 1;
+		// get range to be 1/3 of the block length
+	    range*=0.33;
 		
 		// Obstacle creation
 		int decider = randomGenerator.nextInt(6); //random int von-bis

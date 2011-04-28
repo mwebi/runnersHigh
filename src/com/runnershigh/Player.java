@@ -122,6 +122,8 @@ public class Player{
 												(int)currentObstacle.y
 												);
 			if( checkIntersect(playerRect, ObstacleRect) && !currentObstacle.didTrigger){
+				currentObstacle.didTrigger=true;
+				
 				if(currentObstacle.getType()=='s'){
 					//TODO: prevent playing sound 2x or more 
 					if(!slowSoundplayed){    
@@ -137,9 +139,10 @@ public class Player{
 				else if(currentObstacle.getType()=='b'){
 					SoundManager.playSound(8, 1);
 					Level.scoreCounter+=200;
+					currentObstacle.z=-2; 
 				}
-				currentObstacle.didTrigger=true;
 			}
+
 		}
 		slowSoundplayed=false;
 		return false;
