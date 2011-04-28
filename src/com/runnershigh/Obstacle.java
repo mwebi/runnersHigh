@@ -4,7 +4,8 @@ import android.graphics.Rect;
 
 public class Obstacle extends RHDrawable {
 	private Rect ObstacleRect;
-	public char ObstacleType; //s=slow, j=jumper 
+	public char ObstacleType; //s=slow, j=jumper //b=bonus
+	public boolean didTrigger;
 	
 	
 	public Obstacle(float _x, float _y, float _z, float _width, float _height, char type){
@@ -27,6 +28,7 @@ public class Obstacle extends RHDrawable {
 		setIndices(indices);
 		setVertices(vertices);
 		setTextureCoordinates(textureCoordinates);
+		didTrigger=false;
 	}
 	
 	public Obstacle(Obstacle GivenObstacle){

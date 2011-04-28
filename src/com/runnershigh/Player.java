@@ -1,6 +1,8 @@
 package com.runnershigh;
 
 import android.content.Context;
+
+import java.util.TimerTask;
 import java.util.Vector;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -119,9 +121,10 @@ public class Player{
 												(int)currentObstacle.x+(int)currentObstacle.width, 
 												(int)currentObstacle.y
 												);
-			if( checkIntersect(playerRect, ObstacleRect) ){
+			if( checkIntersect(playerRect, ObstacleRect) && !currentObstacle.didTrigger){
 				if(currentObstacle.getType()=='s'){
-					if(!slowSoundplayed){
+					//TODO: prevent playing sound 2x or more 
+					if(!slowSoundplayed){    
 						SoundManager.playSound(5, 1);
 						slowSoundplayed=true;
 					}
@@ -131,11 +134,17 @@ public class Player{
 					SoundManager.playSound(6, 1);
 					velocity = 10; //katapultiert den player wie ein trampolin nach oben
 				}
+				else if(currentObstacle.getType()=='b'){
+					SoundManager.playSound(8, 1);
+					Level.scoreCounter+=200;
+				}
+				currentObstacle.didTrigger=true;
 			}
 		}
 		slowSoundplayed=false;
 		return false;
 	}
+
 	public boolean checkIntersect(Rect playerRect, Rect blockRect) {
 		if(playerRect.bottom >= blockRect.bottom && playerRect.bottom <= blockRect.top)
 		{
