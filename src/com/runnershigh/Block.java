@@ -78,7 +78,8 @@ public class Block extends Group {
 	}
 	
 	public Rect getRect() {
-		return new Rect((int)x,(int)(y+mHeight),(int)(x+mWidth),(int)y);
+		//return new Rect((int)x,(int)(y+mHeight),(int)(x+mWidth),(int)y);
+		return new Rect((int)x,(int)(mHeight),(int)(x+mWidth),(int)mHeight-mTextureHeightLeft);
 	}
 	
 	public void setWidth(int width)
@@ -112,18 +113,18 @@ public class Block extends Group {
 	{
 		mHeight = height;
 
-		mVerticesLeft[1] = -mTextureHeightLeft;
-		mVerticesLeft[4] = -mTextureHeightLeft;
+		mVerticesLeft[1] = mHeight-mTextureHeightLeft;
+		mVerticesLeft[4] = mHeight-mTextureHeightLeft;
 		mVerticesLeft[7] = mHeight;
 		mVerticesLeft[10] = mHeight;
 
-		mVerticesMiddle[1] = -mTextureHeightMiddle;
-		mVerticesMiddle[4] = -mTextureHeightMiddle;
+		mVerticesMiddle[1] = mHeight-mTextureHeightMiddle;
+		mVerticesMiddle[4] = mHeight-mTextureHeightMiddle;
 		mVerticesMiddle[7] = mHeight;
 		mVerticesMiddle[10] = mHeight;
 
-		mVerticesRight[1] = -mTextureHeightRight;
-		mVerticesRight[4] = -mTextureHeightRight;
+		mVerticesRight[1] = mHeight-mTextureHeightRight;
+		mVerticesRight[4] = mHeight-mTextureHeightRight;
 		mVerticesRight[7] = mHeight;
 		mVerticesRight[10] = mHeight;
 

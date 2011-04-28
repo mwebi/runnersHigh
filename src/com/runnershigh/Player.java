@@ -96,7 +96,9 @@ public class Player{
 					jumping = false;
 				}
 				else{
-					return false;
+					// false -> player stops at left -> block mode
+					// true -> player goes through left side -> platform mode
+					//return false;
 				}
 			}
 		}
