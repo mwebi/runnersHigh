@@ -17,9 +17,14 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
 
 import android.app.Activity;
 import android.content.Context;
@@ -117,6 +122,7 @@ public class HighScoreForm extends Activity {
 	
 	        	        // Execute HTTP Post Request
 	        	        HttpResponse response = httpclient.execute(httppost);
+	        	        getOnlineHighscore();
 	
 	        	    } catch (ClientProtocolException e) {
 	        	        // TODO Auto-generated catch block
@@ -135,6 +141,16 @@ public class HighScoreForm extends Activity {
         } else {
         	highScoreAdapter.toastMessage(R.string.hs_error_name_empty);
         }
+    }
+    
+    private void getOnlineHighscore() {
+    	HttpParams httpParams = new BasicHttpParams();
+    	HttpConnectionParams.setConnectionTimeout(httpParams, 2000);
+    	HttpConnectionParams.setSoTimeout(httpParams, 2000);
+    	HttpClient client = new DefaultHttpClient(httpParams);
+
+    	HttpGet request = new HttpGet("http://rh.fidrelity.at/best.php?number=10");
+    	Log.i("get request", request.toString());
     }
     
 	public boolean isOnline() {
