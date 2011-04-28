@@ -226,23 +226,24 @@ public class Level {
 			else
 				newHeight = (int)(Math.random()*height/2 + height/8);
 			
-			if (Math.abs(oldHeight - newHeight) < 20)
+			/*if (Math.abs(oldHeight - newHeight) < 20)
 			{
 				newHeight -= (oldHeight - newHeight) * 4;
 			}
+			*/
 			
 			int newWidth = (int)(Math.random()*width/2+width/2);
 			newWidth -= (newWidth - Block.getTextureLeftWidth() - Block.getTextureRightWidth()) % (Block.getTextureMiddleWidth());
 			
 			// use this for original distance
-			//int distance = (int)(Math.random()*width/4+width/8);
+			int distance = (int)(Math.random()*width/4+width/8);
 			
 			// or use this for variable distance
-			int distance;
-			if (levelPosition < 2000)
-				distance = (int)(Math.random()*width/4-width/4+levelPosition/40.0f);
-			else
-				distance = (int)(Math.random()*width/4-width/4+50);
+			//int distance;
+			//if (levelPosition < 2000)
+				//distance = (int)(Math.random()*width/4-width/4+levelPosition/40.0f);
+			//else
+				//distance = (int)(Math.random()*width/4-width/4+50);
 			
 			
 			Block lastBlock = blockData.get(blockData.size() - 1); 

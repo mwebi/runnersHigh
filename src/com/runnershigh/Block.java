@@ -77,9 +77,10 @@ public class Block extends Group {
 		add(mRight);
 	}
 	
-	public Rect getRect() {
-		//return new Rect((int)x,(int)(y+mHeight),(int)(x+mWidth),(int)y);
-		return new Rect((int)x,(int)(mHeight),(int)(x+mWidth),(int)mHeight-mTextureHeightLeft);
+	public Rect getRect()
+	{
+		return new Rect((int)x,(int)(y+mHeight),(int)(x+mWidth),(int)y);
+		//return new Rect((int)x,(int)(mHeight),(int)(x+mWidth),(int)mHeight-mTextureHeightLeft);
 	}
 	
 	public void setWidth(int width)
