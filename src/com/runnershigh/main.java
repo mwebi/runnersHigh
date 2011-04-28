@@ -314,7 +314,7 @@ public class main extends Activity {
 						resetButton.z = -2.0f;
 						saveButton.setShowButton(false);
 						saveButton.z = -2.0f;
-						saveButton.x = saveButton.lastX;
+						saveButton.x = saveButton.lastX; 
 						mCounterGroup.resetCounter();
 						scoreWasSaved=false;
 						deathSoundPlayed=false;
@@ -326,7 +326,7 @@ public class main extends Activity {
 						saveButton.setShowButton(false);
 						saveButton.z = -2.0f;
 						saveButton.lastX = saveButton.x;
-						saveButton.x = -500;
+						saveButton.x = -5000;
 						
 						saveScore(level.getScoreCounter());
 

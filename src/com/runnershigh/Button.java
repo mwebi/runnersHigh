@@ -7,7 +7,7 @@ public class Button extends RHDrawable{
 	
 	public Button(int _x, int _y, int _z, int _width, int _height){
 		super((int)_x, (int)_y, (int)_z, (int)_width, (int)_height);
-		x=_x;
+		x=lastX=_x;
 		y=_y;
 		width=_width;
 		height=_height;
