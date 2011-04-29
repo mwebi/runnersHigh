@@ -294,7 +294,7 @@ public class Level {
 		    int newBonusHeight= 50;
 		    
 		    if (unusedObstacles.size() == 0) {
-		    	newBonus = new Obstacle(0.0f, 0.0f, 1.0f, newBonusWidth, newBonusHeight,'b');
+		    	newBonus = new Obstacle(0.0f, 0.0f, 0.9f, newBonusWidth, newBonusHeight,'b');
 				renderer.addMesh(newBonus);
 			} else {
 				newBonus = unusedObstacles.firstElement();
