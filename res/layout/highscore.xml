@@ -29,6 +29,11 @@
 		android:layout_height="wrap_content"
 	    android:text="Clear"
 		/>
+  <Button android:id="@+id/onlineHSButton"
+		android:layout_marginLeft="15dp" 
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+	    android:text="Get Online Highscore" />
   </LinearLayout>
   <ListView 
   		android:id="@id/android:list"

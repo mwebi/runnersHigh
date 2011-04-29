@@ -8,6 +8,14 @@
 
 package com.runnershigh;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
+
 import android.app.ListActivity;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -46,6 +54,13 @@ public class HighScoreActivity extends ListActivity {
         	}
         });  
         
+        Button getOnlineHS = (Button) findViewById(R.id.onlineHSButton);
+        getOnlineHS.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View v) {
+				loadOnlineHighscore(10);
+			}
+		});
+        
         fillData();
         
         registerForContextMenu(getListView());
@@ -76,6 +91,30 @@ public class HighScoreActivity extends ListActivity {
 
         // Sets the ListView's adapter to be the cursor adapter that was just created.
         setListAdapter(adapter);
+    }
+    public void loadOnlineHighscore(int size) {
+    	try {
+    		HttpClient client = new DefaultHttpClient();  
+    		String getURL = "http://rh.fidrelity.at/best.php?size=" + Integer.toString(size);
+    		HttpGet get = new HttpGet(getURL);
+    		// query data from server
+    		HttpResponse responseGet = client.execute(get); 
+    		HttpEntity resEntityGet = responseGet.getEntity();  
+    		if (resEntityGet != null) {
+    			JSONArray jArray = new JSONArray(EntityUtils.toString(resEntityGet));
+    			
+    			for(int i = 0; i < jArray.length(); i++) {
+    				String name;
+    				int score;
+    				name = jArray.getJSONObject(i).getString("name");
+    				score = Integer.parseInt(jArray.getJSONObject(i).getString("score"));
+    				Log.i("GET ONLINE HS", name + " with the score " + score);	
+    				//TODO: ADD TO DB (OR JUST RETURN IT?)
+    			}             
+    		}
+    	} catch (Exception e) {
+    		e.printStackTrace();
+    	}
     }
     
     // ---------------------------------------------------------

@@ -121,7 +121,6 @@ public class HighScoreForm extends Activity {
 	
 	        	        // Execute HTTP Post Request
 	        	        HttpResponse response = httpclient.execute(httppost);
-	        	        getOnlineHighscore();
 	
 	        	    } catch (ClientProtocolException e) {
 	        	        // TODO Auto-generated catch block
@@ -140,31 +139,6 @@ public class HighScoreForm extends Activity {
         } else {
         	highScoreAdapter.toastMessage(R.string.hs_error_name_empty);
         }
-    }
-
-    private void getOnlineHighscore() {
-    	try {
-            HttpClient client = new DefaultHttpClient();  
-            String getURL = "http://rh.fidrelity.at/best.php";
-            HttpGet get = new HttpGet(getURL);
-            // query data from server
-            HttpResponse responseGet = client.execute(get); 
-            HttpEntity resEntityGet = responseGet.getEntity();  
-            if (resEntityGet != null) {
-    			JSONArray jArray = new JSONArray(EntityUtils.toString(resEntityGet));
-    			
-            	for(int i = 0; i < jArray.length(); i++) {
-            		String name;
-            		int score;
-            		name = jArray.getJSONObject(i).getString("name");
-            		score = Integer.parseInt(jArray.getJSONObject(i).getString("score"));
-         			Log.i("GET ONLINE HS", name + " with the score " + score);	
-         			//TODO: ADD TO DB (OR JUST RETURN IT?)
-            	}             
-            }
-    	} catch (Exception e) {
-    		e.printStackTrace();
-    	}
     }
 
     // Check if user is connected to the internet
