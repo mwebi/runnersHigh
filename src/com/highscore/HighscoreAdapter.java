@@ -58,7 +58,9 @@ public class HighscoreAdapter extends DbAdapter {
 
     // -------------------------------------------------------
     // Show List
-    public Cursor fetchScores(String limit, int isOnline) throws SQLException {	
+    public Cursor fetchScores(String limit) throws SQLException {	
+    	
+    	//"isonline = " + isOnline
     	
     	Cursor mCursor =  mDb.query(DATABASE_TABLE,
         				new String[] { 	KEY_ROWID,
@@ -66,7 +68,7 @@ public class HighscoreAdapter extends DbAdapter {
     									KEY_SCORE,
     									KEY_ISONLINE
     								  },
-    					"isonline = " + isOnline,
+    					null,
     					null, null, null,
         				KEY_SCORE + " DESC", limit);
     	

@@ -9,5 +9,7 @@
 	<string name="hs_bttn_getonline">Show online HighScore</string>
 	<string name="hs_bttn_getlocal">Show local HighScore</string>
 	<string name="hs_bttn_pushOnline">Push Online</string>
+	<string name="hs_pushed_online">Score saved online !</string>
+	<string name="hs_already_pushed">Score is already online !</string>
 	<string name="info">runnersHigh was created in 2010 by MultiMedia-Technology09 students of FH-Salzburg in Austria.\n\n- Michael Webersdorfer\n- Christian Winkler\n- Andre Schweighofer\n- Francois Weber\n\nVersion 1.0</string>
 </resources>

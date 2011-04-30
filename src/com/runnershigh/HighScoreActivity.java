@@ -54,8 +54,7 @@ public class HighScoreActivity extends ListActivity {
         Button clearButton = (Button) findViewById(R.id.clearButton);
         clearButton.setOnClickListener(new View.OnClickListener() {
         	public void onClick(View view) {
-        		highScoreAdapter.clear();
-        		fillData(empty);
+        		clearHighscore();        		
         	}
         });        
        
@@ -77,7 +76,7 @@ public class HighScoreActivity extends ListActivity {
     	// Local List
     	} else {   
     		
-	        Cursor cursor = highScoreAdapter.fetchScores(SHOW_LIMIT, 0);
+	        Cursor cursor = highScoreAdapter.fetchScores(SHOW_LIMIT);
 	        startManagingCursor(cursor);
 	       	                
 	        // Create an array to specify the fields we want to display in the list
@@ -163,15 +162,35 @@ public class HighScoreActivity extends ListActivity {
     	}
     }
     
+    private void clearHighscore() {
+    	
+    	AlertDialog.Builder alert = new AlertDialog.Builder(this);
+
+        alert.setTitle("Clear Highscore");
+        alert.setMessage("Do you really want to delete all local Highscores ?");        
+  
+        alert.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+        public void onClick(DialogInterface dialog, int whichButton) {          
+        	highScoreAdapter.clear();
+        	fillData(empty);
+        	}
+        });
+
+        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+          public void onClick(DialogInterface dialog, int whichButton) {
+            // Canceled.
+          }
+        });
+        
+        alert.show();           	
+    }
+    
     // ---------------------------------------------------------
     // onClick Item list element
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
         super.onListItemClick(l, v, position, id);
-
-        //i.putExtra(GradeDbAdapter.KEY_ROWID, id);
-        //startActivityForResult(i, ACTIVITY_EDIT);
-        
+       
         AlertDialog.Builder alert = new AlertDialog.Builder(this);
 
         alert.setTitle("Highscore");
@@ -181,14 +200,22 @@ public class HighScoreActivity extends ListActivity {
         String ID = cursor.getString(cursor.getColumnIndex(HighscoreAdapter.KEY_ROWID));
         String name = cursor.getString(cursor.getColumnIndex(HighscoreAdapter.KEY_NAME));
         String score = cursor.getString(cursor.getColumnIndex(HighscoreAdapter.KEY_SCORE));
+        final String isonline = cursor.getString(cursor.getColumnIndex(HighscoreAdapter.KEY_ISONLINE));
        
         final TextView input = new TextView(this);
-        input.setText("Name: " + name + " Score: " + score);
+        input.setText("Name: " + name + " Score: " + score + " isOnline: " + isonline);
         alert.setView(input);
 
         alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
         public void onClick(DialogInterface dialog, int whichButton) {          
         	// Push score online
+        	
+        	if(isonline == "1") {
+        		highScoreAdapter.toastMessage(R.string.hs_already_pushed);
+        	} else {
+        		highScoreAdapter.toastMessage(R.string.hs_pushed_online);
+        	}
+        	
           }
         });
 
