@@ -45,7 +45,10 @@ import com.highscore.HighscoreAdapter;
 public class HighScoreActivity extends ListActivity {
 	
 	private HighscoreAdapter highScoreAdapter = null;
+	
 	private static final String SHOW_LIMIT = "10";
+	private static final String POST_HIGHSCORE_URL = "http://rh.fidrelity.at/post/post_highscore.php";
+	
 	private final String[] empty = new String[0];	
 	// ---------------------------------------------------
     @Override
@@ -127,15 +130,13 @@ public class HighScoreActivity extends ListActivity {
     			JSONArray jArray = new JSONArray(EntityUtils.toString(resEntityGet));
     			
 				String name;
-				int score;
+				String score;
 				
     			for(int i = 0; i < jArray.length(); i++) {
     				name = jArray.getJSONObject(i).getString("name");
-    				score = Integer.parseInt(jArray.getJSONObject(i).getString("score"));
+    				score = jArray.getJSONObject(i).getString("score");
     				
-    				onlineData[i] = jArray.getJSONObject(i).getString("score") + " " + name;
-    				
-    				Log.i("GET ONLINE HS", name + " with the score " + score);	
+    				onlineData[i] = score + "   " + name;
     			}             
 
     			fillData(onlineData);
@@ -146,7 +147,6 @@ public class HighScoreActivity extends ListActivity {
     }
     
     // ---------------------------------------------------------
-    // HELPER METHODS
     private void switchHighScoreButton(String state) {
     	
     	final Button getOnlineHS = (Button) findViewById(R.id.onlineHSButton);
@@ -171,6 +171,7 @@ public class HighScoreActivity extends ListActivity {
     	}
     }
     
+    // ---------------------------------------------------------
     private void clearHighscore() {
     	
     	AlertDialog.Builder alert = new AlertDialog.Builder(this);
@@ -222,9 +223,12 @@ public class HighScoreActivity extends ListActivity {
         	if(isonline == 1) {
         		highScoreAdapter.toastMessage(R.string.hs_already_pushed);
         	} else {
+        		
+        		/**TODO: CHECK IF USER IS ONLINE **/
+        		
         		// Create a new HttpClient and Post Header
         	    HttpClient httpclient = new DefaultHttpClient();
-        	    HttpPost httppost = new HttpPost("http://rh.fidrelity.at/post/post_highscore.php");
+        	    HttpPost httppost = new HttpPost(POST_HIGHSCORE_URL);
 
         	    try {
         	        List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
