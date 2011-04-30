@@ -8,11 +8,20 @@
 
 package com.runnershigh;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 
@@ -188,7 +197,7 @@ public class HighScoreActivity extends ListActivity {
     // ---------------------------------------------------------
     // onClick Item list element
     @Override
-    protected void onListItemClick(ListView l, View v, int position, long id) {
+    protected void onListItemClick(ListView l, View v, int position, final long id) {
         super.onListItemClick(l, v, position, id);
        
         AlertDialog.Builder alert = new AlertDialog.Builder(this);
@@ -196,35 +205,52 @@ public class HighScoreActivity extends ListActivity {
         alert.setTitle("Highscore");
         alert.setMessage("Push this score online ?");
 
+        // Fetch data from database
         Cursor cursor = highScoreAdapter.fetchSingleScore(id);
-        String ID = cursor.getString(cursor.getColumnIndex(HighscoreAdapter.KEY_ROWID));
-        String name = cursor.getString(cursor.getColumnIndex(HighscoreAdapter.KEY_NAME));
-        String score = cursor.getString(cursor.getColumnIndex(HighscoreAdapter.KEY_SCORE));
-        final String isonline = cursor.getString(cursor.getColumnIndex(HighscoreAdapter.KEY_ISONLINE));
+        final String name = cursor.getString(cursor.getColumnIndex(HighscoreAdapter.KEY_NAME));
+        final String score = cursor.getString(cursor.getColumnIndex(HighscoreAdapter.KEY_SCORE));
+        final int isonline = cursor.getInt(cursor.getColumnIndex(HighscoreAdapter.KEY_ISONLINE));
        
         final TextView input = new TextView(this);
         input.setText("Name: " + name + " Score: " + score + " isOnline: " + isonline);
         alert.setView(input);
 
+        // OK
         alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
         public void onClick(DialogInterface dialog, int whichButton) {          
         	// Push score online
-        	
-        	if(isonline == "1") {
+        	if(isonline == 1) {
         		highScoreAdapter.toastMessage(R.string.hs_already_pushed);
         	} else {
-        		highScoreAdapter.toastMessage(R.string.hs_pushed_online);
-        	}
-        	
+        		// Create a new HttpClient and Post Header
+        	    HttpClient httpclient = new DefaultHttpClient();
+        	    HttpPost httppost = new HttpPost("http://rh.fidrelity.at/post/post_highscore.php");
+
+        	    try {
+        	        List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
+        	        nameValuePairs.add(new BasicNameValuePair("name", name));
+        	        nameValuePairs.add(new BasicNameValuePair("score", score));
+        	        httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+
+        	        HttpResponse response = httpclient.execute(httppost);        	       
+        	        highScoreAdapter.updateScore(id, 1);
+        	        highScoreAdapter.toastMessage(R.string.hs_pushed_online);
+        	    } catch (ClientProtocolException e) {
+        	        // TODO Auto-generated catch block
+        	    } catch (IOException e) {
+        	        // TODO Auto-generated catch block
+        	    }        		
+        	}        	
           }
         });
-
+        
+        // CANCEL
         alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
           public void onClick(DialogInterface dialog, int whichButton) {
             // Canceled.
           }
         });
-
+        cursor.close();
         alert.show();
         
     }

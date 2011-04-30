@@ -43,6 +43,16 @@ public class HighscoreAdapter extends DbAdapter {
                 
         return mDb.insert(DATABASE_TABLE, null, initialValues);
     }
+    
+    // -------------------------------------------------------
+    // Update
+    public boolean updateScore(long rowId, int isOnline) {
+        ContentValues args = new ContentValues();
+        args.put(KEY_ROWID, rowId);
+        args.put(KEY_ISONLINE, isOnline);
+        
+        return mDb.update(DATABASE_TABLE, args, KEY_ROWID + "=" + rowId, null) > 0;
+    }
 
     // -------------------------------------------------------
     // Delete
