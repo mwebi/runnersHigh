@@ -53,18 +53,9 @@ public class HighScoreActivity extends ListActivity {
         		highScoreAdapter.clear();
         		fillData(empty);
         	}
-        });  
-        
-        // HighScore Button
-        /*Button getOnlineHS = (Button) findViewById(R.id.onlineHSButton);
-        getOnlineHS.setOnClickListener(new View.OnClickListener() {
-			public void onClick(View v) {
-				loadOnlineHighscore(10);
-			}
-		}); */
-        
-        switchHighScoreButton("ONLINE");
-        
+        });        
+       
+        switchHighScoreButton("ONLINE");        
         fillData(empty);      
     }
     
@@ -75,19 +66,7 @@ public class HighScoreActivity extends ListActivity {
     	// Online List
     	if(onlineData.length > 0) {
     		setListAdapter(new ArrayAdapter<String>(this, R.layout.list_single_row, onlineData));
-    		
-    		/*
-    		 final Button getOnlineHS = (Button) findViewById(R.id.onlineHSButton);
-    		 getOnlineHS.setText(R.string.hs_bttn_getlocal);
-
-    		 // Switch Highscore button onClick
-    		 getOnlineHS.setOnClickListener(new View.OnClickListener() {    			 
-    			 	public void onClick(View v) {
-    			 		getOnlineHS.setText(R.string.hs_bttn_getonline);
-    					fillData(empty);
-    				}    				
-    		 }); */
-    		 switchHighScoreButton("LOCAL");
+    		switchHighScoreButton("LOCAL");
     	         		
     	// Local List
     	} else {   
@@ -169,16 +148,14 @@ public class HighScoreActivity extends ListActivity {
 			});
 	        
     	} else {    		
-    		
+
     		getOnlineHS.setText(R.string.hs_bttn_getlocal);			
             getOnlineHS.setOnClickListener(new View.OnClickListener() {
     			public void onClick(View v) {
     				fillData(empty);
     			}
     		});
-            
     	}
-    	
     }
     
     // ---------------------------------------------------------
