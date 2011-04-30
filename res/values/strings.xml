@@ -8,5 +8,6 @@
 	<string name="hs_error_no_internet">Please establish an internet connection !</string>
 	<string name="hs_bttn_getonline">Show online HighScore</string>
 	<string name="hs_bttn_getlocal">Show local HighScore</string>
+	<string name="hs_bttn_pushOnline">Push Online</string>
 	<string name="info">runnersHigh was created in 2010 by MultiMedia-Technology09 students of FH-Salzburg in Austria.\n\n- Michael Webersdorfer\n- Christian Winkler\n- Andre Schweighofer\n- Francois Weber\n\nVersion 1.0</string>
 </resources>

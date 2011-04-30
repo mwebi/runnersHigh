@@ -16,7 +16,9 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 
+import android.app.AlertDialog;
 import android.app.ListActivity;
+import android.content.DialogInterface;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
@@ -25,7 +27,9 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
+import android.widget.TextView;
 
 import com.highscore.HighscoreAdapter;
 
@@ -56,6 +60,8 @@ public class HighScoreActivity extends ListActivity {
         });        
        
         switchHighScoreButton("ONLINE");        
+        registerForContextMenu(getListView());
+        
         fillData(empty);      
     }
     
@@ -70,8 +76,7 @@ public class HighScoreActivity extends ListActivity {
     	         		
     	// Local List
     	} else {   
-    		registerForContextMenu(getListView());
-
+    		
 	        Cursor cursor = highScoreAdapter.fetchScores(SHOW_LIMIT, 0);
 	        startManagingCursor(cursor);
 	       	                
@@ -156,6 +161,42 @@ public class HighScoreActivity extends ListActivity {
     			}
     		});
     	}
+    }
+    
+    // ---------------------------------------------------------
+    // onClick Item list element
+    @Override
+    protected void onListItemClick(ListView l, View v, int position, long id) {
+        super.onListItemClick(l, v, position, id);
+
+        //i.putExtra(GradeDbAdapter.KEY_ROWID, id);
+        //startActivityForResult(i, ACTIVITY_EDIT);
+        
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+
+        alert.setTitle("Highscore");
+        alert.setMessage("Push this score online ?");
+
+        // Set an EditText view to get user input 
+        final TextView input = new TextView(this);
+        input.setText("Entry ID: " + id);
+        alert.setView(input);
+
+        alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+        public void onClick(DialogInterface dialog, int whichButton) {
+          
+          // Do something with value!
+          }
+        });
+
+        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+          public void onClick(DialogInterface dialog, int whichButton) {
+            // Canceled.
+          }
+        });
+
+        alert.show();
+        
     }
     
     // ---------------------------------------------------------
