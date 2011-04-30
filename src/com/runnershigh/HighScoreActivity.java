@@ -177,15 +177,18 @@ public class HighScoreActivity extends ListActivity {
         alert.setTitle("Highscore");
         alert.setMessage("Push this score online ?");
 
-        // Set an EditText view to get user input 
+        Cursor cursor = highScoreAdapter.fetchSingleScore(id);
+        String ID = cursor.getString(cursor.getColumnIndex(HighscoreAdapter.KEY_ROWID));
+        String name = cursor.getString(cursor.getColumnIndex(HighscoreAdapter.KEY_NAME));
+        String score = cursor.getString(cursor.getColumnIndex(HighscoreAdapter.KEY_SCORE));
+       
         final TextView input = new TextView(this);
-        input.setText("Entry ID: " + id);
+        input.setText("Name: " + name + " Score: " + score);
         alert.setView(input);
 
         alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-        public void onClick(DialogInterface dialog, int whichButton) {
-          
-          // Do something with value!
+        public void onClick(DialogInterface dialog, int whichButton) {          
+        	// Push score online
           }
         });
 
