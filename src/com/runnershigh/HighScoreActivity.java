@@ -23,6 +23,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.SimpleCursorAdapter;
 
@@ -45,12 +46,14 @@ public class HighScoreActivity extends ListActivity {
         highScoreAdapter = new HighscoreAdapter(this);
         highScoreAdapter.open();
         
+        final String[] empty = new String[] {};
+        
         // Clear Button
         Button clearButton = (Button) findViewById(R.id.clearButton);
         clearButton.setOnClickListener(new View.OnClickListener() {
         	public void onClick(View view) {
         		highScoreAdapter.clear();
-        		fillData();
+        		fillData(empty);
         	}
         });  
         
@@ -61,38 +64,51 @@ public class HighScoreActivity extends ListActivity {
 			}
 		});
         
-        fillData();
+        fillData(empty);
         
-        registerForContextMenu(getListView());
+       
     }
     
     // ---------------------------------------------------------
     // Fetch highscore from database table and put it into the listView
-    private void fillData() {
-        Cursor cursor = highScoreAdapter.fetchScores(SHOW_LIMIT);
-        startManagingCursor(cursor);
-        Log.i("FILLDATA"," Amount:" + cursor.getCount());
-                
-        // Create an array to specify the fields we want to display in the list
-        String[] from = new String[]{ highScoreAdapter.KEY_SCORE, highScoreAdapter.KEY_NAME };
-
-        // and an array of the fields we want to bind those fields to
-        int[] to = new int[]{ R.id.score, R.id.name };
-        
-        // Creates the backing adapter for the ListView.
-        SimpleCursorAdapter adapter
-            = new SimpleCursorAdapter(
-                      this,                             // The Context for the ListView
-                      R.layout.list_row,          		// Points to the XML for a list item
-                      cursor,                           // The cursor to get items from
-                      from,
-                      to
-              );
-
-        // Sets the ListView's adapter to be the cursor adapter that was just created.
-        setListAdapter(adapter);
+    private void fillData(String[] onlineData) {
+    	
+    	// Online List
+    	if(onlineData.length > 0) {
+    		Log.i("FILLDATA", "onlineData");
+    		setListAdapter(new ArrayAdapter<String>(this, R.layout.list_single_row, onlineData));
+    		//ListView lv = getListView();
+    	// Local List
+    	} else {   
+    		registerForContextMenu(getListView());
+    		Log.i("FILLDATA", "offline");
+	        Cursor cursor = highScoreAdapter.fetchScores(SHOW_LIMIT, 0);
+	        startManagingCursor(cursor);
+	       	                
+	        // Create an array to specify the fields we want to display in the list
+	        String[] from = new String[]{ highScoreAdapter.KEY_SCORE, highScoreAdapter.KEY_NAME };
+	
+	        // and an array of the fields we want to bind those fields to
+	        int[] to = new int[]{ R.id.score, R.id.name };
+	        
+	        // Creates the backing adapter for the ListView.
+	        SimpleCursorAdapter adapter
+	            = new SimpleCursorAdapter(
+	                      this,                             // The Context for the ListView
+	                      R.layout.list_row,          		// Points to the XML for a list item
+	                      cursor,                           // The cursor to get items from
+	                      from,
+	                      to
+	              );
+	
+	        // Sets the ListView's adapter to be the cursor adapter that was just created.
+	        setListAdapter(adapter);
+    	}
     }
     public void loadOnlineHighscore(int size) {
+    	
+    	final String[] onlineData = new String[] {}; 
+    	
     	try {
     		HttpClient client = new DefaultHttpClient();  
     		String getURL = "http://rh.fidrelity.at/best.php?size=" + Integer.toString(size);
@@ -103,14 +119,21 @@ public class HighScoreActivity extends ListActivity {
     		if (resEntityGet != null) {
     			JSONArray jArray = new JSONArray(EntityUtils.toString(resEntityGet));
     			
+				String name;
+				int score;
+				
     			for(int i = 0; i < jArray.length(); i++) {
-    				String name;
-    				int score;
     				name = jArray.getJSONObject(i).getString("name");
     				score = Integer.parseInt(jArray.getJSONObject(i).getString("score"));
+    				
+    				onlineData[i] = jArray.getJSONObject(i).getString("score") + " " + name;
+    				
     				Log.i("GET ONLINE HS", name + " with the score " + score);	
+    				Log.i("ONLINE DATA", onlineData[i]);	
     				//TODO: ADD TO DB (OR JUST RETURN IT?)
     			}             
+
+    			fillData(onlineData);
     		}
     	} catch (Exception e) {
     		e.printStackTrace();

@@ -131,7 +131,7 @@ public class HighScoreForm extends Activity {
         	}
         	
         	// Save score locally
-        	long id = highScoreAdapter.createHighscore(score, name);
+        	long id = highScoreAdapter.createHighscore(score, name, 0);
         	highScoreAdapter.close();
         	
         	setResult(RESULT_OK);

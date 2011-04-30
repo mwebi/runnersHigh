@@ -17,7 +17,7 @@ import android.util.Log;
 class DBManager extends SQLiteOpenHelper {
 
 	private static final String DATABASE_NAME = "rHighDb";
-	private static final int DATABASE_VERSION = 3;
+	private static final int DATABASE_VERSION = 5;
 	
 	/* -----------------------------------------------
 	 * Database TABLES
@@ -26,7 +26,8 @@ class DBManager extends SQLiteOpenHelper {
 	    "CREATE TABLE rh_highscore " +
 	    "(_id INTEGER PRIMARY KEY AUTOINCREMENT," +
 	    "name TEXT NOT NULL," +
-	    "score INTEGER NOT NULL" +
+	    "score INTEGER NOT NULL," +
+	    "isonline INTEGER NOT NULL" +
 	    ");";	
 	
 	// -----------------------------------------------	
