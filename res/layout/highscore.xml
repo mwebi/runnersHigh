@@ -33,7 +33,7 @@
 		android:layout_marginLeft="15dp" 
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-	    android:text="Get Online Highscore" />
+	    android:text="@string/hs_bttn_getonline" />
   </LinearLayout>
   <ListView 
   		android:id="@id/android:list"

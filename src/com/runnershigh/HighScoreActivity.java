@@ -33,7 +33,7 @@ public class HighScoreActivity extends ListActivity {
 	
 	private HighscoreAdapter highScoreAdapter = null;
 	private static final String SHOW_LIMIT = "10";
-	
+	private final String[] empty = new String[0];	
 	// ---------------------------------------------------
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -44,9 +44,7 @@ public class HighScoreActivity extends ListActivity {
         setContentView(R.layout.highscore);
         
         highScoreAdapter = new HighscoreAdapter(this);
-        highScoreAdapter.open();
-        
-        final String[] empty = new String[] {};
+        highScoreAdapter.open();       
         
         // Clear Button
         Button clearButton = (Button) findViewById(R.id.clearButton);
@@ -57,16 +55,17 @@ public class HighScoreActivity extends ListActivity {
         	}
         });  
         
-        Button getOnlineHS = (Button) findViewById(R.id.onlineHSButton);
+        // HighScore Button
+        /*Button getOnlineHS = (Button) findViewById(R.id.onlineHSButton);
         getOnlineHS.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				loadOnlineHighscore(10);
 			}
-		});
+		}); */
         
-        fillData(empty);
+        switchHighScoreButton("ONLINE");
         
-       
+        fillData(empty);      
     }
     
     // ---------------------------------------------------------
@@ -75,13 +74,25 @@ public class HighScoreActivity extends ListActivity {
     	
     	// Online List
     	if(onlineData.length > 0) {
-    		Log.i("FILLDATA", "onlineData");
     		setListAdapter(new ArrayAdapter<String>(this, R.layout.list_single_row, onlineData));
-    		//ListView lv = getListView();
+    		
+    		/*
+    		 final Button getOnlineHS = (Button) findViewById(R.id.onlineHSButton);
+    		 getOnlineHS.setText(R.string.hs_bttn_getlocal);
+
+    		 // Switch Highscore button onClick
+    		 getOnlineHS.setOnClickListener(new View.OnClickListener() {    			 
+    			 	public void onClick(View v) {
+    			 		getOnlineHS.setText(R.string.hs_bttn_getonline);
+    					fillData(empty);
+    				}    				
+    		 }); */
+    		 switchHighScoreButton("LOCAL");
+    	         		
     	// Local List
     	} else {   
     		registerForContextMenu(getListView());
-    		Log.i("FILLDATA", "offline");
+
 	        Cursor cursor = highScoreAdapter.fetchScores(SHOW_LIMIT, 0);
 	        startManagingCursor(cursor);
 	       	                
@@ -103,11 +114,15 @@ public class HighScoreActivity extends ListActivity {
 	
 	        // Sets the ListView's adapter to be the cursor adapter that was just created.
 	        setListAdapter(adapter);
+	        switchHighScoreButton("ONLINE");
     	}
     }
+       
+    // ---------------------------------------------------------
+    // Load online Highscore
     public void loadOnlineHighscore(int size) {
     	
-    	final String[] onlineData = new String[] {}; 
+    	final String[] onlineData = new String[size]; // {}; 
     	
     	try {
     		HttpClient client = new DefaultHttpClient();  
@@ -129,8 +144,6 @@ public class HighScoreActivity extends ListActivity {
     				onlineData[i] = jArray.getJSONObject(i).getString("score") + " " + name;
     				
     				Log.i("GET ONLINE HS", name + " with the score " + score);	
-    				Log.i("ONLINE DATA", onlineData[i]);	
-    				//TODO: ADD TO DB (OR JUST RETURN IT?)
     			}             
 
     			fillData(onlineData);
@@ -138,6 +151,34 @@ public class HighScoreActivity extends ListActivity {
     	} catch (Exception e) {
     		e.printStackTrace();
     	}
+    }
+    
+    // ---------------------------------------------------------
+    // HELPER METHODS
+    private void switchHighScoreButton(String state) {
+    	
+    	final Button getOnlineHS = (Button) findViewById(R.id.onlineHSButton);
+    	
+    	if(state == "ONLINE") {
+    		
+    		getOnlineHS.setText(R.string.hs_bttn_getonline);
+	        getOnlineHS.setOnClickListener(new View.OnClickListener() {
+				public void onClick(View v) {
+					loadOnlineHighscore(10);
+				}
+			});
+	        
+    	} else {    		
+    		
+    		getOnlineHS.setText(R.string.hs_bttn_getlocal);			
+            getOnlineHS.setOnClickListener(new View.OnClickListener() {
+    			public void onClick(View v) {
+    				fillData(empty);
+    			}
+    		});
+            
+    	}
+    	
     }
     
     // ---------------------------------------------------------
