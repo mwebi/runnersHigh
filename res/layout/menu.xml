@@ -15,32 +15,29 @@
 	    />
 
 	<Button android:id="@+id/startButton" 
-		android:text="Play"
 		android:layout_marginBottom="15dp" 
 		android:layout_height="wrap_content" 
-		android:layout_width="fill_parent"
-		android:background="#FF0000"
+		android:layout_width="fill_parent"		
 		android:textSize="22dp"
 		android:padding="20dp"
 		android:onClick="playGame" 
+		android:background="@drawable/bttn_play"
 		/>
 	
 	<Button android:id="@+id/highscoreButton" 
-		android:text="Highscore"
 		android:layout_marginBottom="15dp" 
 		android:layout_height="wrap_content" 
 		android:layout_width="fill_parent"
-		android:background="#00FF00"
+		android:background="@drawable/bttn_highscore"
 		android:textSize="22dp"
 		android:padding="20dp"
 		android:onClick="showScore" />	
 	
 	<Button android:id="@+id/infoButton" 
-		android:text="Info"
 		android:layout_marginBottom="15dp" 
 		android:layout_height="wrap_content" 
 		android:layout_width="fill_parent"
-		android:background="#0000FF"
+		android:background="@drawable/bttn_info"
 		android:textSize="22dp"
 		android:padding="20dp" 
 		android:onClick="showInfo"/>
