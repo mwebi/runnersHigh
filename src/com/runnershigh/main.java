@@ -23,6 +23,8 @@ public class main extends Activity {
 		PowerManager.WakeLock wakeLock ;
 		MediaPlayer musicPlayerIntro;
 		MediaPlayer musicPlayerLoop;
+		boolean MusicLoopStartedForFirstTime = false;
+		boolean paused =false;
 		
 		boolean RHDEBUG = false;
 		
@@ -31,6 +33,7 @@ public class main extends Activity {
 		public void onCreate(Bundle savedInstanceState) {
 	    	super.onCreate(savedInstanceState);
 	    	//setContentView(R.layout.main);	 
+	    	paused=false;
 	    	
 	    	PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
 			wakeLock = pm.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK, "tag");
@@ -46,7 +49,9 @@ public class main extends Activity {
 	        musicPlayerIntro.setLooping(false);
 	        
 	        musicPlayerLoop= MediaPlayer.create(getApplicationContext(), R.raw.nyanloop);
-	        musicPlayerLoop.setVolume(0, 0);
+	        
+			musicPlayerLoop.seekTo(0);
+			musicPlayerLoop.setVolume(0.5f, 0.5f);
 	        
 			requestWindowFeature(Window.FEATURE_NO_TITLE);  
 			getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -59,6 +64,7 @@ public class main extends Activity {
 		
 	    @Override
 	    protected void onDestroy() {
+	    	Log.d("debug", "onDestroy");
 			wakeLock.release();
 			musicPlayerIntro.release();
 			musicPlayerLoop.release();
@@ -67,12 +73,28 @@ public class main extends Activity {
 		}
 		@Override
 		public void onResume() {
+			Log.d("debug", "onResume");
 			wakeLock.acquire();
-			musicPlayerLoop.start();
-			super.onResume();			
+			if(MusicLoopStartedForFirstTime)
+				musicPlayerLoop.start();
+			super.onResume();
+			paused=false;
+		}
+		@Override
+		public void onStop() {
+			Log.d("debug", "onStop");
+			super.onStop();
+		}
+		@Override
+		public void onRestart() {
+			Log.d("debug", "onRestart");
+			paused=false;
+			super.onRestart();
 		}
 		@Override
 		public void onPause() {
+			Log.d("debug", "onPause");
+			paused=true;
 			wakeLock.release();
 			musicPlayerLoop.pause();
 			super.onPause();
@@ -216,9 +238,9 @@ public class main extends Activity {
 			try{
 				//Thread.sleep(500);
 				while(musicPlayerIntro.isPlaying()){
-					blackImgAlpha-=0.0005; 
+					blackImgAlpha-=0.0025; 
 					blackRHD.setColor(0, 0, 0, blackImgAlpha);
-					Thread.sleep(2);
+					Thread.sleep(10);
 				}
 			}
 			catch (InterruptedException e)
@@ -228,12 +250,10 @@ public class main extends Activity {
 			
 			mRenderer.removeMesh(blackRHD);
 			
-			musicPlayerLoop.seekTo(0);
-			musicPlayerLoop.setVolume(0.5f, 0.5f);
-	        musicPlayerLoop.setLooping(true);
+			musicPlayerLoop.start();
+			MusicLoopStartedForFirstTime=true;
 	        
-	        
-			while(true){
+			while(true/*!paused*/){
 				long starttime = System.currentTimeMillis();
 				player.playerSprite.setFrameUpdateTime( (level.baseSpeedMax+level.extraSpeedMax)*10 -((level.baseSpeed+level.extraSpeed)*10) );
 				if (player.update(level.getBlockData())) {
