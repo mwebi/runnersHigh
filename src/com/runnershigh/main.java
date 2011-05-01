@@ -49,7 +49,7 @@ public class main extends Activity {
 	        musicPlayerIntro.setLooping(false);
 	        
 	        musicPlayerLoop= MediaPlayer.create(getApplicationContext(), R.raw.nyanloop);
-	        
+	        musicPlayerLoop.setLooping(true);
 			musicPlayerLoop.seekTo(0);
 			musicPlayerLoop.setVolume(0.5f, 0.5f);
 	        
