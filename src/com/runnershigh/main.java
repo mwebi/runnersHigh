@@ -164,11 +164,8 @@ public class main extends Activity {
 
 			Log.d("debug", "before addMesh");
 			mRenderer.addMesh(background);
-
 			
-
-			
-			resetButtonImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.resetbutton);
+			resetButtonImg = BitmapFactory.decodeResource(context.getResources(),R.drawable.resetbutton);
 			resetButton = new Button(350, height-50-10, -2, 100, 50);
 			resetButton.loadBitmap(resetButtonImg);
 			mRenderer.addMesh(resetButton);			
