@@ -3,7 +3,8 @@
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:padding="10dp">
+    android:padding="10dp"
+    android:background="@drawable/startscreen">
 
 	<TextView  
 		android:id="@+id/title"
@@ -17,8 +18,8 @@
 	<Button android:id="@+id/startButton" 
 		android:layout_marginBottom="15dp" 
 		android:layout_height="wrap_content" 
-		android:layout_width="fill_parent"		
-		android:textSize="22dp"
+		android:layout_width="wrap_content"		
+		android:textSize="18dp"
 		android:padding="20dp"
 		android:onClick="playGame" 
 		android:background="@drawable/bttn_play"
@@ -27,18 +28,18 @@
 	<Button android:id="@+id/highscoreButton" 
 		android:layout_marginBottom="15dp" 
 		android:layout_height="wrap_content" 
-		android:layout_width="fill_parent"
+		android:layout_width="wrap_content"
 		android:background="@drawable/bttn_highscore"
-		android:textSize="22dp"
+		android:textSize="18dp"
 		android:padding="20dp"
 		android:onClick="showScore" />	
 	
 	<Button android:id="@+id/infoButton" 
 		android:layout_marginBottom="15dp" 
 		android:layout_height="wrap_content" 
-		android:layout_width="fill_parent"
+		android:layout_width="wrap_content"
 		android:background="@drawable/bttn_info"
-		android:textSize="22dp"
+		android:textSize="18dp"
 		android:padding="20dp" 
 		android:onClick="showInfo"/>
 
