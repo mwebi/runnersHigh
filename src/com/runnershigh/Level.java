@@ -46,9 +46,9 @@ public class Level {
 		lastLevelPosition = 0;
 		deltaLevelPosition = 0;
 		scoreCounter = 0;
-		baseSpeedStart = 2;
+		baseSpeedStart = 1;
 		baseSpeed = baseSpeedStart;
-		baseSpeedMax = 5;
+		baseSpeedMax = 3.5f;
 		extraSpeed = 0;
 		extraSpeedMax = 5;
 		threeKwasplayed = false;
@@ -224,7 +224,7 @@ public class Level {
 			if (oldHeight > height/2)
 				newHeight = (int)(Math.random()*height/3*2 + height/8);
 			else
-				newHeight = (int)(Math.random()*height/2 + height/8);
+				newHeight = (int)(Math.random()*height/4 + height/8);
 			
 			/*if (Math.abs(oldHeight - newHeight) < 20)
 			{
@@ -232,11 +232,11 @@ public class Level {
 			}
 			*/
 			
-			int newWidth = (int)(Math.random()*width/2+width/2);
+			int newWidth = (int)(Math.random()*width/3+width/3);
 			newWidth -= (newWidth - Block.getTextureLeftWidth() - Block.getTextureRightWidth()) % (Block.getTextureMiddleWidth());
 			
 			// use this for original distance
-			int distance = (int)(Math.random()*width/4+width/8);
+			int distance = (int)(Math.random()*width/16+width/12); 
 			
 			// or use this for variable distance
 			//int distance;
@@ -290,8 +290,8 @@ public class Level {
 		    // compute a fraction of the range, 0 <= frac < range
 		    double fraction = range * randomGenerator.nextDouble();
 		    
-		    int newBonusWidth= 50;
-		    int newBonusHeight= 50;
+		    int newBonusWidth = 35;
+		    int newBonusHeight= 35;
 		    
 		    if (unusedObstacles.size() == 0) {
 		    	newBonus = new Obstacle(0.0f, 0.0f, 0.9f, newBonusWidth, newBonusHeight, 'b');
@@ -334,7 +334,7 @@ public class Level {
 		    if (randomGenerator.nextBoolean()){
 				type='s'; //make obstacle type slow
 				if (unusedObstacles.size() == 0) {
-					newObstacle = new Obstacle(0.0f, 0.0f, 1.0f, (float)obstacleSlowImg.getWidth(), (float)obstacleSlowImg.getHeight(),type);
+					newObstacle = new Obstacle(0.0f, 0.0f, 0.9f, (float)obstacleSlowImg.getWidth(), (float)obstacleSlowImg.getHeight(),type);
 					renderer.addMesh(newObstacle);
 				/*} else {
 					newObstacle = unusedObstacles.firstElement();
@@ -349,7 +349,7 @@ public class Level {
 			}else{
 				type='j'; //make obstacle type jumping
 				if (unusedObstacles.size() == 0) {
-					newObstacle = new Obstacle(0.0f, 0.0f, 1.0f, (float)obstacleJumpImg.getWidth(), (float)obstacleJumpImg.getHeight(),type);
+					newObstacle = new Obstacle(0.0f, 0.0f, 0.9f, (float)obstacleJumpImg.getWidth(), (float)obstacleJumpImg.getHeight(),type);
 					renderer.addMesh(newObstacle);
 				/*} else {
 					newObstacle = unusedObstacles.firstElement();
@@ -379,7 +379,7 @@ public class Level {
 		    Obstacle newSlowObstacle = null;
 			type='s'; //make obstacle type slow
 			if (unusedObstacles.size() == 0) {
-				newSlowObstacle  = new Obstacle(0.0f, 0.0f, 1.0f, (float)obstacleSlowImg.getWidth(), (float)obstacleSlowImg.getHeight(),type);
+				newSlowObstacle  = new Obstacle(0.0f, 0.0f, 0.9f, (float)obstacleSlowImg.getWidth(), (float)obstacleSlowImg.getHeight(),type);
 				renderer.addMesh(newSlowObstacle);
 			} else {
 				newSlowObstacle=checkForExistingObstacle(type);
@@ -398,7 +398,7 @@ public class Level {
 			Obstacle newJumpObstacle = null;
 			type='j'; //make obstacle type jumping
 			if (unusedObstacles.size() == 0) {
-				newJumpObstacle = new Obstacle(0.0f, 0.0f, 1.0f, (float)obstacleJumpImg.getWidth(), (float)obstacleJumpImg.getHeight(),type);
+				newJumpObstacle = new Obstacle(0.0f, 0.0f, 0.9f, (float)obstacleJumpImg.getWidth(), (float)obstacleJumpImg.getHeight(),type);
 				renderer.addMesh(newJumpObstacle);
 			} else {
 				newJumpObstacle=checkForExistingObstacle(type);
