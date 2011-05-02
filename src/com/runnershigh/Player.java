@@ -9,7 +9,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Rect;
 
 public class Player{
-	private static float MAX_JUMP_HEIGHT = 140;
+	private static float MAX_JUMP_HEIGHT = 100;
 	private static float MIN_JUMP_HEIGHT = 10;
 	public Bitmap playerImg;
 	private float lastPosY;
@@ -33,8 +33,8 @@ public class Player{
 		x = 70; 
 		y = 200;
 		
-		width = 60; //62; playersprite settings
-		height = 42; //63; playersprite settings
+		width = 40; //60; nyan cat pre minimalize //62; playersprite settings
+		height = 30; //42; nyan cat pre minimalize //63; playersprite settings
 		
 		playerSpriteImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.nyansprite);
 		playerSprite = new PlayerSprite(x, y, 1, width, height, 25, 6); 

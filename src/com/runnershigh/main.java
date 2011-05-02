@@ -245,9 +245,12 @@ public class main extends Activity {
 				e.printStackTrace();
 			}
 			
-			mRenderer.removeMesh(blackRHD);
+			blackRHD.setColor(0, 0, 0, 0);
+			blackRHD.z=-1.0f;
+			//mRenderer.removeMesh(blackRHD); //TODO: find a way to remove mesh without runtime errors
 			
-			musicPlayerLoop.start();
+			if(!musicPlayerLoop.isPlaying())
+				musicPlayerLoop.start();
 			MusicLoopStartedForFirstTime=true;
 	        
 			while(true/*!paused*/){
