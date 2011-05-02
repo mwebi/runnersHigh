@@ -9,11 +9,11 @@ import android.graphics.BitmapFactory;
 import android.graphics.Rect;
 
 public class Player{
-	private static float MAX_JUMP_HEIGHT = 100;
+	private static float MAX_JUMP_HEIGHT = 100;  //TODO: make MAX_JUMP_HEIGHT < 100 possible
 	private static float MIN_JUMP_HEIGHT = 10;
 	public Bitmap playerImg;
 	private float lastPosY;
-	private int width;
+	static public int width;
 	private int height;
 	private float x;
 	private float y;
@@ -64,7 +64,7 @@ public class Player{
 		}
 		if (jumping && velocity >= 0) {
 			if(y - jumpStartY < MIN_JUMP_HEIGHT || !reachedPeak) {
-				float modifier = (MAX_JUMP_HEIGHT - (y - jumpStartY))/30;
+				float modifier = (MAX_JUMP_HEIGHT - (y - jumpStartY))/30; //TODO: make MAX_JUMP_HEIGHT < 100 possible
 				velocity += 0.4981f * modifier;
 			}
 			if(y - jumpStartY >= MAX_JUMP_HEIGHT) {
@@ -136,7 +136,7 @@ public class Player{
 				}
 				else if(currentObstacle.getType()=='j'){
 					SoundManager.playSound(6, 1);
-					velocity = 10; //katapultiert den player wie ein trampolin nach oben
+					velocity = 6; //katapultiert den player wie ein trampolin nach oben
 				}
 				else if(currentObstacle.getType()=='b'){
 					SoundManager.playSound(8, 1);

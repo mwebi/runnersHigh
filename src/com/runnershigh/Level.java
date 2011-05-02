@@ -48,9 +48,9 @@ public class Level {
 		scoreCounter = 0;
 		baseSpeedStart = 1;
 		baseSpeed = baseSpeedStart;
-		baseSpeedMax = 3.5f;
+		baseSpeedMax = 3.0f;
 		extraSpeed = 0;
-		extraSpeedMax = 5;
+		extraSpeedMax = 4f;
 		threeKwasplayed = false;
 		renderer = glrenderer;
 		
@@ -238,6 +238,7 @@ public class Level {
 			// use this for original distance
 			int distance = (int)(Math.random()*width/16+width/12); 
 			
+			
 			// or use this for variable distance
 			//int distance;
 			//if (levelPosition < 2000)
@@ -245,6 +246,8 @@ public class Level {
 			//else
 				//distance = (int)(Math.random()*width/4-width/4+50);
 			
+			if(distance <= Player.width)
+				distance = Player.width+2;
 			
 			Block lastBlock = blockData.get(blockData.size() - 1); 
 			int newLeft = lastBlock.getRect().right + distance;
@@ -265,9 +268,8 @@ public class Level {
 			
 			currentBlock.x = newLeft;
 			
-			//start creating obstacles after the 10th block
-			if(BlockCounter>10)
-				generateAndAddObstacle(newLeft, newRight, newHeight, newWidth);
+			//start creating obstacles
+			generateAndAddObstacle(newLeft, newRight, newHeight, newWidth);
 		}
 		BlockCounter++;
 	}
@@ -280,139 +282,142 @@ public class Level {
 		double limitLeft=newLeft+range*0.20;
 		//range*=0.60;
 	    
-		
-		int Bonusdecider = randomGenerator.nextInt(5);
-		Obstacle newBonus = null;
-		//if (0 == 0){
-		if (Bonusdecider == 3){
-			int bonusLeft;
-
-		    // compute a fraction of the range, 0 <= frac < range
-		    double fraction = range * randomGenerator.nextDouble();
-		    
-		    int newBonusWidth = 35;
-		    int newBonusHeight= 35;
-		    
-		    if (unusedObstacles.size() == 0) {
-		    	newBonus = new Obstacle(0.0f, 0.0f, 0.9f, newBonusWidth, newBonusHeight, 'b');
-				renderer.addMesh(newBonus);
-			} else {
-				newBonus = unusedObstacles.firstElement();
-				unusedObstacles.remove(0);
-				newBonus.setWidth(newBonusWidth );
-			    newBonus.setHeight(newBonusHeight );
-			    newBonus.setType('b');
-			    newBonus.didTrigger=false;
-			    newBonus.z=1;
+		if(BlockCounter>1){  //TODO: geskripteter level anfang: zB 3. block a bonus, am 4. a slow, 5. a jump 6. ...
+			int Bonusdecider = randomGenerator.nextInt(5);
+			Obstacle newBonus = null;
+			//if (0 == 0){
+			if (Bonusdecider == 3){
+				int bonusLeft;
+	
+			    // compute a fraction of the range, 0 <= frac < range
+			    double fraction = range * randomGenerator.nextDouble();
+			    
+			    int newBonusWidth = 35;
+			    int newBonusHeight= 35;
+			    
+			    if (unusedObstacles.size() == 0) {
+			    	newBonus = new Obstacle(0.0f, 0.0f, 0.9f, newBonusWidth, newBonusHeight, 'b');
+					renderer.addMesh(newBonus);
+				} else {
+					newBonus = unusedObstacles.firstElement();
+					unusedObstacles.remove(0);
+					newBonus.setWidth(newBonusWidth );
+				    newBonus.setHeight(newBonusHeight );
+				    newBonus.setType('b');
+				    newBonus.didTrigger=false;
+				    newBonus.z=1;
+				}
+			    newBonus.loadBitmap(bonusImg); //TODO: way to not load bitmap for every object at runtime
+			    bonusLeft = (int)(newLeft + fraction ); 
+			    //set new coordinates
+			    
+			    newBonus.setX(bonusLeft);
+			    newBonus.setY(newHeight+50+randomGenerator.nextInt(75));
+			    newBonus.setObstacleRect(bonusLeft, bonusLeft+newBonus.getWidth() ,newHeight, newHeight-newBonus.getHeight());
+				obstacleData.add(newBonus);
 			}
-		    newBonus.loadBitmap(bonusImg); //TODO: way to not load bitmap for every object at runtime
-		    bonusLeft = (int)(newLeft + fraction ); 
-		    //set new coordinates
-		    
-		    newBonus.setX(bonusLeft);
-		    newBonus.setY(newHeight+50+randomGenerator.nextInt(75));
-		    newBonus.setObstacleRect(bonusLeft, bonusLeft+newBonus.getWidth() ,newHeight, newHeight-newBonus.getHeight());
-			obstacleData.add(newBonus);
 		}
 		
-		//get the range, casting to long to avoid overflow problems
-		range = newRight - newLeft + 1;
-		// get range to be 1/3 of the block length
-	    range*=0.33;
-		
-		// Obstacle creation
-		int decider = randomGenerator.nextInt(6); //random int von-bis
-		if (decider == 3 || decider == 4){ //create either j or s obstacle
-			char type;
-			Obstacle newObstacle = null;
-
-			int obstacleLeft;
-
-		    // compute a fraction of the range, 0 <= frac < range
-		    long fraction = (long)(range * randomGenerator.nextDouble());
-
-		    if (randomGenerator.nextBoolean()){
+		if(BlockCounter>10){
+			//get the range, casting to long to avoid overflow problems
+			range = newRight - newLeft + 1;
+			// get range to be 1/3 of the block length
+		    range*=0.33;
+			
+			// Obstacle creation
+			int decider = randomGenerator.nextInt(6); //random int von-bis
+			if (decider == 3 || decider == 4){ //create either j or s obstacle
+				char type;
+				Obstacle newObstacle = null;
+	
+				int obstacleLeft;
+	
+			    // compute a fraction of the range, 0 <= frac < range
+			    long fraction = (long)(range * randomGenerator.nextDouble());
+	
+			    if (randomGenerator.nextBoolean()){
+					type='s'; //make obstacle type slow
+					if (unusedObstacles.size() == 0) {
+						newObstacle = new Obstacle(0.0f, 0.0f, 0.9f, (float)obstacleSlowImg.getWidth(), (float)obstacleSlowImg.getHeight(),type);
+						renderer.addMesh(newObstacle);
+					/*} else {
+						newObstacle = unusedObstacles.firstElement();
+						unusedObstacles.remove(0);
+					}*/
+					} else {
+						newObstacle=checkForExistingObstacle(type);
+						newObstacle.didTrigger=false;
+					}
+					newObstacle.loadBitmap(obstacleSlowImg);
+				    obstacleLeft =  (int)(newRight - newObstacle.getWidth() - fraction); 
+				}else{
+					type='j'; //make obstacle type jumping
+					if (unusedObstacles.size() == 0) {
+						newObstacle = new Obstacle(0.0f, 0.0f, 0.9f, (float)obstacleJumpImg.getWidth(), (float)obstacleJumpImg.getHeight(),type);
+						renderer.addMesh(newObstacle);
+					/*} else {
+						newObstacle = unusedObstacles.firstElement();
+						unusedObstacles.remove(0);
+					}*/
+					} else {
+						newObstacle=checkForExistingObstacle(type);
+						newObstacle.didTrigger=false;
+					}
+					newObstacle.loadBitmap(obstacleJumpImg);
+				    obstacleLeft =  (int)(newLeft + newObstacle.getWidth() + fraction); 
+				}
+	
+			    //set new coordinates
+			    newObstacle.setX(obstacleLeft);
+			    newObstacle.setY(newHeight);
+			    newObstacle.setObstacleRect(obstacleLeft, obstacleLeft+newObstacle.getWidth() ,newHeight, newHeight-newObstacle.getHeight());
+				obstacleData.add(newObstacle);
+				
+			}else if (decider == 5){ //create two obstacles
+				char type;
+				int obstacleLeft;
+	
+			    // compute a fraction of the range, 0 <= frac < range
+			    long fraction = (long)(range * randomGenerator.nextDouble());
+	
+			    Obstacle newSlowObstacle = null;
 				type='s'; //make obstacle type slow
 				if (unusedObstacles.size() == 0) {
-					newObstacle = new Obstacle(0.0f, 0.0f, 0.9f, (float)obstacleSlowImg.getWidth(), (float)obstacleSlowImg.getHeight(),type);
-					renderer.addMesh(newObstacle);
-				/*} else {
-					newObstacle = unusedObstacles.firstElement();
-					unusedObstacles.remove(0);
-				}*/
+					newSlowObstacle  = new Obstacle(0.0f, 0.0f, 0.9f, (float)obstacleSlowImg.getWidth(), (float)obstacleSlowImg.getHeight(),type);
+					renderer.addMesh(newSlowObstacle);
 				} else {
-					newObstacle=checkForExistingObstacle(type);
-					newObstacle.didTrigger=false;
+					newSlowObstacle=checkForExistingObstacle(type);
+					newSlowObstacle.didTrigger=false;
 				}
-				newObstacle.loadBitmap(obstacleSlowImg);
-			    obstacleLeft =  (int)(newRight - newObstacle.getWidth() - fraction); 
-			}else{
+				
+				newSlowObstacle.loadBitmap(obstacleSlowImg);
+			    obstacleLeft =  (int)(newRight - newSlowObstacle.getWidth() - fraction); 
+			    newSlowObstacle.setType(type);
+			    //set new coordinates
+			    newSlowObstacle.setX(obstacleLeft);
+			    newSlowObstacle.setY(newHeight);
+			    newSlowObstacle.setObstacleRect(obstacleLeft, obstacleLeft+newSlowObstacle.getWidth() ,newHeight, newHeight-newSlowObstacle.getHeight());
+				obstacleData.add(newSlowObstacle);
+				
+				Obstacle newJumpObstacle = null;
 				type='j'; //make obstacle type jumping
 				if (unusedObstacles.size() == 0) {
-					newObstacle = new Obstacle(0.0f, 0.0f, 0.9f, (float)obstacleJumpImg.getWidth(), (float)obstacleJumpImg.getHeight(),type);
-					renderer.addMesh(newObstacle);
-				/*} else {
-					newObstacle = unusedObstacles.firstElement();
-					unusedObstacles.remove(0);
-				}*/
+					newJumpObstacle = new Obstacle(0.0f, 0.0f, 0.9f, (float)obstacleJumpImg.getWidth(), (float)obstacleJumpImg.getHeight(),type);
+					renderer.addMesh(newJumpObstacle);
 				} else {
-					newObstacle=checkForExistingObstacle(type);
-					newObstacle.didTrigger=false;
+					newJumpObstacle=checkForExistingObstacle(type);
+					newJumpObstacle.didTrigger=false;
 				}
-				newObstacle.loadBitmap(obstacleJumpImg);
-			    obstacleLeft =  (int)(newLeft + newObstacle.getWidth() + fraction); 
+				
+				newJumpObstacle.loadBitmap(obstacleJumpImg);
+			    obstacleLeft =  (int)(newLeft + newJumpObstacle.getWidth() + fraction);
+			    newJumpObstacle.setType(type);
+			    //set new coordinates
+			    newJumpObstacle.setX(obstacleLeft);
+			    newJumpObstacle.setY(newHeight);
+			    newJumpObstacle.setObstacleRect(obstacleLeft, obstacleLeft+newJumpObstacle.getWidth() ,newHeight, newHeight-newJumpObstacle.getHeight());
+				obstacleData.add(newJumpObstacle);
 			}
-
-		    //set new coordinates
-		    newObstacle.setX(obstacleLeft);
-		    newObstacle.setY(newHeight);
-		    newObstacle.setObstacleRect(obstacleLeft, obstacleLeft+newObstacle.getWidth() ,newHeight, newHeight-newObstacle.getHeight());
-			obstacleData.add(newObstacle);
-			
-		}else if (decider == 5){ //create two obstacles
-			char type;
-			int obstacleLeft;
-
-		    // compute a fraction of the range, 0 <= frac < range
-		    long fraction = (long)(range * randomGenerator.nextDouble());
-
-		    Obstacle newSlowObstacle = null;
-			type='s'; //make obstacle type slow
-			if (unusedObstacles.size() == 0) {
-				newSlowObstacle  = new Obstacle(0.0f, 0.0f, 0.9f, (float)obstacleSlowImg.getWidth(), (float)obstacleSlowImg.getHeight(),type);
-				renderer.addMesh(newSlowObstacle);
-			} else {
-				newSlowObstacle=checkForExistingObstacle(type);
-				newSlowObstacle.didTrigger=false;
-			}
-			
-			newSlowObstacle.loadBitmap(obstacleSlowImg);
-		    obstacleLeft =  (int)(newRight - newSlowObstacle.getWidth() - fraction); 
-		    newSlowObstacle.setType(type);
-		    //set new coordinates
-		    newSlowObstacle.setX(obstacleLeft);
-		    newSlowObstacle.setY(newHeight);
-		    newSlowObstacle.setObstacleRect(obstacleLeft, obstacleLeft+newSlowObstacle.getWidth() ,newHeight, newHeight-newSlowObstacle.getHeight());
-			obstacleData.add(newSlowObstacle);
-			
-			Obstacle newJumpObstacle = null;
-			type='j'; //make obstacle type jumping
-			if (unusedObstacles.size() == 0) {
-				newJumpObstacle = new Obstacle(0.0f, 0.0f, 0.9f, (float)obstacleJumpImg.getWidth(), (float)obstacleJumpImg.getHeight(),type);
-				renderer.addMesh(newJumpObstacle);
-			} else {
-				newJumpObstacle=checkForExistingObstacle(type);
-				newJumpObstacle.didTrigger=false;
-			}
-			
-			newJumpObstacle.loadBitmap(obstacleJumpImg);
-		    obstacleLeft =  (int)(newLeft + newJumpObstacle.getWidth() + fraction);
-		    newJumpObstacle.setType(type);
-		    //set new coordinates
-		    newJumpObstacle.setX(obstacleLeft);
-		    newJumpObstacle.setY(newHeight);
-		    newJumpObstacle.setObstacleRect(obstacleLeft, obstacleLeft+newJumpObstacle.getWidth() ,newHeight, newHeight-newJumpObstacle.getHeight());
-			obstacleData.add(newJumpObstacle);
 		}
 	}
 	//TODO refactor without temporary vector
