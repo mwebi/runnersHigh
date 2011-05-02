@@ -98,9 +98,9 @@ public class HighScoreForm extends Activity {
     	String name 	=  nameField.getText().toString();
         String score 	=  scoreField.getText().toString();
         CheckBox checkbox = (CheckBox) findViewById(R.id.postOnline);
-            
-        if(name.length() > 0) {
-        	
+        int isonline = 0;
+        
+        if(name.length() > 0) {        	
         	// Save score online
         	if(checkbox.isChecked()) {        	      		
         		
@@ -126,12 +126,14 @@ public class HighScoreForm extends Activity {
 	        	        // TODO Auto-generated catch block
 	        	    } catch (IOException e) {
 	        	        // TODO Auto-generated catch block
-	        	    }    		
+	        	    }
+	        	    
+	        	    isonline = 1;
         		}
         	}
         	
         	// Save score locally
-        	long id = highScoreAdapter.createHighscore(score, name);
+        	long id = highScoreAdapter.createHighscore(score, name, isonline);
         	highScoreAdapter.close();
         	
         	setResult(RESULT_OK);

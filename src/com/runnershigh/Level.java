@@ -134,7 +134,7 @@ public class Level {
 			levelPosition += deltaLevelPosition;
 
 
-			Log.d("debug", "deltaLevelPosition/10: " + deltaLevelPosition/10);
+			//Log.d("debug", "deltaLevelPosition/10: " + deltaLevelPosition/10);
 			scoreCounter += deltaLevelPosition/10;
 						
 			for (Block block : blockData) {
@@ -294,7 +294,7 @@ public class Level {
 		    int newBonusHeight= 50;
 		    
 		    if (unusedObstacles.size() == 0) {
-		    	newBonus = new Obstacle(0.0f, 0.0f, 0.9f, newBonusWidth, newBonusHeight,'b');
+		    	newBonus = new Obstacle(0.0f, 0.0f, 0.9f, newBonusWidth, newBonusHeight, 'b');
 				renderer.addMesh(newBonus);
 			} else {
 				newBonus = unusedObstacles.firstElement();

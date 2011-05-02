@@ -25,6 +25,7 @@ public class HighscoreAdapter extends DbAdapter {
 	public static final String KEY_ROWID 		= "_id";
     public static final String KEY_NAME 		= "name";
     public static final String KEY_SCORE 		= "score";
+    public static final String KEY_ISONLINE		= "isonline";
 
 	public HighscoreAdapter(Context ctx) {
     	super(ctx);
@@ -33,12 +34,24 @@ public class HighscoreAdapter extends DbAdapter {
 	
 	// -------------------------------------------------------
     // Create
-    public long createHighscore(String score, String name) {
+    public long createHighscore(String score, String name, int isonline) { 	
+    	
         ContentValues initialValues = new ContentValues();
         initialValues.put(KEY_NAME, name);
         initialValues.put(KEY_SCORE, score);
+        initialValues.put(KEY_ISONLINE, isonline);
                 
         return mDb.insert(DATABASE_TABLE, null, initialValues);
+    }
+    
+    // -------------------------------------------------------
+    // Update
+    public boolean updateScore(long rowId, int isOnline) {
+        ContentValues args = new ContentValues();
+        args.put(KEY_ROWID, rowId);
+        args.put(KEY_ISONLINE, isOnline);
+        
+        return mDb.update(DATABASE_TABLE, args, KEY_ROWID + "=" + rowId, null) > 0;
     }
 
     // -------------------------------------------------------
@@ -54,15 +67,41 @@ public class HighscoreAdapter extends DbAdapter {
     }
 
     // -------------------------------------------------------
-    // Show
-    public Cursor fetchScores(String limit) throws SQLException {
+    // Show List
+    public Cursor fetchScores(String limit) throws SQLException {	
+    	
+    	//"isonline = " + isOnline
+    	
     	Cursor mCursor =  mDb.query(DATABASE_TABLE,
         				new String[] { 	KEY_ROWID,
     									KEY_NAME,
-    									KEY_SCORE
+    									KEY_SCORE,
+    									KEY_ISONLINE
     								  },
-    					null, null, null, null,
+    					null,
+    					null, null, null,
         				KEY_SCORE + " DESC", limit);
+    	
+        if (mCursor != null) {
+            mCursor.moveToFirst();
+        }
+        
+        return mCursor;
+    }   
+    
+    // -------------------------------------------------------
+    // Show Single
+    public Cursor fetchSingleScore(long id) throws SQLException {	
+    	
+    	Cursor mCursor =  mDb.query(true, DATABASE_TABLE,
+        				new String[] { 	KEY_ROWID,
+    									KEY_NAME,
+    									KEY_SCORE,
+    									KEY_ISONLINE
+    								  },
+    					KEY_ROWID + "=" + id,
+    					null, null, null,
+        				null, null);
     	
         if (mCursor != null) {
             mCursor.moveToFirst();
@@ -78,9 +117,10 @@ public class HighscoreAdapter extends DbAdapter {
     	Cursor mCursor = mDb.query(DATABASE_TABLE, 
         				new String[] { 	KEY_ROWID,
     									KEY_NAME,
-    									KEY_SCORE
+    									KEY_SCORE,
+    									KEY_ISONLINE
     								  },
-    					null, null, null, null,
+    					"isonline = 0", null, null, null,
         				KEY_ROWID + " DESC", "1");
     	
         if (mCursor != null) {
