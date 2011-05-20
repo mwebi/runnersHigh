@@ -49,6 +49,8 @@ public class HighScoreActivity extends ListActivity {
 	private static final String SHOW_LIMIT = "10";
 	private static final String POST_HIGHSCORE_URL = "http://rh.fidrelity.at/post/post_highscore.php";
 	
+	private boolean isOnlineView = false;
+	
 	private final String[] empty = new String[0];	
 	// ---------------------------------------------------
     @Override
@@ -159,6 +161,7 @@ public class HighScoreActivity extends ListActivity {
 					loadOnlineHighscore(10);
 				}
 			});
+	        isOnlineView = true;
 	        
     	} else {    		
 
@@ -168,6 +171,7 @@ public class HighScoreActivity extends ListActivity {
     				fillData(empty);
     			}
     		});
+            isOnlineView = false;
     	}
     }
     
@@ -191,8 +195,7 @@ public class HighScoreActivity extends ListActivity {
             // Canceled.
           }
         });
-        
-        alert.show();           	
+               	
     }
     
     // ---------------------------------------------------------
@@ -201,6 +204,9 @@ public class HighScoreActivity extends ListActivity {
     protected void onListItemClick(ListView l, View v, int position, final long id) {
         super.onListItemClick(l, v, position, id);
        
+        if(isOnlineView == true)
+        	return;    
+        
         AlertDialog.Builder alert = new AlertDialog.Builder(this);
 
         alert.setTitle("Highscore");
@@ -255,8 +261,7 @@ public class HighScoreActivity extends ListActivity {
           }
         });
         cursor.close();
-        alert.show();
-        
+        alert.show();        
     }
     
     // ---------------------------------------------------------
