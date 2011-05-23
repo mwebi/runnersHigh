@@ -12,28 +12,20 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.params.HttpParams;
-import org.apache.http.util.EntityUtils;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -103,10 +95,9 @@ public class HighScoreForm extends Activity {
         if(name.length() > 0) {        	
         	// Save score online
         	if(checkbox.isChecked()) {        	      		
-        		
+
         		if(!isOnline()) {
         			highScoreAdapter.toastMessage(R.string.hs_error_no_internet);
-        			Log.i("isOffline", "jo");
         		} else {
 	        		// Create a new HttpClient and Post Header
 	        	    HttpClient httpclient = new DefaultHttpClient();
@@ -143,10 +134,16 @@ public class HighScoreForm extends Activity {
         }
     }
 
-    // Check if user is connected to the internet
-	public boolean isOnline() {
-		 ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-		 return cm.getActiveNetworkInfo().isConnectedOrConnecting();
+    // ---------------------------------------------------------
+	// Check if user is connected to the internet
+	public boolean isOnline() {		
+	    ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+	    NetworkInfo ni = cm.getActiveNetworkInfo();
+	    if (ni != null && ni.isAvailable() && ni.isConnected()) {
+	        return true;
+	    } else {
+	        return false; 
+	    }
 	}
     
     // ---------------------------------------------------------

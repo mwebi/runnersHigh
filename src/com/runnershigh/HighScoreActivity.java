@@ -27,8 +27,11 @@ import org.json.JSONArray;
 
 import android.app.AlertDialog;
 import android.app.ListActivity;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -77,7 +80,7 @@ public class HighScoreActivity extends ListActivity {
         
         fillData(empty);      
     }
-    
+        
     // ---------------------------------------------------------
     // Fetch highscore from database table and put it into the listView
     private void fillData(String[] onlineData) {
@@ -119,32 +122,38 @@ public class HighScoreActivity extends ListActivity {
     // Load online Highscore
     public void loadOnlineHighscore(int size) {
     	
-    	final String[] onlineData = new String[size]; // {}; 
+    	final String[] onlineData = new String[size]; // {};
     	
-    	try {
-    		HttpClient client = new DefaultHttpClient();  
-    		String getURL = "http://rh.fidrelity.at/best.php?size=" + Integer.toString(size);
-    		HttpGet get = new HttpGet(getURL);
-    		// query data from server
-    		HttpResponse responseGet = client.execute(get); 
-    		HttpEntity resEntityGet = responseGet.getEntity();  
-    		if (resEntityGet != null) {
-    			JSONArray jArray = new JSONArray(EntityUtils.toString(resEntityGet));
-    			
-				String name;
-				String score;
-				
-    			for(int i = 0; i < jArray.length(); i++) {
-    				name = jArray.getJSONObject(i).getString("name");
-    				score = jArray.getJSONObject(i).getString("score");
-    				
-    				onlineData[i] = score + "   " + name;
-    			}             
-
-    			fillData(onlineData);
-    		}
-    	} catch (Exception e) {
-    		e.printStackTrace();
+    	if(!isOnline()) {
+    		Log.i("", "not online");
+    		highScoreAdapter.toastMessage(R.string.hs_error_no_internet);
+    	} else {
+    	
+	    	try {
+	    		HttpClient client = new DefaultHttpClient();  
+	    		String getURL = "http://rh.fidrelity.at/best.php?size=" + Integer.toString(size);
+	    		HttpGet get = new HttpGet(getURL);
+	    		// query data from server
+	    		HttpResponse responseGet = client.execute(get); 
+	    		HttpEntity resEntityGet = responseGet.getEntity();  
+	    		if (resEntityGet != null) {
+	    			JSONArray jArray = new JSONArray(EntityUtils.toString(resEntityGet));
+	    			
+					String name;
+					String score;
+					
+	    			for(int i = 0; i < jArray.length(); i++) {
+	    				name = jArray.getJSONObject(i).getString("name");
+	    				score = jArray.getJSONObject(i).getString("score");
+	    				
+	    				onlineData[i] = score + "   " + name;
+	    			}             
+	
+	    			fillData(onlineData);
+	    		}
+	    	} catch (Exception e) {
+	    		e.printStackTrace();
+	    	}
     	}
     }
     
@@ -196,8 +205,7 @@ public class HighScoreActivity extends ListActivity {
           public void onClick(DialogInterface dialog, int whichButton) {
             // Canceled.
           }
-        });
-               	
+        });               	
     }
     
     // ---------------------------------------------------------
@@ -265,6 +273,18 @@ public class HighScoreActivity extends ListActivity {
         cursor.close();
         alert.show();        
     }
+    
+    // ---------------------------------------------------------
+	// Check if user is connected to the internet
+	public boolean isOnline() {		
+	    ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+	    NetworkInfo ni = cm.getActiveNetworkInfo();
+	    if (ni != null && ni.isAvailable() && ni.isConnected()) {
+	        return true;
+	    } else {
+	        return false; 
+	    }
+	}
     
     // ---------------------------------------------------------
     @Override    
