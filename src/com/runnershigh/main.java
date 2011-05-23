@@ -256,7 +256,7 @@ public class main extends Activity {
 			while(true/*!paused*/){
 				long starttime = System.currentTimeMillis();
 				player.playerSprite.setFrameUpdateTime( (level.baseSpeedMax+level.extraSpeedMax)*10 -((level.baseSpeed+level.extraSpeed)*10) );
-				if (player.update(level.getBlockData())) {
+				if (player.update()) {
 						level.update();
 						background.updat();
 				} else {
@@ -272,7 +272,8 @@ public class main extends Activity {
 						}
 					}
 				}
-				if(player.collidedWithObstacle(level.getObstacleData(),level.getLevelPosition()) ){
+				
+				if(player.collidedWithObstacle(level.getLevelPosition()) ){
 					level.lowerSpeed();
 				}
 				

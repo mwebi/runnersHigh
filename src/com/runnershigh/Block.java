@@ -8,8 +8,8 @@ import android.graphics.Rect;
 
 public class Block extends Group {
 	
-	private int mWidth;
-	private int mHeight;
+	public float mWidth;
+	public float mHeight;
 	
 	private RHDrawable mLeft;
 	private RHDrawable mMiddle;
@@ -80,10 +80,9 @@ public class Block extends Group {
 	public Rect getRect()
 	{
 		return new Rect((int)x,(int)(y+mHeight),(int)(x+mWidth),(int)y);
-		//return new Rect((int)x,(int)(mHeight),(int)(x+mWidth),(int)mHeight-mTextureHeightLeft);
 	}
 	
-	public void setWidth(int width)
+	public void setWidth(float width)
 	{
 		mWidth = width;
 		
@@ -110,7 +109,7 @@ public class Block extends Group {
 		mMiddle.setTextureCoordinates(mTextureCoordinatesMiddle);
 	}
 	
-	public void setHeight(int height)
+	public void setHeight(float height)
 	{
 		mHeight = height;
 

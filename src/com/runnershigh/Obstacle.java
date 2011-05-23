@@ -86,17 +86,17 @@ public class Obstacle extends RHDrawable {
 	public float getY(){
 		return y;
 	}
-	public void setX(int _x){
+	public void setX(float _x){
 		x=centerX=_x;
 	}
-	public void setY(int _y){
+	public void setY(float _y){
 		y=centerY=_y;
 	}
-	public void setObstacleRect(int l, int r, int top, int bottom){
-		ObstacleRect.left=l;
-		ObstacleRect.right=r;
-		ObstacleRect.top=top;
-		ObstacleRect.bottom=bottom;
+	public void setObstacleRect(float l, float r, float top, float bottom){
+		ObstacleRect.left=(int)l;
+		ObstacleRect.right=(int)r;
+		ObstacleRect.top=(int)top;
+		ObstacleRect.bottom=(int)bottom;
 	}
 	public void setObstacleRectRight(int r){
 		ObstacleRect.right=r;

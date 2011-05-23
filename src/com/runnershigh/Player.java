@@ -54,7 +54,7 @@ public class Player{
 			jumpingsoundplayed = false;
 	}
 	
-	public boolean update(Vector<Rect> blocks) {
+	public boolean update() {
 		playerSprite.updatePosition(x, y);
 		playerSprite.tryToSetNextFrame();
 		
@@ -65,6 +65,7 @@ public class Player{
 		if (jumping && velocity >= 0) {
 			if(y - jumpStartY < MIN_JUMP_HEIGHT || !reachedPeak) {
 				float modifier = (MAX_JUMP_HEIGHT - (y - jumpStartY))/30; //TODO: make MAX_JUMP_HEIGHT < 100 possible
+				
 				velocity += 0.4981f * modifier;
 			}
 			if(y - jumpStartY >= MAX_JUMP_HEIGHT) {
@@ -83,14 +84,12 @@ public class Player{
 		
 		playerRect = new Rect((int)x,(int)y+height,(int)x+width,(int)y);
 		
-		for(Rect currentBlock : blocks){
-			if(currentBlock.top==0){
-				continue;
-			}
-			if( checkIntersect(playerRect, currentBlock) ){
-				if(lastPosY >= currentBlock.top)
+		for (int i = 0; i < Level.maxBlocks; i++)
+		{
+			if( checkIntersect(playerRect, Level.blockData[i].getRect()) ){
+				if(lastPosY >= Level.blockData[i].mHeight)
 				{
-					y=currentBlock.top;
+					y=Level.blockData[i].mHeight;
 					velocity = 0;
 					reachedPeak = false;
 					jumping = false;
@@ -116,36 +115,65 @@ public class Player{
 		
 		return true;
 	}	
-	public boolean collidedWithObstacle(Vector<Obstacle> obstacles, int levelPosition) {
-		for(Obstacle currentObstacle : obstacles){
-			Rect ObstacleRect= new Rect((int)currentObstacle.x, 
-												(int)currentObstacle.y+(int)currentObstacle.height, 
-												(int)currentObstacle.x+(int)currentObstacle.width, 
-												(int)currentObstacle.y
-												);
-			if( checkIntersect(playerRect, ObstacleRect) && !currentObstacle.didTrigger){
-				currentObstacle.didTrigger=true;
+	
+	public boolean collidedWithObstacle(int levelPosition) {
+		
+		Rect ObstacleRect = new Rect();
+		
+		for(int i = 0; i < Level.maxObstaclesJumper; i++)
+		{
+			ObstacleRect.left =  (int)Level.obstacleDataJumper[i].x;
+			ObstacleRect.top = (int)Level.obstacleDataJumper[i].y+(int)Level.obstacleDataJumper[i].height; 
+			ObstacleRect.right = (int)Level.obstacleDataJumper[i].x+(int)Level.obstacleDataJumper[i].width;
+			ObstacleRect.bottom = (int)Level.obstacleDataJumper[i].y;
+			
+			if( checkIntersect(playerRect, ObstacleRect) && !Level.obstacleDataJumper[i].didTrigger)
+			{
+				Level.obstacleDataJumper[i].didTrigger=true;
 				
-				if(currentObstacle.getType()=='s'){
-					//TODO: prevent playing sound 2x or more 
-					if(!slowSoundplayed){    
-						SoundManager.playSound(5, 1);
-						slowSoundplayed=true;
-					}
-					return true; //slow down player fast
-				}
-				else if(currentObstacle.getType()=='j'){
-					SoundManager.playSound(6, 1);
-					velocity = 6; //katapultiert den player wie ein trampolin nach oben
-				}
-				else if(currentObstacle.getType()=='b'){
-					SoundManager.playSound(8, 1);
-					Level.scoreCounter+=200;
-					currentObstacle.z=-2; 
-				}
+				SoundManager.playSound(6, 1);
+				velocity = 6; //katapultiert den player wie ein trampolin nach oben
+				
 			}
-
 		}
+		
+		for(int i = 0; i < Level.maxObstaclesSlower; i++)
+		{
+			ObstacleRect.left =  (int)Level.obstacleDataSlower[i].x;
+			ObstacleRect.top = (int)Level.obstacleDataSlower[i].y+(int)Level.obstacleDataSlower[i].height; 
+			ObstacleRect.right = (int)Level.obstacleDataSlower[i].x+(int)Level.obstacleDataSlower[i].width;
+			ObstacleRect.bottom = (int)Level.obstacleDataSlower[i].y;
+
+			if( checkIntersect(playerRect, ObstacleRect) && !Level.obstacleDataSlower[i].didTrigger)
+			{
+				Level.obstacleDataSlower[i].didTrigger=true;
+				
+				//TODO: prevent playing sound 2x or more 
+				if(!slowSoundplayed){    
+					SoundManager.playSound(5, 1);
+					slowSoundplayed=true;
+				}
+				return true; //slow down player fast
+			}
+		}
+		
+		for(int i = 0; i < Level.maxObstaclesBonus; i++)
+		{
+			ObstacleRect.left =  (int)Level.obstacleDataBonus[i].x;
+			ObstacleRect.top = (int)Level.obstacleDataBonus[i].y+(int)Level.obstacleDataBonus[i].height; 
+			ObstacleRect.right = (int)Level.obstacleDataBonus[i].x+(int)Level.obstacleDataBonus[i].width;
+			ObstacleRect.bottom = (int)Level.obstacleDataBonus[i].y;
+
+			if( checkIntersect(playerRect, ObstacleRect) && !Level.obstacleDataBonus[i].didTrigger)
+			{
+				Level.obstacleDataBonus[i].didTrigger=true;
+
+				SoundManager.playSound(8, 1);
+				Level.scoreCounter+=200;
+				Level.obstacleDataBonus[i].z= -1;
+			}
+		}
+
 		slowSoundplayed=false;
 		return false;
 	}
