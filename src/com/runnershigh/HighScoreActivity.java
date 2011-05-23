@@ -149,6 +149,7 @@ public class HighScoreActivity extends ListActivity {
     }
     
     // ---------------------------------------------------------
+    // Switch Views
     private void switchHighScoreButton(String state) {
     	
     	final Button getOnlineHS = (Button) findViewById(R.id.onlineHSButton);
@@ -176,6 +177,7 @@ public class HighScoreActivity extends ListActivity {
     }
     
     // ---------------------------------------------------------
+    // Truncate HighScore Database Table
     private void clearHighscore() {
     	
     	AlertDialog.Builder alert = new AlertDialog.Builder(this);
