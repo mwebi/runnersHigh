@@ -51,6 +51,7 @@ public class HighScoreActivity extends ListActivity {
 	
 	private static final String SHOW_LIMIT = "10";
 	private static final String POST_HIGHSCORE_URL = "http://rh.fidrelity.at/post/post_highscore.php";
+	private static final String GET_HIGHSCORE_URL = "http://rh.fidrelity.at/best.php";
 	
 	private boolean isOnlineView = false;
 	
@@ -68,14 +69,16 @@ public class HighScoreActivity extends ListActivity {
         highScoreAdapter.open();       
         
         // Clear Button
+        /*
         Button clearButton = (Button) findViewById(R.id.clearButton);
         clearButton.setOnClickListener(new View.OnClickListener() {
         	public void onClick(View view) {
         		clearHighscore();        		
         	}
         });        
-       
-        switchHighScoreButton("ONLINE");        
+       */
+
+        switchHighScoreButton("Online");        
         registerForContextMenu(getListView());
         
         fillData(empty);      
@@ -125,13 +128,12 @@ public class HighScoreActivity extends ListActivity {
     	final String[] onlineData = new String[size]; // {};
     	
     	if(!isOnline()) {
-    		Log.i("", "not online");
     		highScoreAdapter.toastMessage(R.string.hs_error_no_internet);
     	} else {
     	
 	    	try {
 	    		HttpClient client = new DefaultHttpClient();  
-	    		String getURL = "http://rh.fidrelity.at/best.php?size=" + Integer.toString(size);
+	    		String getURL = GET_HIGHSCORE_URL + "?size=" + Integer.toString(size);
 	    		HttpGet get = new HttpGet(getURL);
 	    		// query data from server
 	    		HttpResponse responseGet = client.execute(get); 
@@ -171,9 +173,9 @@ public class HighScoreActivity extends ListActivity {
 					loadOnlineHighscore(10);
 				}
 			});
-	        isOnlineView = true;
+	        isOnlineView = false;
 	        
-    	} else {    		
+    	} else {
 
     		getOnlineHS.setText(R.string.hs_bttn_getlocal);			
             getOnlineHS.setOnClickListener(new View.OnClickListener() {
@@ -181,7 +183,7 @@ public class HighScoreActivity extends ListActivity {
     				fillData(empty);
     			}
     		});
-            isOnlineView = false;
+            isOnlineView = true;
     	}
     }
     
@@ -213,7 +215,10 @@ public class HighScoreActivity extends ListActivity {
     @Override
     protected void onListItemClick(ListView l, View v, int position, final long id) {
         super.onListItemClick(l, v, position, id);
-       
+        
+        String g = isOnlineView ? "true" : "false";
+        
+        Log.i("isOnlineView", g);
         if(isOnlineView == true)
         	return;    
         
@@ -229,7 +234,7 @@ public class HighScoreActivity extends ListActivity {
         final int isonline = cursor.getInt(cursor.getColumnIndex(HighscoreAdapter.KEY_ISONLINE));
        
         final TextView input = new TextView(this);
-        input.setText("Name: " + name + " Score: " + score + " isOnline: " + isonline);
+        input.setText("Name: " + name + " Score: " + score);
         alert.setView(input);
 
         // OK
@@ -239,9 +244,7 @@ public class HighScoreActivity extends ListActivity {
         	if(isonline == 1) {
         		highScoreAdapter.toastMessage(R.string.hs_already_pushed);
         	} else {
-        		
-        		/**TODO: CHECK IF USER IS ONLINE **/
-        		
+        	        		
         		// Create a new HttpClient and Post Header
         	    HttpClient httpclient = new DefaultHttpClient();
         	    HttpPost httppost = new HttpPost(POST_HIGHSCORE_URL);

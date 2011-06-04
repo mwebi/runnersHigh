@@ -22,13 +22,7 @@
 	    android:textSize="26dp"
 	    android:textColor="#FFFFFF"
 	    />
-	
-  <Button android:id="@+id/clearButton"
-		android:layout_marginLeft="15dp" 
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-	    android:text="Clear"
-		/>
+
   <Button android:id="@+id/onlineHSButton"
 		android:layout_marginLeft="15dp" 
 		android:layout_width="wrap_content"
