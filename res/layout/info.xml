@@ -15,12 +15,21 @@
 	    android:textSize="26dp"
 	    android:textColor="#FFFFFF"
 	    />
-
-  
+	    
 	<TextView  
 		android:id="@+id/infoText"
 	  	android:layout_width="fill_parent" 
 	    android:layout_height="wrap_content"    
 	    android:textSize="12dp"
-	    android:textColor="#FFFFFF" android:text="@string/info"/>
+	    android:textColor="#FFFFFF" android:text="@string/info"/>	    
+	    
+	 <Button android:id="@+id/websiteButton" 
+		android:layout_marginTop="50dp" 
+		android:layout_height="wrap_content" 
+		android:layout_width="wrap_content"		
+		android:textSize="10dp"
+		android:padding="20dp"
+		android:onClick="visitWebsite"
+		android:text="@string/visit_website"		
+		/>
 </LinearLayout>

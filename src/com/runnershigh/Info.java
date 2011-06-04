@@ -1,9 +1,10 @@
 package com.runnershigh;
 
 import android.app.Activity;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
-import android.view.Window;
-import android.view.WindowManager;
+import android.view.View;
 
 public class Info extends Activity{
 	
@@ -15,5 +16,10 @@ public class Info extends Activity{
 
         //requestWindowFeature(Window.FEATURE_NO_TITLE);  
         //getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
+    }
+    
+    public void visitWebsite(View view) {
+    	Intent browserIntent = new Intent("android.intent.action.VIEW", Uri.parse("http://rh.fidrelity.at"));
+    	startActivity(browserIntent);
     }
 }
