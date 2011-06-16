@@ -21,7 +21,7 @@ import android.view.WindowManager;
 
 public class main extends Activity {
 		PowerManager.WakeLock wakeLock ;
-		MediaPlayer musicPlayerIntro;
+		//MediaPlayer musicPlayerIntro;
 		MediaPlayer musicPlayerLoop;
 		boolean MusicLoopStartedForFirstTime = false;
 		boolean paused =false;
@@ -43,12 +43,12 @@ public class main extends Activity {
 	        SoundManager.initSounds(this);
 	        SoundManager.loadSounds();
 	        
-	        musicPlayerIntro = MediaPlayer.create(getApplicationContext(), R.raw.nyanintro);
-	        musicPlayerIntro.start();
-	        musicPlayerIntro.setVolume(0.5f, 0.5f);
-	        musicPlayerIntro.setLooping(false);
+	        //musicPlayerIntro = MediaPlayer.create(getApplicationContext(), R.raw.nyanintro);
+	        //musicPlayerIntro.start();
+	        //musicPlayerIntro.setVolume(0.5f, 0.5f);
+	        //musicPlayerIntro.setLooping(false);
 	        
-	        musicPlayerLoop= MediaPlayer.create(getApplicationContext(), R.raw.nyanloop);
+	        musicPlayerLoop= MediaPlayer.create(getApplicationContext(), R.raw.footsteps);
 	        musicPlayerLoop.setLooping(true);
 			musicPlayerLoop.seekTo(0);
 			musicPlayerLoop.setVolume(0.5f, 0.5f);
@@ -66,7 +66,6 @@ public class main extends Activity {
 	    protected void onDestroy() {
 	    	Log.d("debug", "onDestroy");
 			wakeLock.release();
-			musicPlayerIntro.release();
 			musicPlayerLoop.release();
 			SoundManager.cleanup();
 			super.onDestroy();
@@ -233,12 +232,12 @@ public class main extends Activity {
 			// wait until the intro is over
 			// this gives the app enough time to load
 			try{
-				//Thread.sleep(500);
-				while(musicPlayerIntro.isPlaying()){
-					blackImgAlpha-=0.0025; 
-					blackRHD.setColor(0, 0, 0, blackImgAlpha);
-					Thread.sleep(10);
-				}
+				Thread.sleep(500);
+				//while(musicPlayerIntro.isPlaying()){
+				//	blackImgAlpha-=0.0025; 
+				//	blackRHD.setColor(0, 0, 0, blackImgAlpha);
+				//	Thread.sleep(10);
+				//}
 			}
 			catch (InterruptedException e)
 			{
