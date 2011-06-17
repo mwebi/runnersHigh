@@ -20,11 +20,13 @@ public class Menu extends Activity {
     	super.onCreate(savedInstanceState);
         setContentView(R.layout.menu);   
         
-        menuLoop = MediaPlayer.create(getApplicationContext(), R.raw.menu);
+        /*
+        menuLoop = MediaPlayer.create(getApplicationContext(), R.raw.menu);  
         menuLoop.setLooping(true);
         menuLoop.seekTo(0);
         menuLoop.setVolume(0.5f, 0.5f);
         menuLoop.start();
+        */
     }
     
     public void playGame(View view) {
@@ -41,16 +43,4 @@ public class Menu extends Activity {
     	Intent myIntent = new Intent (this, Info.class);
     	startActivity (myIntent);
     }
-    
-    @Override
-    protected void onDestroy() {
-    	menuLoop.release();
-    	Log.d("debug", "WEITER WEITER WEITER");
-    }
-    @Override
-	public void onPause() {
-		Log.d("debug", "PAUSE PAUSE PAUSE");
-		menuLoop.pause();
-		super.onPause();
-	}
 }
