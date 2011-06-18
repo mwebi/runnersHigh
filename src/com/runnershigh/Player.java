@@ -124,11 +124,6 @@ public class Player{
 					// true -> player goes through left side -> platform mode
 					return false;
 				}
-				
-				// TODO: remove this test code
-				//if (playerRect.right >= Level.blockData[i].BlockRect.right)
-					//jumping = true;
-				
 			}
 		}
 		lastPosY = y;
