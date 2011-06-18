@@ -48,10 +48,10 @@ import com.highscore.HighscoreAdapter;
 public class HighScoreActivity extends ListActivity {
 	
 	private HighscoreAdapter highScoreAdapter = null;
-	
+
 	private static final String SHOW_LIMIT = "10";
-	private static final String POST_HIGHSCORE_URL = "http://rh.fidrelity.at/post/post_highscore.php";
-	private static final String GET_HIGHSCORE_URL = "http://rh.fidrelity.at/best.php";
+	private static final String POST_HIGHSCORE_URL = Settings.HIGHSCORE_POST_URL; // "http://rh.fidrelity.at/post/post_highscore.php";
+	private static final String GET_HIGHSCORE_URL = Settings.HIGHSCORE_GET_URL; // "http://rh.fidrelity.at/best.php";
 	
 	private boolean isOnlineView = false;
 	
@@ -161,9 +161,8 @@ public class HighScoreActivity extends ListActivity {
     
     // ---------------------------------------------------------
     // Switch Views
-    private void switchHighScoreButton(String state) {
-    	
-    	final Button getOnlineHS = (Button) findViewById(R.id.onlineHSButton);
+    private void switchHighScoreButton(String state) {    	
+    	Button getOnlineHS = (Button) findViewById(R.id.onlineHSButton);
     	
     	if(state == "ONLINE") {
     		

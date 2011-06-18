@@ -19,7 +19,7 @@ public class Info extends Activity{
     }
     
     public void visitWebsite(View view) {
-    	Intent browserIntent = new Intent("android.intent.action.VIEW", Uri.parse("http://rh.fidrelity.at"));
+    	Intent browserIntent = new Intent("android.intent.action.VIEW", Uri.parse(Settings.WEBSITE_URL));
     	startActivity(browserIntent);
     }
 }
