@@ -24,6 +24,7 @@ public class Player{
 	private float jumpStartY;
 	private float velocity = 0;
 	private Rect playerRect;
+	private Rect ObstacleRect;
 	private float speedoffsetX = 0;
 	private Bitmap playerSpriteImg; 
 	public PlayerSprite playerSprite;
@@ -40,6 +41,14 @@ public class Player{
 		playerSprite = new PlayerSprite(x, y, 1, width, height, 25, 8); 
 		playerSprite.loadBitmap(playerSpriteImg); 
 		glrenderer.addMesh(playerSprite);
+		
+		playerRect = new Rect();
+		playerRect.left =(int)x;
+		playerRect.top =(int)y+height;
+		playerRect.right =(int)x+width;
+		playerRect.bottom =(int)y;
+		
+		ObstacleRect = new Rect();
 	}
 	
 	public void setJump(boolean jump) {
@@ -82,11 +91,14 @@ public class Player{
 		
 		y += velocity;
 		
-		playerRect = new Rect((int)x,(int)y+height,(int)x+width,(int)y);
+		playerRect.left =(int)x;
+		playerRect.top =(int)y+height;
+		playerRect.right =(int)x+width;
+		playerRect.bottom =(int)y;
 		
 		for (int i = 0; i < Level.maxBlocks; i++)
 		{
-			if( checkIntersect(playerRect, Level.blockData[i].getRect()) ){
+			if( checkIntersect(playerRect, Level.blockData[i].BlockRect) ){
 				if(lastPosY >= Level.blockData[i].mHeight)
 				{
 					y=Level.blockData[i].mHeight;
@@ -117,8 +129,6 @@ public class Player{
 	}	
 	
 	public boolean collidedWithObstacle(int levelPosition) {
-		
-		Rect ObstacleRect = new Rect();
 		
 		for(int i = 0; i < Level.maxObstaclesJumper; i++)
 		{
