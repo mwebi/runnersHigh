@@ -8,14 +8,14 @@ import android.graphics.Rect;
 import android.util.Log;
 
 public class Player{
-	private static float MAX_JUMP_HEIGHT = 70;  //TODO: make MAX_JUMP_HEIGHT < 100 possible
+	private static float MAX_JUMP_HEIGHT = 55;  //TODO: make MAX_JUMP_HEIGHT < 100 possible
 	private static float MIN_JUMP_HEIGHT = 30;
 	public Bitmap playerImg;
 	private float lastPosY;
 	static public int width;
 	private int height;
-	private float x;
-	private float y;
+	public float x;
+	public float y;
 	private boolean jumping = false;
 	private boolean jumpingsoundplayed = true;
 	private boolean reachedPeak = false;
@@ -75,7 +75,7 @@ public class Player{
 		
 		if (jumping && !reachedPeak) {
 			
-			velocity += 0.9f * (MAX_JUMP_HEIGHT - (y - jumpStartY)) / 100.f;
+			velocity += 1.5f * (MAX_JUMP_HEIGHT - (y - jumpStartY)) / 100.f;
 
 
 			if(Settings.RHDEBUG){
@@ -235,20 +235,6 @@ public class Player{
 		speedoffsetX = 0;
 	}
 	
-	public int getPosX() {
-		return (int)x;
-	}
 
-	public void setPosX(int posX) {
-		this.x = posX;
-	}
-
-	public int getPosY() {
-		return (int)y;
-	}
-
-	public void setPosY(int posY) {
-		this.y = posY;
-	}
 
 }

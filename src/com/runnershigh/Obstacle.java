@@ -17,6 +17,10 @@ public class Obstacle extends RHDrawable {
 	public Obstacle(float _x, float _y, float _z, float _width, float _height, char type){
 		super((int)_x, (int)_y, (int)_z, (int)_width, (int)_height);
 		
+		x=_x;
+		y=_y;
+		z=_z;
+		
 		ObstacleType=type;
 		ObstacleRect = new Rect ((int)x, (int)y, (int)x+(int)width, (int)y+(int)height);
 		

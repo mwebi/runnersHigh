@@ -186,7 +186,7 @@ public class main extends Activity {
 			level = new Level(context, mRenderer, width, height);
 			
 			// Loading Toast
-			loadMessage = Toast.makeText(context, "Fat guys need longer ...", 4000 );
+			loadMessage = Toast.makeText(context, "Game loading", 4000 );
 			loadMessage.setGravity(Gravity.CENTER|Gravity.CENTER, 0, 0);
 			
 			//new counter
@@ -301,7 +301,7 @@ public class main extends Activity {
 							Log.d("runtime", "time after background update: " + Integer.toString((int)currentTimeTaken));
 						}
 				} else {
-					if(player.getPosY() < 0){
+					if(player.y < 0){
 						doUpdateCounter=false;
 						resetButton.setShowButton(true);
 						resetButton.z = 1.0f;
