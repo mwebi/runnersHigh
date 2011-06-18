@@ -3,7 +3,6 @@ package com.runnershigh;
 import android.content.Context;
 
 import java.util.TimerTask;
-import java.util.Vector;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
@@ -56,7 +55,8 @@ public class Player{
 		if(!jump)
 		{
 			reachedPeak = true;
-			Log.d("debug", "!jump");
+			if(Settings.RHDEBUG)
+				Log.d("debug", "!jump");
 		}
 		
 		if(reachedPeak) return;
@@ -78,17 +78,19 @@ public class Player{
 		
 		if (jumping && !reachedPeak) {
 			
-			velocity += 0.5f * (MAX_JUMP_HEIGHT - (y - jumpStartY)) / 100.f;
-
-			Log.d("debug", "velocity: " + velocity);
-			Log.d("debug", "modifier: " + (MAX_JUMP_HEIGHT - (y - jumpStartY)) / 100.0f);
-
-			Log.d("debug", "MAX_JUMP_HEIGHT - (y - jumpStartY): " + (MAX_JUMP_HEIGHT - (y - jumpStartY)));
+			velocity += 0.5f * (MAX_JUMP_HEIGHT - (y - jumpStartY)) / 100.0f;
+			
+			if(Settings.RHDEBUG){
+				Log.d("debug", "velocity: " + velocity);
+				Log.d("debug", "modifier: " + (MAX_JUMP_HEIGHT - (y - jumpStartY)) / 100.0f);
+				Log.d("debug", "MAX_JUMP_HEIGHT - (y - jumpStartY): " + (MAX_JUMP_HEIGHT - (y - jumpStartY)));
+			}
 
 			if(y - jumpStartY >= MAX_JUMP_HEIGHT)
 			{
 				reachedPeak = true;			
-				Log.d("debug", "reachedPeak");
+				if(Settings.RHDEBUG)
+					Log.d("debug", "reachedPeak");
 			}
 		}
 		else

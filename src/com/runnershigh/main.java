@@ -63,7 +63,8 @@ public class main extends Activity {
 		
 	    @Override
 	    protected void onDestroy() {
-	    	Log.d("debug", "onDestroy main");
+	    	if(Settings.RHDEBUG)
+	    		Log.d("debug", "onDestroy main");
 	    	isRunning = false;
 			wakeLock.release();
 			musicPlayerLoop.release();
@@ -72,7 +73,8 @@ public class main extends Activity {
 		}
 		@Override
 		public void onResume() {
-			Log.d("debug", "onResume");
+			if(Settings.RHDEBUG)
+				Log.d("debug", "onResume");
 			wakeLock.acquire();
 			if(MusicLoopStartedForFirstTime)
 				musicPlayerLoop.start();
@@ -81,18 +83,21 @@ public class main extends Activity {
 		}
 		@Override
 		public void onStop() {
-			Log.d("debug", "onStop");
+			if(Settings.RHDEBUG)
+				Log.d("debug", "onStop");
 			super.onStop();
 		}
 		@Override
 		public void onRestart() {
-			Log.d("debug", "onRestart");
+			if(Settings.RHDEBUG)
+				Log.d("debug", "onRestart");
 			paused=false;
 			super.onRestart();
 		}
 		@Override
 		public void onPause() {
-			Log.d("debug", "onPause");
+			if(Settings.RHDEBUG)
+				Log.d("debug", "onPause");
 			paused=true;
 			wakeLock.release();
 			musicPlayerLoop.pause();
@@ -161,7 +166,8 @@ public class main extends Activity {
 			background.loadLayerNear(BitmapFactory.decodeResource(context.getResources(),
 					R.drawable.backgroundlayer1_compr));
 
-			Log.d("debug", "before addMesh");
+			if(Settings.RHDEBUG)
+				Log.d("debug", "before addMesh");
 			mRenderer.addMesh(background);
 			
 			resetButtonImg = BitmapFactory.decodeResource(context.getResources(),R.drawable.resetbutton);
@@ -227,12 +233,14 @@ public class main extends Activity {
 	        Thread rHThread = new Thread(this);
 			rHThread.start();
 			
-			Log.d("debug", "RunnersHighView constructor ended");
+			if(Settings.RHDEBUG)
+				Log.d("debug", "RunnersHighView constructor ended");
 		}
 		
 		public void run() {
 
-	    	Log.d("debug", "run method started");
+			if(Settings.RHDEBUG)
+				Log.d("debug", "run method started");
 	    	
 			// wait until the intro is over
 			// this gives the app enough time to load
@@ -240,7 +248,12 @@ public class main extends Activity {
 				while(!mRenderer.firstFrameDone)
 					Thread.sleep(10);
 
-				Log.d("debug", "first frame done");
+				if(Settings.RHDEBUG)
+					Log.d("debug", "first frame done");
+
+				if(!musicPlayerLoop.isPlaying())
+					musicPlayerLoop.start();
+				MusicLoopStartedForFirstTime=true;
 				
 				long timeAtStart = System.currentTimeMillis();
 				while (System.currentTimeMillis() < timeAtStart + 2000)
@@ -258,10 +271,6 @@ public class main extends Activity {
 			blackRHD.setColor(0, 0, 0, 0);
 			blackRHD.z=-1.0f;
 			//mRenderer.removeMesh(blackRHD); //TODO: find a way to remove mesh without runtime errors
-			
-			if(!musicPlayerLoop.isPlaying())
-				musicPlayerLoop.start();
-			MusicLoopStartedForFirstTime=true;
 
 			long timeForOneCycle=0;
 			long currentTimeTaken=0;
@@ -341,8 +350,8 @@ public class main extends Activity {
 				}
 			}
 			
-
-	    	Log.d("debug", "run method ended");
+			if(Settings.RHDEBUG)
+				Log.d("debug", "run method ended");
 			
 		}
 		
