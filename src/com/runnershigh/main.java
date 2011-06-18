@@ -1,6 +1,5 @@
 package com.runnershigh;
 
-import com.runnershigh.OpenGLRenderer;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -13,9 +12,11 @@ import android.os.Bundle;
 import android.os.PowerManager;
 import android.util.Log;
 import android.view.Display;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Toast;
 
 public class main extends Activity {
 		PowerManager.WakeLock wakeLock ;
@@ -139,7 +140,7 @@ public class main extends Activity {
 		public  boolean doUpdateCounter = true;
 		private long timeAtLastSecond;
 		private int runCycleCounter;
-		
+		private Toast loadMessage;
 		public RunnersHighView(Context context) {
 			super(context);
 			
@@ -184,6 +185,9 @@ public class main extends Activity {
 			
 			level = new Level(context, mRenderer, width, height);
 			
+			// Loading Toast
+			loadMessage = Toast.makeText(context, "Fat guys need longer ...", 4000 );
+			loadMessage.setGravity(Gravity.CENTER|Gravity.CENTER, 0, 0);
 			
 			//new counter
 			CounterYourScoreImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.yourscore);
@@ -226,7 +230,7 @@ public class main extends Activity {
 			blackRHD.setColor(0, 0, 0, blackImgAlpha);
 			blackRHD.loadBitmap(blackImg);
 			mRenderer.addMesh(blackRHD);
-			
+					
 			timeAtLastSecond = System.currentTimeMillis();
 	        runCycleCounter=0;
 			
@@ -241,13 +245,14 @@ public class main extends Activity {
 
 			if(Settings.RHDEBUG)
 				Log.d("debug", "run method started");
-	    	
+					
 			// wait until the intro is over
 			// this gives the app enough time to load
 			try{
+				loadMessage.show();
 				while(!mRenderer.firstFrameDone)
 					Thread.sleep(10);
-
+				
 				if(Settings.RHDEBUG)
 					Log.d("debug", "first frame done");
 
