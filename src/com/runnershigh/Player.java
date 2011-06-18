@@ -8,7 +8,7 @@ import android.graphics.Rect;
 import android.util.Log;
 
 public class Player{
-	private static float MAX_JUMP_HEIGHT = 80;  //TODO: make MAX_JUMP_HEIGHT < 100 possible
+	private static float MAX_JUMP_HEIGHT = 70;  //TODO: make MAX_JUMP_HEIGHT < 100 possible
 	private static float MIN_JUMP_HEIGHT = 30;
 	public Bitmap playerImg;
 	private float lastPosY;
@@ -66,7 +66,7 @@ public class Player{
 	
 	public boolean update() {
 		playerSprite.updatePosition(x, y);
-		//playerSprite.tryToSetNextFrame();
+		playerSprite.tryToSetNextFrame();
 		
 		if(jumpingsoundplayed==false){
 			SoundManager.playSound(3, 1);
@@ -75,7 +75,7 @@ public class Player{
 		
 		if (jumping && !reachedPeak) {
 			
-			velocity += 0.8f * (MAX_JUMP_HEIGHT - (y - jumpStartY)) / 100.f;
+			velocity += 0.9f * (MAX_JUMP_HEIGHT - (y - jumpStartY)) / 100.f;
 
 
 			if(Settings.RHDEBUG){

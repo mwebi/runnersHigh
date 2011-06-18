@@ -314,8 +314,8 @@ public class main extends Activity {
 				}
 				
 				
-				//if(doUpdateCounter)
-					//mCounterGroup.tryToSetCounterTo(level.getScoreCounter());
+				if(doUpdateCounter)
+					mCounterGroup.tryToSetCounterTo(level.getScoreCounter());
 
 				if(Settings.RHDEBUG){				
 					timeForOneCycle= System.currentTimeMillis()- starttime;
