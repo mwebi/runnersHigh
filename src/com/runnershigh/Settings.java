@@ -12,5 +12,6 @@ public class Settings {
 	static final String HIGHSCORE_POST_URL = "http://rh.fidrelity.at/post/post_highscore.php";	
 
 	static final boolean RHDEBUG = false;
-
+	
+	static final int FirstBlockHeight = 50;
 }

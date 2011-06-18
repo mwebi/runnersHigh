@@ -180,9 +180,10 @@ public class main extends Activity {
 			saveButton.loadBitmap(saveButtonImg);
 			mRenderer.addMesh(saveButton);
 			
+			level = new Level(context, mRenderer, width, height);
+
 			player = new Player(getApplicationContext(), mRenderer, height);
 			
-			level = new Level(context, mRenderer, width, height);
 			
 			//new counter
 			CounterYourScoreImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.yourscore);

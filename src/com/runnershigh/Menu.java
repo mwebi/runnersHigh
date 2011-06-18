@@ -24,7 +24,7 @@ public class Menu extends Activity {
         setContentView(R.layout.menu); 
         
 
-		loadMessage = Toast.makeText(getApplicationContext(), "Fat guys need longer ...", 3000 );
+		loadMessage = Toast.makeText(getApplicationContext(), "Game loading", 3000 );
 		loadMessage.setGravity(Gravity.CENTER|Gravity.CENTER, 0, 0);
         
         /*

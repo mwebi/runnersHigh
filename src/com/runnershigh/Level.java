@@ -213,7 +213,7 @@ public class Level {
 			blockData[0] = new Block();
 		blockData[0].x = 0;
 		blockData[0].setWidth(width);
-		blockData[0].setHeight(50);
+		blockData[0].setHeight(Settings.FirstBlockHeight);
 		blockData[0].updateRect();
 		
 		if(Settings.RHDEBUG)

@@ -8,7 +8,7 @@ import android.graphics.Rect;
 import android.util.Log;
 
 public class Player{
-	private static float MAX_JUMP_HEIGHT = 55;  //TODO: make MAX_JUMP_HEIGHT < 100 possible
+	private static float MAX_JUMP_HEIGHT = 50;  //TODO: make MAX_JUMP_HEIGHT < 100 possible
 	private static float MIN_JUMP_HEIGHT = 30;
 	public Bitmap playerImg;
 	private float lastPosY;
@@ -32,7 +32,7 @@ public class Player{
 
 	public Player(Context context, OpenGLRenderer glrenderer, int ScreenHeight) {
 		x = 70; 
-		y = 200;
+		y = Settings.FirstBlockHeight+2;
 		
 		width = 40; //40; nyan cat //60; nyan cat pre minimalize //62; playersprite settings
 		height = 40; //30;  nyan cat //42; nyan cat pre minimalize //63; playersprite settings
@@ -227,9 +227,10 @@ public class Player{
 	}
 	
 	public void reset() {
-		x = 70; // x/y is bottom left corner of picture
-		y = 200;
 		velocity = 0;
+		x = 70; // x/y is bottom left corner of picture
+		y = Settings.FirstBlockHeight+20;
+		
 		speedoffsetX = 0;
 	}
 	
