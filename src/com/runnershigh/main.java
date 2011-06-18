@@ -25,9 +25,8 @@ public class main extends Activity {
 		MediaPlayer musicPlayerLoop;
 		boolean MusicLoopStartedForFirstTime = false;
 		boolean paused =false;
+
 		boolean isRunning = false;
-		
-		boolean RHDEBUG = false;
 		
 		/** Called when the activity is first created. */
 	    @Override
@@ -265,13 +264,30 @@ public class main extends Activity {
 			if(!musicPlayerLoop.isPlaying())
 				musicPlayerLoop.start();
 			MusicLoopStartedForFirstTime=true;
-	        
+
+			long timeForOneCycle=0;
+			long currentTimeTaken=0;
+			long starttime = 0;
+			
 			while(isRunning){
-				long starttime = System.currentTimeMillis();
+				starttime= System.currentTimeMillis();
+
 				player.playerSprite.setFrameUpdateTime( (level.baseSpeedMax+level.extraSpeedMax)*10 -((level.baseSpeed+level.extraSpeed)*10) );
 				if (player.update()) {
+						if(Settings.RHDEBUG){
+							currentTimeTaken = System.currentTimeMillis()- starttime;
+							Log.d("runtime", "time after player update: " + Integer.toString((int)currentTimeTaken));
+						}
 						level.update();
+						if(Settings.RHDEBUG){
+							currentTimeTaken = System.currentTimeMillis()- starttime;
+							Log.d("runtime", "time after level update: " + Integer.toString((int)currentTimeTaken));
+						}
 						background.updat();
+						if(Settings.RHDEBUG){
+							currentTimeTaken = System.currentTimeMillis()- starttime;
+							Log.d("runtime", "time after background update: " + Integer.toString((int)currentTimeTaken));
+						}
 				} else {
 					if(player.getPosY() < 0){
 						doUpdateCounter=false;
@@ -294,9 +310,11 @@ public class main extends Activity {
 				if(doUpdateCounter)
 					mCounterGroup.tryToSetCounterTo(level.getScoreCounter());
 
-				long timeForOneCycle= System.currentTimeMillis()- starttime;
-				//Log.d("runtime", "timeForOneCycle: " + Integer.toString((int)timeForOneCycle));
-				
+				if(Settings.RHDEBUG){				
+					timeForOneCycle= System.currentTimeMillis()- starttime;
+					Log.d("runtime", "time after counter update: " + Integer.toString((int)timeForOneCycle));
+				}
+				timeForOneCycle= System.currentTimeMillis()- starttime;
 				//postInvalidate();
 				if(timeForOneCycle>9)
 					timeForOneCycle=9;
@@ -308,11 +326,20 @@ public class main extends Activity {
 				}
 				runCycleCounter++;
 				
-				//long timeForOneCycle= System.currentTimeMillis()- starttime;
-				if((System.currentTimeMillis() - timeAtLastSecond) > 1000 && RHDEBUG){
+				if(Settings.RHDEBUG){
+					currentTimeTaken = System.currentTimeMillis()- starttime;
+					Log.d("runtime", "time after thread sleep : " + Integer.toString((int)currentTimeTaken));
+				}
+				
+				timeForOneCycle= System.currentTimeMillis()- starttime;
+				if((System.currentTimeMillis() - timeAtLastSecond) > 1000 && Settings.RHDEBUG){
 					timeAtLastSecond = System.currentTimeMillis();
 					Log.d("runtime", "run cycles per second: " + Integer.toString(runCycleCounter));
 					runCycleCounter=0;
+				}
+				if(Settings.RHDEBUG){
+					timeForOneCycle= System.currentTimeMillis()- starttime;
+					Log.d("runtime", "overall time for this run: " + Integer.toString((int)timeForOneCycle));
 				}
 			}
 			

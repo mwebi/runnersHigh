@@ -11,6 +11,8 @@ public class Block extends Group {
 	public float mWidth;
 	public float mHeight;
 	
+	public Rect BlockRect;
+	
 	private RHDrawable mLeft;
 	private RHDrawable mMiddle;
 	private RHDrawable mRight;
@@ -75,11 +77,16 @@ public class Block extends Group {
 		add(mLeft);
 		add(mMiddle);
 		add(mRight);
+		
+		BlockRect = new Rect((int)x, (int)(y+mHeight), (int)(x+mWidth), (int)y );
 	}
 	
-	public Rect getRect()
+	public void updateRect()
 	{
-		return new Rect((int)x,(int)(y+mHeight),(int)(x+mWidth),(int)y);
+		BlockRect.left =(int)x;
+		BlockRect.top = (int)(y+mHeight);
+		BlockRect.right = (int)(x+mWidth);
+		BlockRect.bottom = (int)y;
 	}
 	
 	public void setWidth(float width)
