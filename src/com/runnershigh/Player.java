@@ -33,11 +33,11 @@ public class Player{
 		x = 70; 
 		y = 200;
 		
-		width = 40; //60; nyan cat pre minimalize //62; playersprite settings
-		height = 30; //42; nyan cat pre minimalize //63; playersprite settings
+		width = 40; //40; nyan cat //60; nyan cat pre minimalize //62; playersprite settings
+		height = 40; //30;  nyan cat //42; nyan cat pre minimalize //63; playersprite settings
 		
-		playerSpriteImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.nyansprite);
-		playerSprite = new PlayerSprite(x, y, 1, width, height, 25, 6); 
+		playerSpriteImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.bastardchar1024x256);
+		playerSprite = new PlayerSprite(x, y, 1, width, height, 25, 8); 
 		playerSprite.loadBitmap(playerSpriteImg); 
 		glrenderer.addMesh(playerSprite);
 	}

@@ -27,10 +27,10 @@ import android.util.Log;
 public class OpenGLRenderer implements Renderer {
 	private final Group root;
 	private long timeAtLastSecond;
+	private long currentTimeTaken=0;
+	private long starttime = 0;
 	private int fpsCounter;
 	
-	boolean RHDEBUG = false;
-
 	public OpenGLRenderer() {
 		// Initialize our root.
 		Group group = new Group();
@@ -47,6 +47,11 @@ public class OpenGLRenderer implements Renderer {
 	public void onSurfaceCreated(GL10 gl, EGLConfig config) {
 		// Set the background color to black ( rgba ).
 		gl.glClearColor(0.0f, 0.0f, 0.0f, 0.5f);
+
+		//besser für performance?
+		gl.glDisable(GL10.GL_DITHER);
+
+		
 		// Enable Smooth Shading, default not really needed.
 		gl.glShadeModel(GL10.GL_SMOOTH);
 		// Depth buffer setup.
@@ -76,18 +81,31 @@ public class OpenGLRenderer implements Renderer {
 	 */
 
 	public void onDrawFrame(GL10 gl) {
-		//long starttime = System.currentTimeMillis();
+		if(Settings.RHDEBUG){
+			starttime = System.currentTimeMillis();
+			currentTimeTaken= System.currentTimeMillis()- starttime;
+			Log.d("frametime", "time at beginning: " + Integer.toString((int)currentTimeTaken));
+		}
 		// Clears the screen and depth buffer.
 		gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
 		// Replace the current matrix with the identity matrix
 		gl.glLoadIdentity();
 		
+		if(Settings.RHDEBUG){
+			currentTimeTaken= System.currentTimeMillis()- starttime;
+			Log.d("frametime", "time after clear and loadident: " + Integer.toString((int)currentTimeTaken));
+		}
+		
 		// Draw our scene.
 		root.draw(gl);
 		fpsCounter++;
 		
-		//long timeForOneCycle= System.currentTimeMillis()- starttime;
-		if((System.currentTimeMillis() - timeAtLastSecond) > 1000 && RHDEBUG){
+		if(Settings.RHDEBUG){
+			currentTimeTaken= System.currentTimeMillis()- starttime;
+			Log.d("frametime", "time after draw: " + Integer.toString((int)currentTimeTaken));
+		}
+		
+		if((System.currentTimeMillis() - timeAtLastSecond) > 1000 && Settings.RHDEBUG){
 			timeAtLastSecond = System.currentTimeMillis();
 			Log.d("frametime", "draws per second: " + Integer.toString(fpsCounter));
 			fpsCounter=0;
@@ -106,7 +124,7 @@ public class OpenGLRenderer implements Renderer {
 
 		// gl.glViewport(0, 0, width, height);
 		// GLU.gluOrtho2D(gl, 0, width, 0, height);
-
+		Log.d("frametime", "onSurfaceChanged called");
 		gl.glViewport(0, 0, width, height);
 		gl.glMatrixMode(GL10.GL_PROJECTION);
 		gl.glLoadIdentity();
