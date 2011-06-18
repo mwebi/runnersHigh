@@ -70,7 +70,7 @@ public class HighscoreAdapter extends DbAdapter {
 	// Show List
 	public Cursor fetchScores(String limit) throws SQLException {
 
-		// "isonline = " + isOnline
+		String theLimit = limit == "0" ? "" : limit;
 
 		Cursor mCursor = mDb.query(DATABASE_TABLE, new String[] { KEY_ROWID,
 				KEY_NAME, KEY_SCORE, KEY_ISONLINE }, null, null, null, null,
