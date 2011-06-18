@@ -1,6 +1,7 @@
 package com.runnershigh;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -141,6 +142,9 @@ public class main extends Activity {
 		private long timeAtLastSecond;
 		private int runCycleCounter;
 		private Toast loadMessage;
+		
+		private ProgressDialog loadingDialog;
+		
 		public RunnersHighView(Context context) {
 			super(context);
 			
@@ -188,6 +192,10 @@ public class main extends Activity {
 			// Loading Toast
 			loadMessage = Toast.makeText(context, "Fat guys need longer ...", 4000 );
 			loadMessage.setGravity(Gravity.CENTER|Gravity.CENTER, 0, 0);
+			
+			loadingDialog = new ProgressDialog( context );
+		    loadingDialog.setProgressStyle(0);
+		    loadingDialog.setMessage("Loading Highscore ...");
 			
 			//new counter
 			CounterYourScoreImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.yourscore);
@@ -249,7 +257,7 @@ public class main extends Activity {
 			// wait until the intro is over
 			// this gives the app enough time to load
 			try{
-				loadMessage.show();
+				loadingDialog.show();
 				while(!mRenderer.firstFrameDone)
 					Thread.sleep(10);
 				
@@ -267,6 +275,7 @@ public class main extends Activity {
 					blackRHD.setColor(0, 0, 0, blackImgAlpha);
 					Thread.sleep(10);
 				}
+				loadingDialog.hide();
 			}
 			catch (InterruptedException e)
 			{
