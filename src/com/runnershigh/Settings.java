@@ -1,5 +1,7 @@
 /*
  * RunnersHigh Settings 
+ * _DESCRIPTION:
+ * 	for global values
  */
 
 package com.runnershigh;
