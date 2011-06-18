@@ -54,6 +54,8 @@ public class Mesh {
 	
 	private int mWrapS;
 	private int mWrapT;
+	
+	private ByteBuffer byteBuf;
 
 	// The number of indices.
 	private int mNumOfIndices = -1;
@@ -181,12 +183,10 @@ public class Mesh {
 	 * 
 	 * @param textureCoords
 	 */
-	protected void setTextureCoordinates(float[] textureCoords) { // New
-		// function.
+	protected void setTextureCoordinates(float[] textureCoords) { 
 		// float is 4 bytes, therefore we multiply the number if
 		// vertices with 4.
-		ByteBuffer byteBuf = ByteBuffer
-				.allocateDirect(textureCoords.length * 4);
+		byteBuf = ByteBuffer.allocateDirect(textureCoords.length * 4);
 		byteBuf.order(ByteOrder.nativeOrder());
 		mTextureBuffer = byteBuf.asFloatBuffer();
 		mTextureBuffer.put(textureCoords);
