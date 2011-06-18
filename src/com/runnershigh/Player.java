@@ -10,7 +10,7 @@ import android.graphics.Rect;
 import android.util.Log;
 
 public class Player{
-	private static float MAX_JUMP_HEIGHT = 200;  //TODO: make MAX_JUMP_HEIGHT < 100 possible
+	private static float MAX_JUMP_HEIGHT = 150;  //TODO: make MAX_JUMP_HEIGHT < 100 possible
 	private static float MIN_JUMP_HEIGHT = 30;
 	public Bitmap playerImg;
 	private float lastPosY;
@@ -56,7 +56,6 @@ public class Player{
 		if(!jump)
 		{
 			reachedPeak = true;
-			Log.d("debug", "!jump");
 		}
 		
 		if(reachedPeak) return;
@@ -78,22 +77,25 @@ public class Player{
 		
 		if (jumping && !reachedPeak) {
 			
-			velocity += 0.5f * (MAX_JUMP_HEIGHT - (y - jumpStartY)) / 100.f;
+			//velocity = 0.5f * (MAX_JUMP_HEIGHT - (y - jumpStartY)) / 20.f;
+			velocity += 0.3f * (MAX_JUMP_HEIGHT - (y - jumpStartY)) / 100.f;
 
-			Log.d("debug", "velocity: " + velocity);
-			Log.d("debug", "modifier: " + (MAX_JUMP_HEIGHT - (y - jumpStartY)) / 100.0f);
+			//Log.d("debug", "velocity: " + velocity);
+			//Log.d("debug", "modifier: " + (MAX_JUMP_HEIGHT - (y - jumpStartY)) / 100.0f);
 
-			Log.d("debug", "MAX_JUMP_HEIGHT - (y - jumpStartY): " + (MAX_JUMP_HEIGHT - (y - jumpStartY)));
+			Log.d("debug", "y: " + (y));
+			Log.d("debug", "y + height: " + (y + height));
+
+			//Log.d("debug", "MAX_JUMP_HEIGHT - (y - jumpStartY): " + (MAX_JUMP_HEIGHT - (y - jumpStartY)));
 
 			if(y - jumpStartY >= MAX_JUMP_HEIGHT)
 			{
-				reachedPeak = true;			
-				Log.d("debug", "reachedPeak");
+				reachedPeak = true;
 			}
 		}
 		else
 		{
-			velocity -= 0.5f;
+			velocity -= 0.3f;
 		}
 		
 		
@@ -111,8 +113,9 @@ public class Player{
 		
 		for (int i = 0; i < Level.maxBlocks; i++)
 		{
-			if( checkIntersect(playerRect, Level.blockData[i].BlockRect) ){
-				if(lastPosY >= Level.blockData[i].mHeight)
+			if( checkIntersect(playerRect, Level.blockData[i].BlockRect) )
+			{
+				if(lastPosY >= Level.blockData[i].mHeight && velocity <= 0)
 				{
 					y=Level.blockData[i].mHeight;
 					velocity = 0;
@@ -124,6 +127,11 @@ public class Player{
 					// true -> player goes through left side -> platform mode
 					return false;
 				}
+				
+				// TODO: remove this test code
+				//if (playerRect.right >= Level.blockData[i].BlockRect.right)
+					//jumping = true;
+				
 			}
 		}
 		lastPosY = y;
