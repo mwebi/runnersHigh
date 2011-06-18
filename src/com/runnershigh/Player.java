@@ -78,8 +78,7 @@ public class Player{
 			
 			velocity += 0.3f * (MAX_JUMP_HEIGHT - (y - jumpStartY)) / 100.f;
 
-			Log.d("debug", "y: " + (y));
-			Log.d("debug", "y + height: " + (y + height));
+
 			if(Settings.RHDEBUG){
 				//Log.d("debug", "velocity: " + velocity);
 				//Log.d("debug", "modifier: " + (MAX_JUMP_HEIGHT - (y - jumpStartY)) / 100.0f);
