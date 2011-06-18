@@ -11,6 +11,7 @@ public class CounterGroup extends CounterDigit{
 	private int lastCounterValueTens;
 	private int lastCounterValueHundreds;
 	private int lastCounterValueThousands;
+	private int size;
 	
 	
 	public CounterGroup(int _x, int _y, int _z, int _width, int _height, int _FrameUpdateTime){
@@ -30,7 +31,7 @@ public class CounterGroup extends CounterDigit{
 
 	@Override
 	public void draw(GL10 gl) {
-		int size = mChildren.size();
+		size = mChildren.size();
 		for (int i = 0; i < size; i++)
 			mChildren.get(i).draw(gl);
 	}

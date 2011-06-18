@@ -7,6 +7,7 @@ public class CounterDigit extends Mesh {
 	protected float width;
 	protected float height;
 	protected int digitValue;
+	protected float textureCoordinates[] = {0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f};
 	
 	public CounterDigit(int _x, int _y, int _z, int _width, int _height) {
 		x = _x;
@@ -80,11 +81,15 @@ public class CounterDigit extends Mesh {
 	public void setDigitTo(int value) {
 		digitValue=value;
 		
-		float textureCoordinates[] = {0.0625f*digitValue, 1.0f, //
-				0.0625f*digitValue+0.0625f, 1.0f, //
-				0.0625f*digitValue, 0.0f, //
-				0.0625f*digitValue+0.0625f, 0.0f, //
-		};
+		textureCoordinates[0] = 0.0625f*digitValue;
+		textureCoordinates[1] = 1.0f;
+		textureCoordinates[2] = 0.0625f*digitValue+0.0625f;
+		textureCoordinates[3] = 1.0f;
+		textureCoordinates[4] = 0.0625f*digitValue;
+		textureCoordinates[5] = 0.0f;
+		textureCoordinates[6] = 0.0625f*digitValue+0.0625f;
+		textureCoordinates[7] = 0.0f;
+		
 		setTextureCoordinates(textureCoordinates);
 		
 	}
