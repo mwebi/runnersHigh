@@ -1,9 +1,15 @@
+/* 
+ * RunnersHigh Version 1.0
+ * 
+ * _DESCRIPTION:
+ * 		Displays a button ...
+ */
+
 package com.runnershigh;
 
 public class Button extends RHDrawable{
 	private boolean showButton = false;
 	public float lastX;
-	
 	
 	public Button(int _x, int _y, int _z, int _width, int _height){
 		super((int)_x, (int)_y, (int)_z, (int)_width, (int)_height);

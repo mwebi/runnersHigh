@@ -17,14 +17,12 @@ import android.view.MotionEvent;
 import android.view.Window;
 import android.view.WindowManager;
 
-
-
 public class main extends Activity {
 		PowerManager.WakeLock wakeLock ;
 		//MediaPlayer musicPlayerIntro;
 		MediaPlayer musicPlayerLoop;
 		boolean MusicLoopStartedForFirstTime = false;
-		boolean paused =false;
+		boolean paused = false;
 
 		boolean isRunning = false;
 		
@@ -162,11 +160,11 @@ public class main extends Activity {
 			background = new ParalaxBackground(width, height);
 
 			background.loadLayerFar(BitmapFactory.decodeResource(context.getResources(),
-					R.drawable.backgroundlayer3));
+					R.drawable.backgroundlayer3_compr));
 			background.loadLayerMiddle(BitmapFactory.decodeResource(context.getResources(),
-					R.drawable.backgroundlayer2));
+					R.drawable.backgroundlayer2_compr));
 			background.loadLayerNear(BitmapFactory.decodeResource(context.getResources(),
-					R.drawable.backgroundlayer1));
+					R.drawable.backgroundlayer1_compr));
 
 			if(Settings.RHDEBUG)
 				Log.d("debug", "before addMesh");
