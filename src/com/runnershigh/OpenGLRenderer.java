@@ -30,6 +30,7 @@ public class OpenGLRenderer implements Renderer {
 	private int fpsCounter;
 	
 	boolean RHDEBUG = false;
+	public boolean firstFrameDone = false;
 
 	public OpenGLRenderer() {
 		// Initialize our root.
@@ -86,12 +87,15 @@ public class OpenGLRenderer implements Renderer {
 		root.draw(gl);
 		fpsCounter++;
 		
+		
 		//long timeForOneCycle= System.currentTimeMillis()- starttime;
 		if((System.currentTimeMillis() - timeAtLastSecond) > 1000 && RHDEBUG){
 			timeAtLastSecond = System.currentTimeMillis();
 			Log.d("frametime", "draws per second: " + Integer.toString(fpsCounter));
 			fpsCounter=0;
 		}
+		
+		firstFrameDone = true;
 	}
 
 	/*

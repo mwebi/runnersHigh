@@ -7,6 +7,7 @@ import java.util.Vector;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
+import android.util.Log;
 
 public class Player{
 	private static float MAX_JUMP_HEIGHT = 100;  //TODO: make MAX_JUMP_HEIGHT < 100 possible
@@ -40,6 +41,8 @@ public class Player{
 		playerSprite = new PlayerSprite(x, y, 1, width, height, 25, 6); 
 		playerSprite.loadBitmap(playerSpriteImg); 
 		glrenderer.addMesh(playerSprite);
+		
+		Log.d("debug", "Player constructor ended");
 	}
 	
 	public void setJump(boolean jump) {

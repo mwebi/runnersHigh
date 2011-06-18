@@ -25,6 +25,7 @@ public class main extends Activity {
 		MediaPlayer musicPlayerLoop;
 		boolean MusicLoopStartedForFirstTime = false;
 		boolean paused =false;
+		boolean isRunning = false;
 		
 		boolean RHDEBUG = false;
 		
@@ -58,13 +59,15 @@ public class main extends Activity {
 			
 			//setContentView(R.layout.runnershigh);	        
 			//(RunnersHighView) findViewById(R.id.runnersHighViewXML);
+			isRunning = true;
 			RunnersHighView gameView = new RunnersHighView(getApplicationContext()); 
 			setContentView(gameView);	     
 		}	
 		
 	    @Override
 	    protected void onDestroy() {
-	    	Log.d("debug", "onDestroy");
+	    	Log.d("debug", "onDestroy main");
+	    	isRunning = false;
 			wakeLock.release();
 			musicPlayerLoop.release();
 			SoundManager.cleanup();
@@ -226,18 +229,29 @@ public class main extends Activity {
 			
 	        Thread rHThread = new Thread(this);
 			rHThread.start();
+			
+			Log.d("debug", "RunnersHighView constructor ended");
 		}
-
+		
 		public void run() {
+
+	    	Log.d("debug", "run method started");
+	    	
 			// wait until the intro is over
 			// this gives the app enough time to load
 			try{
-				Thread.sleep(500);
-				//while(musicPlayerIntro.isPlaying()){
-				//	blackImgAlpha-=0.0025; 
-				//	blackRHD.setColor(0, 0, 0, blackImgAlpha);
-				//	Thread.sleep(10);
-				//}
+				while(!mRenderer.firstFrameDone)
+					Thread.sleep(10);
+
+				Log.d("debug", "first frame done");
+				
+				long timeAtStart = System.currentTimeMillis();
+				while (System.currentTimeMillis() < timeAtStart + 2000)
+				{
+					blackImgAlpha-=0.005; 
+					blackRHD.setColor(0, 0, 0, blackImgAlpha);
+					Thread.sleep(10);
+				}
 			}
 			catch (InterruptedException e)
 			{
@@ -252,7 +266,7 @@ public class main extends Activity {
 				musicPlayerLoop.start();
 			MusicLoopStartedForFirstTime=true;
 	        
-			while(true/*!paused*/){
+			while(isRunning){
 				long starttime = System.currentTimeMillis();
 				player.playerSprite.setFrameUpdateTime( (level.baseSpeedMax+level.extraSpeedMax)*10 -((level.baseSpeed+level.extraSpeed)*10) );
 				if (player.update()) {
@@ -301,6 +315,10 @@ public class main extends Activity {
 					runCycleCounter=0;
 				}
 			}
+			
+
+	    	Log.d("debug", "run method ended");
+			
 		}
 		
 		/*public void draw(Canvas canvas) {

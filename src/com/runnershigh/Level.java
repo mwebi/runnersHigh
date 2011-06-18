@@ -79,7 +79,7 @@ public class Level {
 	private Random randomGenerator;
 	
 	public Level(Context context, OpenGLRenderer glrenderer, int _width, int _heigth) {
-		//Log.d("debug", "in Level constructor");
+		Log.d("debug", "in Level constructor");
 		width = _width;
 		height = _heigth;
 		levelPosition = 0;
