@@ -1,8 +1,12 @@
 package com.runnershigh;
 
+import com.highscore.HighscoreAdapter;
+
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Paint;
@@ -140,6 +144,10 @@ public class main extends Activity {
 		public  boolean doUpdateCounter = true;
 		private long timeAtLastSecond;
 		private int runCycleCounter;
+		private Toast loadMessage;
+		private ProgressDialog loadingDialog;
+		private HighscoreAdapter highScoreAdapter;
+
 		public RunnersHighView(Context context) {
 			super(context);
 			
@@ -185,6 +193,17 @@ public class main extends Activity {
 			player = new Player(getApplicationContext(), mRenderer, height);
 			
 			
+
+			// Loading Toast
+			loadMessage = Toast.makeText(context, "Fat guys need longer ...", 4000 );
+			loadMessage.setGravity(Gravity.CENTER|Gravity.CENTER, 0, 0);
+			
+			loadingDialog = new ProgressDialog( context );
+		    loadingDialog.setProgressStyle(0);
+		    loadingDialog.setMessage("Loading Highscore ...");
+			
+		    highScoreAdapter = new HighscoreAdapter(context);
+
 			//new counter
 			CounterYourScoreImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.yourscore);
 			CounterYourScoreDrawable = new RHDrawable(20, height-16-20, 1, CounterYourScoreImg.getWidth(), CounterYourScoreImg.getHeight());
@@ -237,6 +256,22 @@ public class main extends Activity {
 				Log.d("debug", "RunnersHighView constructor ended");
 		}
 		
+		public int getAmountOfLocalHighscores() {
+			highScoreAdapter.open();
+		    Cursor cursor = highScoreAdapter.fetchScores("0");
+		    int amount = cursor.getCount();
+		    highScoreAdapter.close();
+			return amount;
+		}
+		
+		public int getHighscore(long id) {		    
+			highScoreAdapter.open();
+		    Cursor cursor = highScoreAdapter.fetchSingleScore(id);
+		    String hs = cursor.getString(cursor.getColumnIndexOrThrow(highScoreAdapter.KEY_SCORE));
+		    highScoreAdapter.close();		    
+		    return new Integer(hs); // Keine Ahnung ob der das richtig castet!!
+		}
+		
 		public void run() {
 
 			if(Settings.RHDEBUG)
@@ -245,6 +280,8 @@ public class main extends Activity {
 			// wait until the intro is over
 			// this gives the app enough time to load
 			try{
+				//loadingDialog.show();
+
 				while(!mRenderer.firstFrameDone)
 					Thread.sleep(10);
 				
@@ -262,6 +299,7 @@ public class main extends Activity {
 					blackRHD.setColor(0, 0, 0, blackImgAlpha);
 					Thread.sleep(10);
 				}
+				//loadingDialog.hide();
 			}
 			catch (InterruptedException e)
 			{
