@@ -3,7 +3,6 @@ package com.runnershigh;
 import javax.microedition.khronos.opengles.GL10;
 
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Rect;
 
 public class Block extends Group {
