@@ -146,7 +146,7 @@ public class Level {
 			
 
 			
-			if (0 > blockData[leftBlockIndex].getRect().right) {
+			if (0 > blockData[leftBlockIndex].BlockRect.right) {
 				appendBlockToEnd();
 				
 				if (BlockCounter > 10)
@@ -175,6 +175,7 @@ public class Level {
 			for (int i = 0; i < maxBlocks; i++)
 			{
 				blockData[i].x -= deltaLevelPosition;
+				blockData[i].updateRect();
 			}
 			
 			for (int i = 0; i < maxObstaclesJumper; i++)
@@ -212,7 +213,8 @@ public class Level {
 		blockData[0].x = 0;
 		blockData[0].setWidth(width);
 		blockData[0].setHeight(50);
-
+		blockData[0].updateRect();
+		
 		Log.d("debug", "after blockdata 0");
 
 		if(firstTime)
@@ -231,6 +233,7 @@ public class Level {
 			if (firstTime)
 				renderer.addMesh(blockData[i]);
 			appendBlockToEnd();
+			blockData[i].updateRect();
 		}
 		Log.d("debug", "left initializeBlocks");
 	}
@@ -244,7 +247,7 @@ public class Level {
 		int distance;
 		int newLeft;
 		
-		oldHeight = blockData[rightBlockIndex].getRect().top;
+		oldHeight = blockData[rightBlockIndex].BlockRect.top;
 		
 		if (oldHeight > height/2)
 			newHeight = (int)(Math.random()*height/3*2 + height/8);
@@ -260,7 +263,7 @@ public class Level {
 			distance = Player.width+2;
 		
 		Block lastBlock = blockData[rightBlockIndex];
-		newLeft = lastBlock.getRect().right + distance;
+		newLeft = lastBlock.BlockRect.right + distance;
 		
 		blockData[leftBlockIndex].setHeight(newHeight);
 		blockData[leftBlockIndex].setWidth(newWidth);
