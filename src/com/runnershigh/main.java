@@ -142,9 +142,9 @@ public class main extends Activity {
 		private long timeAtLastSecond;
 		private int runCycleCounter;
 		private Toast loadMessage;
-		
 		private ProgressDialog loadingDialog;
 		
+
 		public RunnersHighView(Context context) {
 			super(context);
 			
@@ -189,6 +189,7 @@ public class main extends Activity {
 			
 			level = new Level(context, mRenderer, width, height);
 			
+
 			// Loading Toast
 			loadMessage = Toast.makeText(context, "Fat guys need longer ...", 4000 );
 			loadMessage.setGravity(Gravity.CENTER|Gravity.CENTER, 0, 0);
@@ -197,6 +198,7 @@ public class main extends Activity {
 		    loadingDialog.setProgressStyle(0);
 		    loadingDialog.setMessage("Loading Highscore ...");
 			
+
 			//new counter
 			CounterYourScoreImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.yourscore);
 			CounterYourScoreDrawable = new RHDrawable(20, height-16-20, 1, CounterYourScoreImg.getWidth(), CounterYourScoreImg.getHeight());
@@ -258,6 +260,7 @@ public class main extends Activity {
 			// this gives the app enough time to load
 			try{
 				loadingDialog.show();
+
 				while(!mRenderer.firstFrameDone)
 					Thread.sleep(10);
 				
@@ -310,7 +313,7 @@ public class main extends Activity {
 							Log.d("runtime", "time after background update: " + Integer.toString((int)currentTimeTaken));
 						}
 				} else {
-					if(player.getPosY() < 0){
+					if(player.y < 0){
 						doUpdateCounter=false;
 						resetButton.setShowButton(true);
 						resetButton.z = 1.0f;
@@ -328,8 +331,8 @@ public class main extends Activity {
 				}
 				
 				
-				//if(doUpdateCounter)
-					//mCounterGroup.tryToSetCounterTo(level.getScoreCounter());
+				if(doUpdateCounter)
+					mCounterGroup.tryToSetCounterTo(level.getScoreCounter());
 
 				if(Settings.RHDEBUG){				
 					timeForOneCycle= System.currentTimeMillis()- starttime;
