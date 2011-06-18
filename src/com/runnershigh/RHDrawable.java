@@ -1,8 +1,5 @@
 package com.runnershigh;
 
-import android.graphics.Rect;
-import android.util.Log;
-
 public class RHDrawable extends Mesh {
 	protected float width;
 	protected float height;
@@ -31,9 +28,7 @@ public class RHDrawable extends Mesh {
 		setTextureCoordinates(textureCoordinates);
 	}
 	
-	public Rect getRect() {
-		return new Rect((int)x,(int)(y+height),(int)(x+width),(int)y);
-	}
+
 	
 	public void setWidth(int width)
 	{

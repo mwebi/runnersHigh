@@ -1,9 +1,7 @@
 package com.runnershigh;
 
-import java.util.Currency;
-import java.util.Random;
-import java.util.Vector;
 
+import java.util.Random;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -79,7 +77,9 @@ public class Level {
 	private Random randomGenerator;
 	
 	public Level(Context context, OpenGLRenderer glrenderer, int _width, int _heigth) {
-		Log.d("debug", "in Level constructor");
+		if(Settings.RHDEBUG)
+			Log.d("debug", "in Level constructor");
+		
 		width = _width;
 		height = _heigth;
 		levelPosition = 0;
@@ -205,7 +205,8 @@ public class Level {
 	}
 	
 	private void initializeBlocks(Boolean firstTime) {
-		Log.d("debug", "in initializeBlocks");
+		if(Settings.RHDEBUG)
+			Log.d("debug", "in initializeBlocks");
 		//Log.d("debug", "blockData.size() -> " + Integer.toString(blockData.size()) );
 		
 		if (firstTime)
@@ -215,15 +216,17 @@ public class Level {
 		blockData[0].setHeight(50);
 		blockData[0].updateRect();
 		
-		Log.d("debug", "after blockdata 0");
+		if(Settings.RHDEBUG)
+			Log.d("debug", "after blockdata 0");
 
 		if(firstTime)
 			renderer.addMesh(blockData[0]);
 		
 		leftBlockIndex = 1;
 		rightBlockIndex = 0;
-
-		Log.d("debug", "before for");
+		
+		if(Settings.RHDEBUG)
+			Log.d("debug", "before for");
 		
 		for(int i = 1; i < maxBlocks; i++)
 		{
@@ -235,7 +238,8 @@ public class Level {
 			appendBlockToEnd();
 			blockData[i].updateRect();
 		}
-		Log.d("debug", "left initializeBlocks");
+		if(Settings.RHDEBUG)
+			Log.d("debug", "left initializeBlocks");
 	}
 	
 	private void appendBlockToEnd()
@@ -288,7 +292,7 @@ public class Level {
 		{
 			if (firstTime)
 			{
-				obstacleDataJumper[i] = new Obstacle(-1000, 0, 0, obstacleJumpImg.getWidth(), obstacleJumpImg.getHeight(), 'j');
+				obstacleDataJumper[i] = new Obstacle(-1000, 0, 0, 30, 10, 'j');
 				renderer.addMesh(obstacleDataJumper[i]);
 				obstacleDataJumper[i].loadBitmap(obstacleJumpImg);
 			}
@@ -299,7 +303,7 @@ public class Level {
 		{
 			if (firstTime)
 			{
-				obstacleDataSlower[i] = new Obstacle(-1000, 0, 0, obstacleSlowImg.getWidth(), obstacleSlowImg.getHeight(), 's');
+				obstacleDataSlower[i] = new Obstacle(-1000, 0, 0, 35, 10, 's');
 				renderer.addMesh(obstacleDataSlower[i]);				
 				obstacleDataSlower[i].loadBitmap(obstacleSlowImg);
 			}
@@ -315,7 +319,7 @@ public class Level {
 				renderer.addMesh(obstacleDataBonus[i]);
 				obstacleDataBonus[i].loadBitmap(obstacleBonusImg);
 			}
-			obstacleDataBonus[i].x = -1000;
+			obstacleDataBonus[i].centerX = -1000;
 			obstacleDataBonus[i].didTrigger = false;
 		}
 	}
@@ -395,15 +399,15 @@ public class Level {
 			
 		    obstacleLeft =  
 		    	blockData[rightBlockIndex].x + blockData[rightBlockIndex].mWidth
-    			- newSlowObstacle.getWidth() - fraction; 
+    			- newSlowObstacle.width - fraction; 
 		    
-		    newSlowObstacle.setX(obstacleLeft);
-		    newSlowObstacle.setY(blockData[rightBlockIndex].mHeight);
+		    newSlowObstacle.x = obstacleLeft;
+		    newSlowObstacle.y = blockData[rightBlockIndex].mHeight;
 		    newSlowObstacle.setObstacleRect(
 		    		obstacleLeft,
-		    		obstacleLeft+newSlowObstacle.getWidth(),
+		    		obstacleLeft+newSlowObstacle.width,
 		    		blockData[rightBlockIndex].mHeight,
-		    		blockData[rightBlockIndex].mHeight-newSlowObstacle.getHeight());
+		    		blockData[rightBlockIndex].mHeight-newSlowObstacle.height);
 			
 		    leftSlowerIndex++;
 		    if (leftSlowerIndex == maxObstaclesSlower)
@@ -417,24 +421,26 @@ public class Level {
 		
 		if (spawnJumper)
 		{
-			Log.d("debug", "in spawnJumper");
+			if(Settings.RHDEBUG)
+				Log.d("debug", "in spawnJumper");
 			float obstacleLeft;
 			Obstacle newJumpObstacle = obstacleDataJumper[leftJumperIndex];
 			newJumpObstacle.didTrigger = false;
 			
 			long fraction = (long)(blockData[rightBlockIndex].mWidth * 0.33 * randomGenerator.nextDouble());
 			
-			obstacleLeft =  (blockData[rightBlockIndex].x + newJumpObstacle.getWidth() + fraction);
+			obstacleLeft =  (blockData[rightBlockIndex].x + newJumpObstacle.width + fraction);
 		
-			newJumpObstacle.setX(obstacleLeft);
-		    newJumpObstacle.setY(blockData[rightBlockIndex].mHeight);
+			newJumpObstacle.x = obstacleLeft;
+		    newJumpObstacle.y = blockData[rightBlockIndex].mHeight;
 		    newJumpObstacle.setObstacleRect(
 		    		obstacleLeft,
-		    		obstacleLeft+newJumpObstacle.getWidth(),
+		    		obstacleLeft+newJumpObstacle.width,
 		    		blockData[rightBlockIndex].mHeight,
-		    		blockData[rightBlockIndex].mHeight-newJumpObstacle.getHeight());
-
-		    Log.d("debug", "x: " + newJumpObstacle.x +
+		    		blockData[rightBlockIndex].mHeight-newJumpObstacle.height);
+		    
+		    if(Settings.RHDEBUG)
+		    	Log.d("debug", "x: " + newJumpObstacle.x +
 		    		" / y: " + newJumpObstacle.y +
 		    		" / z: " + newJumpObstacle.z);
 		    
@@ -451,7 +457,9 @@ public class Level {
 		
 		if (spawnBonus)
 		{
-			Log.d("debug", "in spawnBonus");
+			if(Settings.RHDEBUG)
+				Log.d("debug", "in spawnBonus");
+			
 			float range = blockData[rightBlockIndex].mWidth;
 			
 			int bonusLeft;
@@ -471,12 +479,12 @@ public class Level {
 		    newBonus.y = newBonus.centerY = blockData[rightBlockIndex].mHeight+50+randomGenerator.nextInt(75);
 		    
 		    newBonus.setObstacleRect(bonusLeft,
-		    		bonusLeft+newBonus.getWidth(),
+		    		bonusLeft+newBonus.width,
 		    		blockData[rightBlockIndex].mHeight,
-		    		blockData[rightBlockIndex].mHeight-newBonus.getHeight());
+		    		blockData[rightBlockIndex].mHeight-newBonus.height);
 		    
-
-		    Log.d("debug", "x: " + newBonus.x +
+		    if(Settings.RHDEBUG)
+		    	Log.d("debug", "x: " + newBonus.x +
 		    		" / y: " + newBonus.y +
 		    		" / z: " + newBonus.z);
 		    

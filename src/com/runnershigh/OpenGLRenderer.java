@@ -129,7 +129,8 @@ public class OpenGLRenderer implements Renderer {
 
 		// gl.glViewport(0, 0, width, height);
 		// GLU.gluOrtho2D(gl, 0, width, 0, height);
-		Log.d("frametime", "onSurfaceChanged called");
+		if(Settings.RHDEBUG)
+			Log.d("frametime", "onSurfaceChanged called");
 		gl.glViewport(0, 0, width, height);
 		gl.glMatrixMode(GL10.GL_PROJECTION);
 		gl.glLoadIdentity();

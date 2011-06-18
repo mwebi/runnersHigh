@@ -3,7 +3,6 @@ package com.runnershigh;
 import android.content.Context;
 
 import java.util.TimerTask;
-import java.util.Vector;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
@@ -38,7 +37,7 @@ public class Player{
 		width = 40; //40; nyan cat //60; nyan cat pre minimalize //62; playersprite settings
 		height = 40; //30;  nyan cat //42; nyan cat pre minimalize //63; playersprite settings
 		
-		playerSpriteImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.bastardchar1024x256);
+		playerSpriteImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.bastardchar512x128);
 		playerSprite = new PlayerSprite(x, y, 1, width, height, 25, 8); 
 		playerSprite.loadBitmap(playerSpriteImg); 
 		glrenderer.addMesh(playerSprite);
@@ -77,16 +76,15 @@ public class Player{
 		
 		if (jumping && !reachedPeak) {
 			
-			//velocity = 0.5f * (MAX_JUMP_HEIGHT - (y - jumpStartY)) / 20.f;
 			velocity += 0.3f * (MAX_JUMP_HEIGHT - (y - jumpStartY)) / 100.f;
-
-			//Log.d("debug", "velocity: " + velocity);
-			//Log.d("debug", "modifier: " + (MAX_JUMP_HEIGHT - (y - jumpStartY)) / 100.0f);
 
 			Log.d("debug", "y: " + (y));
 			Log.d("debug", "y + height: " + (y + height));
-
-			//Log.d("debug", "MAX_JUMP_HEIGHT - (y - jumpStartY): " + (MAX_JUMP_HEIGHT - (y - jumpStartY)));
+			if(Settings.RHDEBUG){
+				//Log.d("debug", "velocity: " + velocity);
+				//Log.d("debug", "modifier: " + (MAX_JUMP_HEIGHT - (y - jumpStartY)) / 100.0f);
+				//Log.d("debug", "MAX_JUMP_HEIGHT - (y - jumpStartY): " + (MAX_JUMP_HEIGHT - (y - jumpStartY)));
+			}
 
 			if(y - jumpStartY >= MAX_JUMP_HEIGHT)
 			{
