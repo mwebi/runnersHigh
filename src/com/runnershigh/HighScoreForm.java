@@ -63,6 +63,7 @@ public class HighScoreForm extends Activity {
         checkboxPushOnline = (CheckBox) findViewById(R.id.postOnline);
         Button confirmButton = (Button) findViewById(R.id.confirm);
      
+        // Performe save
         confirmButton.setOnClickListener(new View.OnClickListener() {
         	public void onClick(View view) {
         		saveState();
@@ -70,9 +71,8 @@ public class HighScoreForm extends Activity {
         });        
         
         // Set Checkbox true if device is connected to internet
-        if(isOnline()) {
-        	checkboxPushOnline.isChecked();
-        }
+        if(isOnline())
+        	checkboxPushOnline.setChecked(true);
         
         // Get Score
         score = (savedInstanceState == null) ? null : (Integer) savedInstanceState.getSerializable("score");
