@@ -130,7 +130,6 @@ public class HighScoreActivity extends ListActivity {
     	if(!isOnline()) {
     		highScoreAdapter.toastMessage(R.string.hs_error_no_internet);
     	} else {
-    	
 	    	try {
 	    		HttpClient client = new DefaultHttpClient();  
 	    		String getURL = GET_HIGHSCORE_URL + "?size=" + Integer.toString(size);
@@ -214,10 +213,7 @@ public class HighScoreActivity extends ListActivity {
     @Override
     protected void onListItemClick(ListView l, View v, int position, final long id) {
         super.onListItemClick(l, v, position, id);
-        
-        String g = isOnlineView ? "true" : "false";
-        
-        Log.i("isOnlineView", g);
+               
         if(isOnlineView == true)
         	return;    
         
@@ -242,6 +238,8 @@ public class HighScoreActivity extends ListActivity {
         	// Push score online
         	if(isonline == 1) {
         		highScoreAdapter.toastMessage(R.string.hs_already_pushed);
+        	} else if(!isOnline()) {
+        		highScoreAdapter.toastMessage(R.string.hs_error_no_internet);
         	} else {
         	        		
         		// Create a new HttpClient and Post Header
