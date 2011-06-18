@@ -140,7 +140,6 @@ public class main extends Activity {
 		public  boolean doUpdateCounter = true;
 		private long timeAtLastSecond;
 		private int runCycleCounter;
-		private Toast loadMessage;
 		public RunnersHighView(Context context) {
 			super(context);
 			
@@ -184,10 +183,6 @@ public class main extends Activity {
 			player = new Player(getApplicationContext(), mRenderer, height);
 			
 			level = new Level(context, mRenderer, width, height);
-			
-			// Loading Toast
-			loadMessage = Toast.makeText(context, "Game loading", 4000 );
-			loadMessage.setGravity(Gravity.CENTER|Gravity.CENTER, 0, 0);
 			
 			//new counter
 			CounterYourScoreImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.yourscore);
@@ -249,7 +244,6 @@ public class main extends Activity {
 			// wait until the intro is over
 			// this gives the app enough time to load
 			try{
-				loadMessage.show();
 				while(!mRenderer.firstFrameDone)
 					Thread.sleep(10);
 				
