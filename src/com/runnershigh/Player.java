@@ -38,7 +38,7 @@ public class Player{
 		height = 40; //30;  nyan cat //42; nyan cat pre minimalize //63; playersprite settings
 		
 		playerSpriteImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.bastardchar512x128);
-		playerSprite = new PlayerSprite(x, y, 1, width, height, 25, 8); 
+		playerSprite = new PlayerSprite(x, y, 0.5f, width, height, 25, 8); 
 		playerSprite.loadBitmap(playerSpriteImg); 
 		glrenderer.addMesh(playerSprite);
 		
@@ -69,7 +69,7 @@ public class Player{
 	
 	public boolean update() {
 		playerSprite.updatePosition(x, y);
-		playerSprite.tryToSetNextFrame();
+		//playerSprite.tryToSetNextFrame();
 		
 		if(jumpingsoundplayed==false){
 			SoundManager.playSound(3, 1);
@@ -198,7 +198,6 @@ public class Player{
 				Level.obstacleDataBonus[i].z= -1;
 			}
 		}
-
 		slowSoundplayed=false;
 		return false;
 	}
