@@ -2,14 +2,13 @@ package com.runnershigh;
 
 import android.content.Context;
 
-import java.util.TimerTask;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
 import android.util.Log;
 
 public class Player{
-	private static float MAX_JUMP_HEIGHT = 150;  //TODO: make MAX_JUMP_HEIGHT < 100 possible
+	private static float MAX_JUMP_HEIGHT = 80;  //TODO: make MAX_JUMP_HEIGHT < 100 possible
 	private static float MIN_JUMP_HEIGHT = 30;
 	public Bitmap playerImg;
 	private float lastPosY;
@@ -76,11 +75,12 @@ public class Player{
 		
 		if (jumping && !reachedPeak) {
 			
-			velocity += 0.3f * (MAX_JUMP_HEIGHT - (y - jumpStartY)) / 100.f;
+			velocity += 0.8f * (MAX_JUMP_HEIGHT - (y - jumpStartY)) / 100.f;
 
-			Log.d("debug", "y: " + (y));
-			Log.d("debug", "y + height: " + (y + height));
+
 			if(Settings.RHDEBUG){
+				Log.d("debug", "y: " + (y));
+				Log.d("debug", "y + height: " + (y + height));
 				//Log.d("debug", "velocity: " + velocity);
 				//Log.d("debug", "modifier: " + (MAX_JUMP_HEIGHT - (y - jumpStartY)) / 100.0f);
 				//Log.d("debug", "MAX_JUMP_HEIGHT - (y - jumpStartY): " + (MAX_JUMP_HEIGHT - (y - jumpStartY)));
