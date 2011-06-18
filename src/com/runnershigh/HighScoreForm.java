@@ -44,6 +44,7 @@ public class HighScoreForm extends Activity {
 	private EditText nameField;
 	private TextView scoreField;
 	private Integer score;
+	private CheckBox checkboxPushOnline;
 	// ---------------------------------------------------
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -59,6 +60,7 @@ public class HighScoreForm extends Activity {
         // Find form elements
         nameField = (EditText) findViewById(R.id.title);
         scoreField = (TextView) findViewById(R.id.score);
+        checkboxPushOnline = (CheckBox) findViewById(R.id.postOnline);
         Button confirmButton = (Button) findViewById(R.id.confirm);
      
         confirmButton.setOnClickListener(new View.OnClickListener() {
@@ -66,6 +68,11 @@ public class HighScoreForm extends Activity {
         		saveState();
         	}
         });        
+        
+        // Set Checkbox true if device is connected to internet
+        if(isOnline()) {
+        	checkboxPushOnline.isChecked();
+        }
         
         // Get Score
         score = (savedInstanceState == null) ? null : (Integer) savedInstanceState.getSerializable("score");
@@ -89,12 +96,12 @@ public class HighScoreForm extends Activity {
     private void saveState() {
     	String name 	=  nameField.getText().toString();
         String score 	=  scoreField.getText().toString();
-        CheckBox checkbox = (CheckBox) findViewById(R.id.postOnline);
+
         int isonline = 0;
         
         if(name.length() > 0) {        	
         	// Save score online
-        	if(checkbox.isChecked()) {        	      		
+        	if(checkboxPushOnline.isChecked()) {        	      		
 
         		if(!isOnline()) {
         			highScoreAdapter.toastMessage(R.string.hs_error_no_internet);
