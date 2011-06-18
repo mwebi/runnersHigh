@@ -1,6 +1,5 @@
 package com.runnershigh;
 
-import android.graphics.Rect;
 import android.util.Log;
 
 public class PlayerSprite extends Mesh {
@@ -43,10 +42,6 @@ public class PlayerSprite extends Mesh {
 		
 		LastFrameChangeTime = System.currentTimeMillis();
 		
-	}
-	
-	public Rect getRect() {
-		return new Rect((int)x,(int)(y+height),(int)(x+width),(int)y);
 	}
 	
 	public void setWidth(int width)

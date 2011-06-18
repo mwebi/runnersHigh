@@ -292,7 +292,7 @@ public class Level {
 		{
 			if (firstTime)
 			{
-				obstacleDataJumper[i] = new Obstacle(-1000, 0, 0, obstacleJumpImg.getWidth(), obstacleJumpImg.getHeight(), 'j');
+				obstacleDataJumper[i] = new Obstacle(-1000, 0, 0, 30, 10, 'j');
 				renderer.addMesh(obstacleDataJumper[i]);
 				obstacleDataJumper[i].loadBitmap(obstacleJumpImg);
 			}
@@ -303,7 +303,7 @@ public class Level {
 		{
 			if (firstTime)
 			{
-				obstacleDataSlower[i] = new Obstacle(-1000, 0, 0, obstacleSlowImg.getWidth(), obstacleSlowImg.getHeight(), 's');
+				obstacleDataSlower[i] = new Obstacle(-1000, 0, 0, 35, 10, 's');
 				renderer.addMesh(obstacleDataSlower[i]);				
 				obstacleDataSlower[i].loadBitmap(obstacleSlowImg);
 			}

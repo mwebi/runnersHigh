@@ -100,7 +100,7 @@ public class Group extends Mesh {
 	/**
 	 * @return
 	 * @see java.util.Vector#size()
-	 */
+	 */ 
 	public int size() {
 		return mChildren.size();
 	}

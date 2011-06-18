@@ -290,7 +290,7 @@ public class main extends Activity {
 							currentTimeTaken = System.currentTimeMillis()- starttime;
 							Log.d("runtime", "time after level update: " + Integer.toString((int)currentTimeTaken));
 						}
-						background.updat();
+						background.update();
 						if(Settings.RHDEBUG){
 							currentTimeTaken = System.currentTimeMillis()- starttime;
 							Log.d("runtime", "time after background update: " + Integer.toString((int)currentTimeTaken));
