@@ -5,12 +5,15 @@ import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Toast;
 
 public class Menu extends Activity {
 	MediaPlayer menuLoop;
+	private Toast loadMessage;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -18,7 +21,11 @@ public class Menu extends Activity {
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		
     	super.onCreate(savedInstanceState);
-        setContentView(R.layout.menu);   
+        setContentView(R.layout.menu); 
+        
+
+		loadMessage = Toast.makeText(getApplicationContext(), "Fat guys need longer ...", 3000 );
+		loadMessage.setGravity(Gravity.CENTER|Gravity.CENTER, 0, 0);
         
         /*
         menuLoop = MediaPlayer.create(getApplicationContext(), R.raw.menu);  
@@ -30,6 +37,10 @@ public class Menu extends Activity {
     }
     
     public void playGame(View view) {
+
+		// Loading Toast
+		loadMessage.show();
+		
     	Intent myIntent = new Intent (this, main.class);
     	startActivity (myIntent);
     }

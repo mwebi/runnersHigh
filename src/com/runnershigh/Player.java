@@ -18,6 +18,7 @@ public class Player{
 	private float y;
 	private boolean jumping = false;
 	private boolean jumpingsoundplayed = true;
+	private boolean onGround = false;
 	private boolean reachedPeak = false;
 	private boolean slowSoundplayed = false;
 	private float jumpStartY;
@@ -56,7 +57,7 @@ public class Player{
 			reachedPeak = true;
 		}
 		
-		if(reachedPeak) return;
+		if(reachedPeak || !onGround) return;
 		
 		jumpStartY = y;
 		jumping = true;
@@ -74,7 +75,7 @@ public class Player{
 		}
 		
 		if (jumping && !reachedPeak) {
-			
+
 			velocity += 0.8f * (MAX_JUMP_HEIGHT - (y - jumpStartY)) / 100.f;
 
 
@@ -109,6 +110,8 @@ public class Player{
 		playerRect.right =(int)x+width;
 		playerRect.bottom =(int)y;
 		
+		onGround = false;
+		
 		for (int i = 0; i < Level.maxBlocks; i++)
 		{
 			if( checkIntersect(playerRect, Level.blockData[i].BlockRect) )
@@ -119,6 +122,7 @@ public class Player{
 					velocity = 0;
 					reachedPeak = false;
 					jumping = false;
+					onGround = true;
 				}
 				else{
 					// false -> player stops at left -> block mode
