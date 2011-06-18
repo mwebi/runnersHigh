@@ -9,7 +9,7 @@ import android.graphics.Rect;
 import android.util.Log;
 
 public class Player{
-	private static float MAX_JUMP_HEIGHT = 200;  //TODO: make MAX_JUMP_HEIGHT < 100 possible
+	private static float MAX_JUMP_HEIGHT = 150;  //TODO: make MAX_JUMP_HEIGHT < 100 possible
 	private static float MIN_JUMP_HEIGHT = 30;
 	public Bitmap playerImg;
 	private float lastPosY;
@@ -38,7 +38,7 @@ public class Player{
 		height = 40; //30;  nyan cat //42; nyan cat pre minimalize //63; playersprite settings
 		
 		playerSpriteImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.bastardchar512x128);
-		playerSprite = new PlayerSprite(x, y, 1, width, height, 25, 8); 
+		playerSprite = new PlayerSprite(x, y, 0.5f, width, height, 25, 8); 
 		playerSprite.loadBitmap(playerSpriteImg); 
 		glrenderer.addMesh(playerSprite);
 		
@@ -55,8 +55,6 @@ public class Player{
 		if(!jump)
 		{
 			reachedPeak = true;
-			if(Settings.RHDEBUG)
-				Log.d("debug", "!jump");
 		}
 		
 		if(reachedPeak) return;
@@ -69,7 +67,7 @@ public class Player{
 	
 	public boolean update() {
 		playerSprite.updatePosition(x, y);
-		playerSprite.tryToSetNextFrame();
+		//playerSprite.tryToSetNextFrame();
 		
 		if(jumpingsoundplayed==false){
 			SoundManager.playSound(3, 1);
@@ -78,24 +76,24 @@ public class Player{
 		
 		if (jumping && !reachedPeak) {
 			
-			velocity += 0.5f * (MAX_JUMP_HEIGHT - (y - jumpStartY)) / 100.0f;
-			
+			velocity += 0.3f * (MAX_JUMP_HEIGHT - (y - jumpStartY)) / 100.f;
+
+			Log.d("debug", "y: " + (y));
+			Log.d("debug", "y + height: " + (y + height));
 			if(Settings.RHDEBUG){
-				Log.d("debug", "velocity: " + velocity);
-				Log.d("debug", "modifier: " + (MAX_JUMP_HEIGHT - (y - jumpStartY)) / 100.0f);
-				Log.d("debug", "MAX_JUMP_HEIGHT - (y - jumpStartY): " + (MAX_JUMP_HEIGHT - (y - jumpStartY)));
+				//Log.d("debug", "velocity: " + velocity);
+				//Log.d("debug", "modifier: " + (MAX_JUMP_HEIGHT - (y - jumpStartY)) / 100.0f);
+				//Log.d("debug", "MAX_JUMP_HEIGHT - (y - jumpStartY): " + (MAX_JUMP_HEIGHT - (y - jumpStartY)));
 			}
 
 			if(y - jumpStartY >= MAX_JUMP_HEIGHT)
 			{
-				reachedPeak = true;			
-				if(Settings.RHDEBUG)
-					Log.d("debug", "reachedPeak");
+				reachedPeak = true;
 			}
 		}
 		else
 		{
-			velocity -= 0.5f;
+			velocity -= 0.3f;
 		}
 		
 		
@@ -113,8 +111,9 @@ public class Player{
 		
 		for (int i = 0; i < Level.maxBlocks; i++)
 		{
-			if( checkIntersect(playerRect, Level.blockData[i].BlockRect) ){
-				if(lastPosY >= Level.blockData[i].mHeight)
+			if( checkIntersect(playerRect, Level.blockData[i].BlockRect) )
+			{
+				if(lastPosY >= Level.blockData[i].mHeight && velocity <= 0)
 				{
 					y=Level.blockData[i].mHeight;
 					velocity = 0;
@@ -126,6 +125,11 @@ public class Player{
 					// true -> player goes through left side -> platform mode
 					return false;
 				}
+				
+				// TODO: remove this test code
+				//if (playerRect.right >= Level.blockData[i].BlockRect.right)
+					//jumping = true;
+				
 			}
 		}
 		lastPosY = y;
@@ -198,7 +202,6 @@ public class Player{
 				Level.obstacleDataBonus[i].z= -1;
 			}
 		}
-
 		slowSoundplayed=false;
 		return false;
 	}

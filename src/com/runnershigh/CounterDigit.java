@@ -1,6 +1,5 @@
 package com.runnershigh;
 
-import android.graphics.Rect;
 import android.util.Log;
 
 public class CounterDigit extends Mesh {
@@ -33,10 +32,6 @@ public class CounterDigit extends Mesh {
 		setIndices(indices);
 		setVertices(vertices);
 		setTextureCoordinates(textureCoordinates);
-	}
-	
-	public Rect getRect() {
-		return new Rect((int)x,(int)(y+height),(int)(x+width),(int)y);
 	}
 	
 	public void setWidth(int width)
