@@ -38,7 +38,7 @@ public class Player{
 		width = 40; //40; nyan cat //60; nyan cat pre minimalize //62; playersprite settings
 		height = 40; //30;  nyan cat //42; nyan cat pre minimalize //63; playersprite settings
 		
-		playerSpriteImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.bastardchar1024x256);
+		playerSpriteImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.bastardchar512x128);
 		playerSprite = new PlayerSprite(x, y, 1, width, height, 25, 8); 
 		playerSprite.loadBitmap(playerSpriteImg); 
 		glrenderer.addMesh(playerSprite);
