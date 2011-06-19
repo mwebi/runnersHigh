@@ -144,7 +144,6 @@ public class main extends Activity {
 		public  boolean doUpdateCounter = true;
 		private long timeAtLastSecond;
 		private int runCycleCounter;
-		private Toast loadMessage;
 		private ProgressDialog loadingDialog;
 		private HighscoreAdapter highScoreAdapter;
 
@@ -214,11 +213,6 @@ public class main extends Activity {
 			
 			if(Settings.RHDEBUG)
 				Log.d("debug", "after player creation");
-
-			// Loading Toast
-			loadMessage = Toast.makeText(context, "Fat guys need longer ...", 4000 );
-			loadMessage.setGravity(Gravity.CENTER|Gravity.CENTER, 0, 0);
-			
 			loadingDialog = new ProgressDialog( context );
 		    loadingDialog.setProgressStyle(0);
 		    loadingDialog.setMessage("Loading Highscore ...");
