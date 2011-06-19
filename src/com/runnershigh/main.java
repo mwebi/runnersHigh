@@ -416,7 +416,7 @@ public class main extends Activity {
 					Log.d("runtime", "time after counter update: " + Integer.toString((int)timeForOneCycle));
 				}
 				timeForOneCycle= System.currentTimeMillis()- starttime;
-				//postInvalidate();
+
 				if(timeForOneCycle>9)
 					timeForOneCycle=9;
 				
@@ -465,21 +465,25 @@ public class main extends Activity {
 				if (mHighscoreMark5 == null)
 					mHighscoreMark5 = new HighscoreMark(mRenderer, mHighscoreMarkBitmap, CounterFont);
 				mHighscoreMark5.setMarkTo(5, mHighscore5);
+				mHighscoreMark5.z = 0.0f;
 			case 4:
 				mHighscore4 = getHighscore(4);
 				if (mHighscoreMark4 == null)
 					mHighscoreMark4 = new HighscoreMark(mRenderer, mHighscoreMarkBitmap, CounterFont);
 				mHighscoreMark4.setMarkTo(4, mHighscore4);
+				mHighscoreMark4.z = 0.0f;
 			case 3:
 				mHighscore3 = getHighscore(3);
 				if (mHighscoreMark3 == null)
 					mHighscoreMark3 = new HighscoreMark(mRenderer, mHighscoreMarkBitmap, CounterFont);
 				mHighscoreMark3.setMarkTo(3, mHighscore3);
+				mHighscoreMark3.z = 0.0f;
 			case 2:
 				mHighscore2 = getHighscore(2);
 				if (mHighscoreMark2 == null)
 					mHighscoreMark2 = new HighscoreMark(mRenderer, mHighscoreMarkBitmap, CounterFont);
 				mHighscoreMark2.setMarkTo(2, mHighscore2);
+				mHighscoreMark2.z = 0.0f;
 			case 1:
 				mHighscore1 = getHighscore(1);
 
@@ -489,50 +493,78 @@ public class main extends Activity {
 				if (mHighscoreMark1 == null)
 					mHighscoreMark1 = new HighscoreMark(mRenderer, mHighscoreMarkBitmap, CounterFont);
 				mHighscoreMark1.setMarkTo(1, mHighscore1);
+
+				mHighscoreMark1.z = 0.0f;
 			case 0:
 			}
 		}
 		
 		private void updateHighscoreMarks()
-		{
+		{	
 			switch(mTotalHighscores)
 			{
 			default:
 			case 5:
 				if (mHighscoreMark5 != null)
-					mHighscoreMark5.x = (mHighscore5 - totalScore) * 10 + player.x;
+				{
+					if (totalScore < mHighscore5)
+						mHighscoreMark5.x = (mHighscore5 - totalScore) * 10 + player.x;
+					else
+						mHighscoreMark5.x = 0;
+				}
 			case 4:
 				if (mHighscoreMark4 != null)
-					mHighscoreMark4.x = (mHighscore4 - totalScore) * 10 + player.x;
+				{
+					if (totalScore < mHighscore4)
+						mHighscoreMark4.x = (mHighscore4 - totalScore) * 10 + player.x;
+					else
+					{
+						mHighscoreMark4.x = 0;
+						if (mHighscoreMark5 != null)
+							mHighscoreMark5.z = -2.0f;
+					}
+				}
 			case 3:
 				if (mHighscoreMark3 != null)
-					mHighscoreMark3.x = (mHighscore3 - totalScore) * 10 + player.x;
+				{
+					if (totalScore < mHighscore3)
+						mHighscoreMark3.x = (mHighscore3 - totalScore) * 10 + player.x;
+					else
+					{
+						mHighscoreMark3.x = 0;
+						if (mHighscoreMark4 != null)
+							mHighscoreMark4.z = -2.0f;
+					}
+				}
 			case 2:
 				if (mHighscoreMark2 != null)
-					mHighscoreMark2.x = (mHighscore2 - totalScore) * 10 + player.x;
+				{
+					if (totalScore < mHighscore2)
+						mHighscoreMark2.x = (mHighscore2 - totalScore) * 10 + player.x;
+					else
+					{
+						mHighscoreMark2.x = 0;
+						if (mHighscoreMark3 != null)
+							mHighscoreMark3.z = -2.0f;
+					}
+				}
 			case 1:
 				if (mHighscoreMark1 != null)
-					mHighscoreMark1.x = (mHighscore1 - totalScore) * 10 + player.x;
+				{
+					if (totalScore < mHighscore1)
+						mHighscoreMark1.x = (mHighscore1 - totalScore) * 10 + player.x;
+					else
+					{
+						mHighscoreMark1.x = 0;
+						if (mHighscoreMark2 != null)
+							mHighscoreMark2.z = -2.0f;
+					}
+				}
 			case 0:
 			}
+
 		}
 		
-		/*public void draw(Canvas canvas) {
-			
-
-			canvas.drawText("Your Score: " + Integer.toString(level.getScoreCounter()), 20, 20, paint);
-			
-			if (resetButton.getShowButton())
-				resetButton.drawButton(canvas);
-			if (saveButton.getShowButton() && !scoreWasSaved)
-				saveButton.drawButton(canvas);
-
-			level.draw(canvas);
-			player.draw(canvas);
-			
-		}
-		*/
-
 
 		public boolean onTouchEvent(MotionEvent event) {
 			if(event.getAction() == MotionEvent.ACTION_UP)
