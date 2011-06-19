@@ -1,6 +1,7 @@
 package com.runnershigh;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 
 
 public class Util {

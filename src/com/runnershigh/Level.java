@@ -15,10 +15,8 @@ public class Level {
 	private int width;
 	private int height;
 	private int levelPosition;
-	private int lastLevelPosition;
 	private float deltaLevelPosition;
-	public static float scoreCounter;
-	private boolean threeKwasplayed;
+	//public static float scoreCounter;
 	public float baseSpeed;
 	public float baseSpeedMax;
 	public float baseSpeedStart;
@@ -83,15 +81,14 @@ public class Level {
 		width = _width;
 		height = _heigth;
 		levelPosition = 0;
-		lastLevelPosition = 0;
+		//lastLevelPosition = 0;
 		deltaLevelPosition = 0;
-		scoreCounter = 0;
+		//scoreCounter = 0;
 		baseSpeedStart = 1;
 		baseSpeed = baseSpeedStart;
 		baseSpeedMax = 3.0f;
 		extraSpeed = 0;
 		extraSpeedMax = 4f;
-		threeKwasplayed = false;
 		renderer = glrenderer;
 		
 		randomGenerator = new Random();
@@ -170,7 +167,7 @@ public class Level {
 
 
 			//Log.d("debug", "deltaLevelPosition/10: " + deltaLevelPosition/10);
-			scoreCounter += deltaLevelPosition/10;
+			//scoreCounter += deltaLevelPosition/10;
 			
 			for (int i = 0; i < maxBlocks; i++)
 			{
@@ -194,12 +191,8 @@ public class Level {
 				obstacleDataBonus[i].centerX -= deltaLevelPosition;
 			}
 			
-			if(scoreCounter>=3000 && threeKwasplayed==false){
-				threeKwasplayed=true;
-				SoundManager.playSound(2, 1);
-			}
 			
-			lastLevelPosition=levelPosition;
+			//lastLevelPosition=levelPosition;
 			//Log.d("debug", "in update after value mod");
 		}	
 	}
@@ -499,9 +492,11 @@ public class Level {
 		}
 	}
 	
-	public int getScoreCounter() {
-		return (int)scoreCounter;
+	public int getDistanceScore()
+	{
+		return levelPosition / 10;
 	}
+	
 	public void lowerSpeed() {
 		slowDown = true;
 	}
@@ -509,7 +504,6 @@ public class Level {
 		return levelPosition;
 	}
 	public void reset() {
-		scoreCounter=0;
 		synchronized (blockData) {
 			levelPosition = 0;
 			

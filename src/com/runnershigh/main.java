@@ -148,6 +148,25 @@ public class main extends Activity {
 		private ProgressDialog loadingDialog;
 		private HighscoreAdapter highScoreAdapter;
 
+		private int mTotalHighscores = 0;
+		private int mHighscore1 = 0;
+		private int mHighscore2 = 0;
+		private int mHighscore3 = 0;
+		private int mHighscore4 = 0;
+		private int mHighscore5 = 0;
+
+		private HighscoreMark mHighscoreMark1 = null;
+		private HighscoreMark mHighscoreMark2 = null;
+		private HighscoreMark mHighscoreMark3 = null;
+		private HighscoreMark mHighscoreMark4 = null;
+		private HighscoreMark mHighscoreMark5 = null;
+		
+		private Bitmap mHighscoreMarkBitmap;
+		private RHDrawable mNewHighscore;
+		
+		private int totalScore = 0;
+		private boolean threeKwasplayed = false;
+
 		public RunnersHighView(Context context) {
 			super(context);
 			
@@ -176,6 +195,7 @@ public class main extends Activity {
 
 			if(Settings.RHDEBUG)
 				Log.d("debug", "before addMesh");
+			
 			mRenderer.addMesh(background);
 			
 			resetButtonImg = BitmapFactory.decodeResource(context.getResources(),R.drawable.resetbutton);
@@ -245,7 +265,16 @@ public class main extends Activity {
 			blackRHD.setColor(0, 0, 0, blackImgAlpha);
 			blackRHD.loadBitmap(blackImg);
 			mRenderer.addMesh(blackRHD);
-					
+			
+			mHighscoreMarkBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.highscoremark);
+			
+			mNewHighscore = new RHDrawable(width/2 - 128, height/2 - 64, -2, 256, 128);
+			mNewHighscore.loadBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.new_highscore));
+			mRenderer.addMesh(mNewHighscore);
+
+
+			initHighscoreMarks();
+			
 			timeAtLastSecond = System.currentTimeMillis();
 	        runCycleCounter=0;
 			
@@ -266,10 +295,15 @@ public class main extends Activity {
 		
 		public int getHighscore(long id) {		    
 			highScoreAdapter.open();
-		    Cursor cursor = highScoreAdapter.fetchSingleScore(id);
-		    String hs = cursor.getString(cursor.getColumnIndexOrThrow(highScoreAdapter.KEY_SCORE));
-		    highScoreAdapter.close();		    
-		    return new Integer(hs); // Keine Ahnung ob der das richtig castet!!
+			if (mTotalHighscores >= id)
+			{
+			    Cursor cursor = highScoreAdapter.getHighscore(id);
+			    String hs = cursor.getString(cursor.getColumnIndexOrThrow(highScoreAdapter.KEY_SCORE));
+			    highScoreAdapter.close();		    
+			    return new Integer(hs);
+			}
+			else
+				return 0;
 		}
 		
 		public void run() {
@@ -333,6 +367,15 @@ public class main extends Activity {
 							currentTimeTaken = System.currentTimeMillis()- starttime;
 							Log.d("runtime", "time after background update: " + Integer.toString((int)currentTimeTaken));
 						}
+						
+						updateHighscoreMarks();
+						
+						if (totalScore > mHighscore5)
+						{
+							boolean breakthisshit = true;
+							if (breakthisshit)
+								breakthisshit = false;
+						}
 				} else {
 					if(player.y < 0){
 						doUpdateCounter=false;
@@ -344,6 +387,9 @@ public class main extends Activity {
 							SoundManager.playSound(7, 1);
 							deathSoundPlayed=true;
 						}
+						
+						if (totalScore > mHighscore1)
+							mNewHighscore.z = 1.0f;
 					}
 				}
 				
@@ -353,7 +399,17 @@ public class main extends Activity {
 				
 				
 				if(doUpdateCounter)
-					mCounterGroup.tryToSetCounterTo(level.getScoreCounter());
+				{
+					totalScore = level.getDistanceScore() + player.getBonusScore();
+					mCounterGroup.tryToSetCounterTo(totalScore);
+					
+					if(totalScore>=3000 && threeKwasplayed==false)
+					{
+						threeKwasplayed=true;
+						SoundManager.playSound(2, 1);
+					}
+				}
+					
 
 				if(Settings.RHDEBUG){				
 					timeForOneCycle= System.currentTimeMillis()- starttime;
@@ -393,6 +449,74 @@ public class main extends Activity {
 			
 		}
 		
+		private void initHighscoreMarks()
+		{
+			mTotalHighscores = getAmountOfLocalHighscores();
+
+			if(Settings.RHDEBUG)
+				Log.d("debug", "mTotalHighscores: " + mTotalHighscores);
+			
+			// awesome switch usage XD // TODO: remove this comment :D
+			switch(mTotalHighscores)
+			{
+			default:
+			case 5:
+				mHighscore5 = getHighscore(5);
+				if (mHighscoreMark5 == null)
+					mHighscoreMark5 = new HighscoreMark(mRenderer, mHighscoreMarkBitmap, CounterFont);
+				mHighscoreMark5.setMarkTo(5, mHighscore5);
+			case 4:
+				mHighscore4 = getHighscore(4);
+				if (mHighscoreMark4 == null)
+					mHighscoreMark4 = new HighscoreMark(mRenderer, mHighscoreMarkBitmap, CounterFont);
+				mHighscoreMark4.setMarkTo(4, mHighscore4);
+			case 3:
+				mHighscore3 = getHighscore(3);
+				if (mHighscoreMark3 == null)
+					mHighscoreMark3 = new HighscoreMark(mRenderer, mHighscoreMarkBitmap, CounterFont);
+				mHighscoreMark3.setMarkTo(3, mHighscore3);
+			case 2:
+				mHighscore2 = getHighscore(2);
+				if (mHighscoreMark2 == null)
+					mHighscoreMark2 = new HighscoreMark(mRenderer, mHighscoreMarkBitmap, CounterFont);
+				mHighscoreMark2.setMarkTo(2, mHighscore2);
+			case 1:
+				mHighscore1 = getHighscore(1);
+
+				if(Settings.RHDEBUG)
+					Log.d("debug", "mHighscore1: " + mHighscore1);
+				
+				if (mHighscoreMark1 == null)
+					mHighscoreMark1 = new HighscoreMark(mRenderer, mHighscoreMarkBitmap, CounterFont);
+				mHighscoreMark1.setMarkTo(1, mHighscore1);
+			case 0:
+			}
+		}
+		
+		private void updateHighscoreMarks()
+		{
+			switch(mTotalHighscores)
+			{
+			default:
+			case 5:
+				if (mHighscoreMark5 != null)
+					mHighscoreMark5.x = (mHighscore5 - totalScore) * 10 + player.x;
+			case 4:
+				if (mHighscoreMark4 != null)
+					mHighscoreMark4.x = (mHighscore4 - totalScore) * 10 + player.x;
+			case 3:
+				if (mHighscoreMark3 != null)
+					mHighscoreMark3.x = (mHighscore3 - totalScore) * 10 + player.x;
+			case 2:
+				if (mHighscoreMark2 != null)
+					mHighscoreMark2.x = (mHighscore2 - totalScore) * 10 + player.x;
+			case 1:
+				if (mHighscoreMark1 != null)
+					mHighscoreMark1.x = (mHighscore1 - totalScore) * 10 + player.x;
+			case 0:
+			}
+		}
+		
 		/*public void draw(Canvas canvas) {
 			
 
@@ -430,6 +554,10 @@ public class main extends Activity {
 						deathSoundPlayed=false;
 						SoundManager.playSound(1, 1);
 						doUpdateCounter=true;
+						mNewHighscore.z = -2.0f;
+						initHighscoreMarks();
+						threeKwasplayed = false;
+						totalScore = 0;
 					}
 					else if(saveButton.isClicked( event.getX(), Util.getInstance().toScreenY((int)event.getY())  ) && !scoreWasSaved){
 						//save score
@@ -438,7 +566,7 @@ public class main extends Activity {
 						saveButton.lastX = saveButton.x;
 						saveButton.x = -5000;
 						
-						saveScore(level.getScoreCounter());
+						saveScore(totalScore);
 
 						//play save sound
 						SoundManager.playSound(4, 1);

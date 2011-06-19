@@ -29,10 +29,13 @@ public class Player{
 	private Bitmap playerSpriteImg; 
 	public PlayerSprite playerSprite;
 	
+	public int bonusItems = 0;
+	private int bonusScorePerItem = 200;
+	
 
 	public Player(Context context, OpenGLRenderer glrenderer, int ScreenHeight) {
 		x = 70; 
-		y = Settings.FirstBlockHeight+2;
+		y = Settings.FirstBlockHeight+20;
 		
 		width = 40; //40; nyan cat //60; nyan cat pre minimalize //62; playersprite settings
 		height = 40; //30;  nyan cat //42; nyan cat pre minimalize //63; playersprite settings
@@ -196,7 +199,7 @@ public class Player{
 				Level.obstacleDataBonus[i].didTrigger=true;
 
 				SoundManager.playSound(8, 1);
-				Level.scoreCounter+=200;
+				bonusItems++;
 				Level.obstacleDataBonus[i].z= -1;
 			}
 		}
@@ -232,6 +235,12 @@ public class Player{
 		y = Settings.FirstBlockHeight+20;
 		
 		speedoffsetX = 0;
+		bonusItems = 0;
+	}
+	
+	public int getBonusScore()
+	{
+		return bonusItems * bonusScorePerItem;
 	}
 	
 
