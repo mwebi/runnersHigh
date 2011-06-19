@@ -121,7 +121,7 @@ public class HighscoreAdapter extends DbAdapter {
 	}
 
 	// -------------------------------------------------------
-	// Get Last Entries
+	// Get Last Entry
 	public Cursor fetchLastEntry() throws SQLException {
 		Cursor mCursor = mDb.query(DATABASE_TABLE, new String[] { KEY_ROWID,
 				KEY_NAME, KEY_SCORE, KEY_ISONLINE }, "isonline = 0", null,
