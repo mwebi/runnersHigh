@@ -1,5 +1,7 @@
 package com.runnershigh;
 
+import android.util.Log;
+
 public class RHDrawable extends Mesh {
 	protected float width;
 	protected float height;
@@ -8,7 +10,7 @@ public class RHDrawable extends Mesh {
 		x = _x;
 		y = _y;
 		z = _z;
-		
+
 		width= _width;
 		height= _height;
 		
@@ -17,7 +19,6 @@ public class RHDrawable extends Mesh {
 				0.0f, 0.0f, //
 				1.0f, 0.0f, //
 		};
-
 		short[] indices = new short[] { 0, 1, 2, 1, 3, 2 };
 
 		float[] vertices = new float[] { 0, 0, 0, width, 0, 0.0f, 0, height,

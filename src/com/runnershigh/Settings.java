@@ -13,5 +13,7 @@ public class Settings {
 
 	static final boolean RHDEBUG = false;
 	
+	static final boolean showHighscoreMarks = false;
+	
 	static final int FirstBlockHeight = 50;
 }

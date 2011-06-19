@@ -212,7 +212,8 @@ public class main extends Activity {
 
 			player = new Player(getApplicationContext(), mRenderer, height);
 			
-			
+			if(Settings.RHDEBUG)
+				Log.d("debug", "after player creation");
 
 			// Loading Toast
 			loadMessage = Toast.makeText(context, "Fat guys need longer ...", 4000 );
@@ -222,18 +223,32 @@ public class main extends Activity {
 		    loadingDialog.setProgressStyle(0);
 		    loadingDialog.setMessage("Loading Highscore ...");
 			
+		    if(Settings.RHDEBUG)
+				Log.d("debug", "after loading messages");
+		    
 		    highScoreAdapter = new HighscoreAdapter(context);
 
+		    if(Settings.RHDEBUG)
+		    	Log.d("debug", "after HighscoreAdapter");
+		    
 			//new counter
-			CounterYourScoreImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.yourscore);
+			CounterYourScoreImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.scorebackground);
 			CounterYourScoreDrawable = new RHDrawable(20, height-16-20, 1, CounterYourScoreImg.getWidth(), CounterYourScoreImg.getHeight());
 			CounterYourScoreDrawable.loadBitmap(CounterYourScoreImg); 
 			mRenderer.addMesh(CounterYourScoreDrawable);
+
+			if(Settings.RHDEBUG)
+				Log.d("debug", "after CounterYourScoreDrawable addMesh");
 			
 			CounterFont = BitmapFactory.decodeResource(context.getResources(), R.drawable.numberfont);
 			mCounterGroup = new CounterGroup(70, height-20-20, 1, 128*4, 20, 25);
 			
+			if(Settings.RHDEBUG)
+				Log.d("debug", "after mCounterGroup");
+			
 			for(int i=70; i<130; i+=15){
+				if(Settings.RHDEBUG)
+					Log.d("debug", "in coutner for");
 				if(i==115){
 					mCounterDigit1 = new CounterDigit(i, height-20-20, 1, 16, 20);
 					mCounterDigit1.loadBitmap(CounterFont); 
@@ -257,6 +272,9 @@ public class main extends Activity {
 			}
 			mRenderer.addMesh(mCounterGroup);
 			
+			if(Settings.RHDEBUG)
+				Log.d("debug", "after counter");
+			
 			blackImg = Bitmap.createBitmap(16, 16, Bitmap.Config.ARGB_4444);
 			//blackImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.resetbutton);
 			blackRHD = new RHDrawable(0, 0, 1, width, height);
@@ -272,8 +290,8 @@ public class main extends Activity {
 			mNewHighscore.loadBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.new_highscore));
 			mRenderer.addMesh(mNewHighscore);
 
-
-			initHighscoreMarks();
+			if(Settings.showHighscoreMarks)
+				initHighscoreMarks();
 			
 			timeAtLastSecond = System.currentTimeMillis();
 	        runCycleCounter=0;
@@ -367,15 +385,9 @@ public class main extends Activity {
 							currentTimeTaken = System.currentTimeMillis()- starttime;
 							Log.d("runtime", "time after background update: " + Integer.toString((int)currentTimeTaken));
 						}
+						if(Settings.showHighscoreMarks)
+							updateHighscoreMarks();
 						
-						updateHighscoreMarks();
-						
-						if (totalScore > mHighscore5)
-						{
-							boolean breakthisshit = true;
-							if (breakthisshit)
-								breakthisshit = false;
-						}
 				} else {
 					if(player.y < 0){
 						doUpdateCounter=false;
@@ -387,9 +399,10 @@ public class main extends Activity {
 							SoundManager.playSound(7, 1);
 							deathSoundPlayed=true;
 						}
-						
-						if (totalScore > mHighscore1)
-							mNewHighscore.z = 1.0f;
+						if(Settings.showHighscoreMarks){
+							if (totalScore > mHighscore1)
+								mNewHighscore.z = 1.0f;
+						}
 					}
 				}
 				
@@ -586,8 +599,12 @@ public class main extends Activity {
 						deathSoundPlayed=false;
 						SoundManager.playSound(1, 1);
 						doUpdateCounter=true;
-						mNewHighscore.z = -2.0f;
-						initHighscoreMarks();
+						
+						if(Settings.showHighscoreMarks){
+							mNewHighscore.z = -2.0f;
+							initHighscoreMarks();
+						}
+							
 						threeKwasplayed = false;
 						totalScore = 0;
 					}
