@@ -279,7 +279,7 @@ public class main extends Activity {
 			mRenderer.addMesh(blackRHD);
 			
 			mHighscoreMarkBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.highscoremark);
-			
+			 
 			mNewHighscore = new RHDrawable(width/2 - 128, height/2 - 64, -2, 256, 128);
 			mNewHighscore.loadBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.new_highscore));
 			mRenderer.addMesh(mNewHighscore);
@@ -318,6 +318,7 @@ public class main extends Activity {
 				return 0;
 		}
 		
+		@SuppressWarnings("unused")
 		public void run() {
 
 			if(Settings.RHDEBUG)
@@ -440,7 +441,8 @@ public class main extends Activity {
 				}
 				
 				timeForOneCycle= System.currentTimeMillis()- starttime;
-				if((System.currentTimeMillis() - timeAtLastSecond) > 1000 && Settings.RHDEBUG){
+				if((System.currentTimeMillis() - timeAtLastSecond) > 1000 && Settings.RHDEBUG)
+				{
 					timeAtLastSecond = System.currentTimeMillis();
 					Log.d("runtime", "run cycles per second: " + Integer.toString(runCycleCounter));
 					runCycleCounter=0;
