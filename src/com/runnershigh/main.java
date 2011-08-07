@@ -9,18 +9,15 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Paint;
 import android.media.MediaPlayer;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.util.Log;
 import android.view.Display;
-import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Toast;
 
 public class main extends Activity {
 		PowerManager.WakeLock wakeLock ;
@@ -131,7 +128,6 @@ public class main extends Activity {
 		private float blackImgAlpha;
 		private boolean scoreWasSaved = false;
 		private boolean deathSoundPlayed = false;
-		Paint paint = new Paint();
 		private OpenGLRenderer mRenderer;
 		private CounterGroup mCounterGroup;
 		private CounterDigit mCounterDigit1;
@@ -170,15 +166,13 @@ public class main extends Activity {
 			super(context);
 			
 			Display display = ((WindowManager) getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
-			width= display.getWidth(); 
+			width= display.getWidth();  
 			height= display.getHeight();
-			Util.getInstance().setScreenHeight(height);
+			
+			Util.mScreenHeight=height;
+			Util.mScreenWidth=width;
 			Util.getInstance().setAppContext(context);
 			
-			
-			paint.setARGB(0xff, 0x00, 0x00, 0x00);;
-			paint.setAntiAlias(true);
-			paint.setTextSize(16);
 			
 			mRenderer = new OpenGLRenderer();
 			this.setRenderer(mRenderer);
@@ -198,7 +192,8 @@ public class main extends Activity {
 			mRenderer.addMesh(background);
 			
 			resetButtonImg = BitmapFactory.decodeResource(context.getResources(),R.drawable.resetbutton);
-			resetButton = new Button(350, height-50-10, -2, 100, 50);
+			resetButton = new Button(Util.getPercentOfScreenWidth(75), height-Util.getPercentOfScreenHeight(22), -2, 
+									 Util.getPercentOfScreenWidth(18), Util.getPercentOfScreenHeight(18));
 			resetButton.loadBitmap(resetButtonImg);
 			mRenderer.addMesh(resetButton);			
 			
@@ -240,30 +235,23 @@ public class main extends Activity {
 			if(Settings.RHDEBUG)
 				Log.d("debug", "after mCounterGroup");
 			
-			for(int i=70; i<130; i+=15){
-				if(Settings.RHDEBUG)
-					Log.d("debug", "in coutner for");
-				if(i==115){
-					mCounterDigit1 = new CounterDigit(i, height-20-20, 1, 16, 20);
-					mCounterDigit1.loadBitmap(CounterFont); 
-					mCounterGroup.add(mCounterDigit1);
-				}
-				if(i==100){
-					mCounterDigit2 = new CounterDigit(i, height-20-20, 1, 16, 20);
-					mCounterDigit2.loadBitmap(CounterFont); 
-					mCounterGroup.add(mCounterDigit2);
-				}
-				if(i==85){
-					mCounterDigit3 = new CounterDigit(i, height-20-20, 1, 16, 20);
-					mCounterDigit3.loadBitmap(CounterFont); 
-					mCounterGroup.add(mCounterDigit3);
-				}
-				if(i==70){
-					mCounterDigit4 = new CounterDigit(i, height-20-20, 1, 16, 20);
-					mCounterDigit4.loadBitmap(CounterFont); 
-					mCounterGroup.add(mCounterDigit4);
-				}
-			}
+
+			mCounterDigit1 = new CounterDigit(70, height-20-20, 1, 16, 20);
+			mCounterDigit1.loadBitmap(CounterFont); 
+			mCounterGroup.add(mCounterDigit1);
+
+			mCounterDigit2 = new CounterDigit(85, height-20-20, 1, 16, 20);
+			mCounterDigit2.loadBitmap(CounterFont); 
+			mCounterGroup.add(mCounterDigit2);
+
+			mCounterDigit3 = new CounterDigit(100, height-20-20, 1, 16, 20);
+			mCounterDigit3.loadBitmap(CounterFont); 
+			mCounterGroup.add(mCounterDigit3);
+
+			mCounterDigit4 = new CounterDigit(115, height-20-20, 1, 16, 20);
+			mCounterDigit4.loadBitmap(CounterFont); 
+			mCounterGroup.add(mCounterDigit4);
+			
 			mRenderer.addMesh(mCounterGroup);
 			
 			if(Settings.RHDEBUG)
@@ -290,6 +278,7 @@ public class main extends Activity {
 			timeAtLastSecond = System.currentTimeMillis();
 	        runCycleCounter=0;
 			
+	        
 	        Thread rHThread = new Thread(this);
 			rHThread.start();
 			

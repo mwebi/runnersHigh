@@ -6,7 +6,8 @@ import android.graphics.Bitmap;
 
 public class Util {
 	private static Util mInstance =  null;
-	private int mScreenHeight = 0;
+	public static int mScreenHeight = 0;
+	public static int mScreenWidth = 0;
 	private Context mContext = null;
 	
 	public static synchronized Util getInstance() {
@@ -15,14 +16,16 @@ public class Util {
 		
 		return mInstance;
 	}
-
-	public void setScreenHeight(int value) {
-		mScreenHeight = value;
-	}
 	
-	public int getScreenHeight() {
-		return mScreenHeight;
-	}
+	public static float getPercentOfScreenWidth(int percent) {
+		float percentWidth=mScreenWidth/100*percent;
+		return percentWidth;
+	} 
+	public static float getPercentOfScreenHeight(int percent) {
+		float percentHeight=mScreenHeight/100*percent;
+		return percentHeight;
+	} 	
+
 	
 	
 	public int toScreenY(int y) {

@@ -11,10 +11,11 @@ public class Button extends RHDrawable{
 	private boolean showButton = false;
 	public float lastX;
 	
-	public Button(int _x, int _y, int _z, int _width, int _height){
-		super((int)_x, (int)_y, (int)_z, (int)_width, (int)_height);
+	public Button(float _x, float _y, float _z, float _width, float _height){
+		super(_x, _y, _z, _width, _height);
 		x=lastX=_x;
 		y=_y;
+		z=_z;
 		width=_width;
 		height=_height;
 	}
