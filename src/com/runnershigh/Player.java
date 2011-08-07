@@ -176,7 +176,7 @@ public class Player{
 				Level.obstacleDataJumper[i].didTrigger=true;
 				
 				SoundManager.playSound(6, 1);
-				velocity = 6; //katapultiert den player wie ein trampolin nach oben
+				velocity = Util.getPercentOfScreenHeight(1.3f);//6; //katapultiert den player wie ein trampolin nach oben
 				
 			}
 		}
