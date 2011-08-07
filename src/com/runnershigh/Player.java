@@ -148,7 +148,7 @@ public class Player{
 		return true;
 	}	
 	
-	public boolean collidedWithObstacle(int levelPosition) {
+	public boolean collidedWithObstacle(float levelPosition) {
 		
 		for(int i = 0; i < Level.maxObstaclesJumper; i++)
 		{

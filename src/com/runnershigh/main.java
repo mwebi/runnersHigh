@@ -198,7 +198,9 @@ public class main extends Activity {
 			mRenderer.addMesh(resetButton);			
 			
 			saveButtonImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.savebutton);
-			saveButton = new Button(200, height-50-10, -2, 100, 50);
+			//saveButton = new Button(200, height-50-10, -2, 100, 50);
+			saveButton = new Button(Util.getPercentOfScreenWidth(50), height-Util.getPercentOfScreenHeight(22), -2, 
+					 				Util.getPercentOfScreenWidth(18), Util.getPercentOfScreenHeight(18));
 			saveButton.loadBitmap(saveButtonImg);
 			mRenderer.addMesh(saveButton);
 			
@@ -222,7 +224,7 @@ public class main extends Activity {
 		    
 			//new counter
 			CounterYourScoreImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.scorebackground);
-			CounterYourScoreDrawable = new RHDrawable(20, height-16-20, 1, CounterYourScoreImg.getWidth(), CounterYourScoreImg.getHeight());
+			CounterYourScoreDrawable = new RHDrawable(Util.getPercentOfScreenWidth(5), height-Util.getPercentOfScreenHeight(12), 1, Util.getPercentOfScreenWidth(27), Util.getPercentOfScreenHeight(7));
 			CounterYourScoreDrawable.loadBitmap(CounterYourScoreImg); 
 			mRenderer.addMesh(CounterYourScoreDrawable);
 
@@ -230,25 +232,25 @@ public class main extends Activity {
 				Log.d("debug", "after CounterYourScoreDrawable addMesh");
 			
 			CounterFont = BitmapFactory.decodeResource(context.getResources(), R.drawable.numberfont);
-			mCounterGroup = new CounterGroup(70, height-20-20, 1, 128*4, 20, 25);
+			mCounterGroup = new CounterGroup(Util.getPercentOfScreenWidth(9), height-Util.getPercentOfScreenHeight(12.5f), 1, Util.getPercentOfScreenWidth(16), Util.getPercentOfScreenHeight(6), 25);
 			
 			if(Settings.RHDEBUG)
 				Log.d("debug", "after mCounterGroup");
 			
 
-			mCounterDigit1 = new CounterDigit(70, height-20-20, 1, 16, 20);
+			mCounterDigit1 = new CounterDigit(Util.getPercentOfScreenWidth(14), height-Util.getPercentOfScreenHeight(12.5f), 1, Util.getPercentOfScreenWidth(4), Util.getPercentOfScreenHeight(6.5f));
 			mCounterDigit1.loadBitmap(CounterFont); 
 			mCounterGroup.add(mCounterDigit1);
 
-			mCounterDigit2 = new CounterDigit(85, height-20-20, 1, 16, 20);
+			mCounterDigit2 = new CounterDigit(Util.getPercentOfScreenWidth(17.5f), height-Util.getPercentOfScreenHeight(12.5f), 1, Util.getPercentOfScreenWidth(4), Util.getPercentOfScreenHeight(6.5f));
 			mCounterDigit2.loadBitmap(CounterFont); 
 			mCounterGroup.add(mCounterDigit2);
 
-			mCounterDigit3 = new CounterDigit(100, height-20-20, 1, 16, 20);
+			mCounterDigit3 = new CounterDigit(Util.getPercentOfScreenWidth(21), height-Util.getPercentOfScreenHeight(12.5f), 1, Util.getPercentOfScreenWidth(4), Util.getPercentOfScreenHeight(6.5f));
 			mCounterDigit3.loadBitmap(CounterFont); 
 			mCounterGroup.add(mCounterDigit3);
 
-			mCounterDigit4 = new CounterDigit(115, height-20-20, 1, 16, 20);
+			mCounterDigit4 = new CounterDigit(Util.getPercentOfScreenWidth(24.5f), height-Util.getPercentOfScreenHeight(12.5f), 1, Util.getPercentOfScreenWidth(4), Util.getPercentOfScreenHeight(6.5f));
 			mCounterDigit4.loadBitmap(CounterFont); 
 			mCounterGroup.add(mCounterDigit4);
 			

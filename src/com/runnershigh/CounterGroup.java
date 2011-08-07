@@ -18,7 +18,7 @@ public class CounterGroup extends CounterDigit{
 	private int size;
 	
 	
-	public CounterGroup(int _x, int _y, int _z, int _width, int _height, int _FrameUpdateTime){
+	public CounterGroup(float _x, float _y, float _z, float _width, float _height, int _FrameUpdateTime){
 		super((int)_x, (int)_y, (int)_z, (int)_width, (int)_height);
 		x=_x;
 		y=_y;

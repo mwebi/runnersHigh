@@ -14,14 +14,17 @@ import android.util.Log;
 public class Level {
 	private int width;
 	private int height;
-	private int levelPosition;
+	private float levelPosition;
 	private float deltaLevelPosition;
 	//public static float scoreCounter;
 	public float baseSpeed;
 	public float baseSpeedMax;
 	public float baseSpeedStart;
+	public float baseSpeedAcceleration;
 	public float extraSpeed;
+	public float extraSpeedStart;
 	public float extraSpeedMax;
+	public float extraSpeedAcceleration;
 	
 	public static Block[] blockData;
 	public static final int maxBlocks = 5;
@@ -84,11 +87,17 @@ public class Level {
 		//lastLevelPosition = 0;
 		deltaLevelPosition = 0;
 		//scoreCounter = 0;
-		baseSpeedStart = 1;
+		
+		baseSpeedStart = Util.getPercentOfScreenWidth(0.075f);
 		baseSpeed = baseSpeedStart;
-		baseSpeedMax = 3.0f;
-		extraSpeed = 0;
-		extraSpeedMax = 4f;
+		baseSpeedMax = Util.getPercentOfScreenWidth(0.375f);
+		baseSpeedAcceleration = baseSpeed*0.025f;
+		
+		extraSpeedStart = Util.getPercentOfScreenWidth(0.025f);
+		extraSpeed = extraSpeedStart;
+		extraSpeedMax = Util.getPercentOfScreenWidth(0.5f);
+		extraSpeedAcceleration = extraSpeed * 0.010f;
+		
 		renderer = glrenderer;
 		
 		randomGenerator = new Random();
@@ -150,14 +159,18 @@ public class Level {
 					decideIfAndWhatObstaclesSpawn();
 			}
 			
+			baseSpeedAcceleration = baseSpeed * 0.005f;
+			extraSpeedAcceleration = extraSpeed * 0.005f;
+			
 			if(baseSpeed < baseSpeedMax)
-				baseSpeed+=0.025; //baseSpeed+=0.025;
+				baseSpeed+=baseSpeedAcceleration; //baseSpeed+=0.025;
 			
 			if(extraSpeed < extraSpeedMax)
-				extraSpeed+=0.001; //extraSpeed+=0.001;
+				extraSpeed+=extraSpeedAcceleration; //0.001; //extraSpeed+=0.001;
+			
 			if(slowDown){
 				//extraSpeed=0;
-				baseSpeed=1;
+				baseSpeed=baseSpeedStart;
 				slowDown=false;
 			}
 			
@@ -494,13 +507,13 @@ public class Level {
 	
 	public int getDistanceScore()
 	{
-		return levelPosition / 10;
+		return (int)(levelPosition / 10);
 	}
 	
 	public void lowerSpeed() {
 		slowDown = true;
 	}
-	public int getLevelPosition(){
+	public float getLevelPosition(){
 		return levelPosition;
 	}
 	public void reset() {
@@ -510,10 +523,9 @@ public class Level {
 			initializeBlocks(false);
 			initializeObstacles(false);
 			
-			this.baseSpeed = baseSpeedStart;
-			this.extraSpeed = 0;
+			baseSpeed = baseSpeedStart;
+			extraSpeed = extraSpeedStart;
 			BlockCounter=0;
-
 		}
 	}
 }

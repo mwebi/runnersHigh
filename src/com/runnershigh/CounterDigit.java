@@ -8,7 +8,7 @@ public class CounterDigit extends Mesh {
 	protected int digitValue;
 	protected float textureCoordinates[] = {0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f};
 	
-	public CounterDigit(int _x, int _y, int _z, int _width, int _height) {
+	public CounterDigit(float _x, float _y, float _z, float _width, float _height) {
 		x = _x;
 		y = _y;
 		z = _z;
