@@ -169,8 +169,12 @@ public class main extends Activity {
 			width= display.getWidth();  
 			height= display.getHeight();
 			
+			if(Settings.RHDEBUG)
+				Log.d("debug", "displaywidth: " + width + ", displayheight: " + height);
+			
 			Util.mScreenHeight=height;
 			Util.mScreenWidth=width;
+			Util.mWidthHeightRatio=width/height;
 			Util.getInstance().setAppContext(context);
 			
 			

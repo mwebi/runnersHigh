@@ -8,12 +8,12 @@ import android.graphics.Rect;
 import android.util.Log;
 
 public class Player{
-	private static float MAX_JUMP_HEIGHT = 50;  //TODO: make MAX_JUMP_HEIGHT < 100 possible
-	private static float MIN_JUMP_HEIGHT = 30;
+	private static float MAX_JUMP_HEIGHT = Util.getPercentOfScreenHeight(45);  
+	private static float MIN_JUMP_HEIGHT = Util.getPercentOfScreenHeight(5);
 	public Bitmap playerImg;
 	private float lastPosY;
-	static public int width;
-	private int height;
+	static public float width;
+	static public float height;
 	public float x;
 	public float y;
 	private boolean jumping = false;
@@ -34,11 +34,11 @@ public class Player{
 	
 
 	public Player(Context context, OpenGLRenderer glrenderer, int ScreenHeight) {
-		x = 70; 
-		y = Settings.FirstBlockHeight+20;
+		x = Util.getPercentOfScreenWidth(9); //70; 
+		y = Settings.FirstBlockHeight+Util.getPercentOfScreenHeight(4);
 		
-		width = 40; //40; nyan cat //60; nyan cat pre minimalize //62; playersprite settings
-		height = 40; //30;  nyan cat //42; nyan cat pre minimalize //63; playersprite settings
+		width = Util.getPercentOfScreenWidth(9); //40; dicker //40; nyan cat //60; nyan cat pre minimalize //62; playersprite settings
+		height = width*Util.mWidthHeightRatio; //40; dicker //30;  nyan cat //42; nyan cat pre minimalize //63; playersprite settings
 		
 		playerSpriteImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.bastardchar512x128);
 		playerSprite = new PlayerSprite(x, y, 0.5f, width, height, 25, 8); 
@@ -47,8 +47,8 @@ public class Player{
 		
 		playerRect = new Rect();
 		playerRect.left =(int)x;
-		playerRect.top =(int)y+height;
-		playerRect.right =(int)x+width;
+		playerRect.top =(int)(y+height);
+		playerRect.right =(int)(x+width);
 		playerRect.bottom =(int)y;
 		
 		ObstacleRect = new Rect();
@@ -96,20 +96,20 @@ public class Player{
 		}
 		else
 		{
-			velocity -= 0.3f;
+			velocity -= Util.getPercentOfScreenHeight(0.625f); //3
 		}
 		
 		
-		if (velocity < -9)
-			velocity = -9;
-		else if (velocity > 9)
-			velocity = 9;
+		if (velocity < -Util.getPercentOfScreenHeight(1.875f)) //9
+			velocity = -Util.getPercentOfScreenHeight(1.875f);
+		else if (velocity > Util.getPercentOfScreenHeight(1.875f))
+			velocity = Util.getPercentOfScreenHeight(1.875f);
 		
 		y += velocity;
 		
 		playerRect.left =(int)x;
-		playerRect.top =(int)y+height;
-		playerRect.right =(int)x+width;
+		playerRect.top =(int)(y+height);
+		playerRect.right =(int)(x+width);
 		playerRect.bottom =(int)y;
 		
 		onGround = false;
@@ -135,10 +135,10 @@ public class Player{
 		}
 		lastPosY = y;
 		
-		if(speedoffsetX<50)
-			speedoffsetX+=0.01;
+		if(speedoffsetX<Util.getPercentOfScreenWidth(7) ) //50
+			speedoffsetX+=Util.getPercentOfScreenWidth(0.002f); //0.01
 		
-		x=70+speedoffsetX;
+		x=Util.getPercentOfScreenWidth(9)+speedoffsetX;
 		
 		if(y + height < 0){
 			y = -height;

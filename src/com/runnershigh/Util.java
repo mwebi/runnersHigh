@@ -8,6 +8,7 @@ public class Util {
 	private static Util mInstance =  null;
 	public static int mScreenHeight = 0;
 	public static int mScreenWidth = 0;
+	public static int mWidthHeightRatio = 0;
 	private Context mContext = null;
 	
 	public static synchronized Util getInstance() {

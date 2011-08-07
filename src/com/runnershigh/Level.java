@@ -251,11 +251,11 @@ public class Level {
 	private void appendBlockToEnd()
 	{
 		//Log.d("debug", "in appendBlockToEnd");
-		int newHeight;
-		int oldHeight;
-		int newWidth;
-		int distance;
-		int newLeft;
+		float newHeight;
+		float oldHeight;
+		float newWidth;
+		float distance;
+		float newLeft;
 		
 		oldHeight = blockData[rightBlockIndex].BlockRect.top;
 		

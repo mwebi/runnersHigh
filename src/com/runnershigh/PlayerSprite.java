@@ -12,7 +12,7 @@ public class PlayerSprite extends Mesh {
 	private float textureWidthOfOneFrame;
 	private float textureCoordinates[] = {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,};
 	
-	public PlayerSprite(float _x, float _y, float _z, int _width, int _height, int _FrameUpdateTime, int _numberOfFrames) {
+	public PlayerSprite(float _x, float _y, float _z, float _width, float _height, int _FrameUpdateTime, int _numberOfFrames) {
 		x = _x;
 		y = _y;
 		z = _z;
