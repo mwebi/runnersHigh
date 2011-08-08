@@ -5,31 +5,24 @@
   android:layout_width="fill_parent"
   android:layout_height="fill_parent"
   android:padding="10dp"
-  android:textColor="#FFFFFF">
-  
-	<TextView  
-		android:id="@+id/title"
-	  	android:layout_width="fill_parent" 
-	    android:layout_height="wrap_content"    
-	    android:text="@string/app_name" 
-	    android:textSize="26dp"
-	    android:textColor="#FFFFFF"
-	    />
-	    
-	<TextView  
-		android:id="@+id/infoText"
-	  	android:layout_width="fill_parent" 
-	    android:layout_height="wrap_content"    
-	    android:textSize="12dp"
-	    android:textColor="#FFFFFF" android:text="@string/info"/>	    
-	    
-	 <Button android:id="@+id/websiteButton" 
-		android:layout_marginTop="50dp" 
-		android:layout_height="wrap_content" 
-		android:layout_width="wrap_content"		
-		android:textSize="10dp"
-		android:padding="20dp"
-		android:onClick="visitWebsite"
-		android:text="@string/visit_website"		
-		/>
+  android:background="#FFFFFF">
+    <LinearLayout android:id="@+id/linearLayout4" android:layout_width="match_parent" android:layout_height="match_parent" android:layout_weight="2">
+        <Button android:onClick="visitWebsite" android:layout_width="wrap_content" android:id="@+id/buttonMediaCube" android:background="@drawable/info_mediacube_logo" android:layout_height="wrap_content"></Button>
+        <Button android:onClick="visitWebsite" android:layout_width="wrap_content" android:id="@+id/buttonRunnersHigh" android:background="@drawable/runners_high" android:layout_height="wrap_content"></Button>
+        <Button android:onClick="visitWebsite" android:layout_width="wrap_content" android:id="@+id/buttonFHS" android:background="@drawable/info_fh_logo" android:layout_height="wrap_content"></Button>
+    </LinearLayout>
+    <LinearLayout android:id="@+id/linearLayout1" android:layout_width="match_parent" android:layout_height="match_parent" android:layout_weight="1">
+        <LinearLayout android:orientation="vertical" android:id="@+id/linearLayout2" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent">
+            <Button android:onClick="visitWebsite" android:id="@+id/buttonAndre" android:text="Andre" android:layout_weight="1" android:layout_height="0dp" android:layout_width="match_parent"></Button>
+            <Button android:onClick="visitWebsite" android:id="@+id/buttonChris" android:text="Chris" android:layout_weight="1" android:layout_height="0dp" android:layout_width="match_parent"></Button>
+            <Button android:onClick="visitWebsite" android:id="@+id/buttonFrancois" android:text="Francois" android:layout_weight="1" android:layout_height="0dp" android:layout_width="match_parent"></Button>
+            <Button android:onClick="visitWebsite" android:id="@+id/buttonWebi" android:text="Webi" android:layout_weight="1" android:layout_height="0dp" android:layout_width="match_parent"></Button>
+        </LinearLayout>
+        <LinearLayout android:orientation="vertical" android:id="@+id/linearLayout3" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent">
+            <Button android:onClick="visitWebsite" android:id="@+id/buttonAndreas" android:text="NaglStudio" android:layout_height="0dp" android:layout_weight="1" android:layout_width="match_parent"></Button>
+            <Button android:onClick="visitWebsite" android:id="@+id/buttonManuel" android:text="Manuel" android:layout_height="0dp" android:layout_weight="1" android:layout_width="match_parent"></Button>
+            <Button android:onClick="visitWebsite" android:id="@+id/buttonHans" android:text="Hans (Maulwurf)" android:layout_height="0dp" android:layout_weight="1" android:layout_width="match_parent"></Button>
+        </LinearLayout>
+    </LinearLayout>	    
+	
 </LinearLayout>

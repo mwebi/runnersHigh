@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 public class Info extends Activity{
@@ -19,7 +20,45 @@ public class Info extends Activity{
     }
     
     public void visitWebsite(View view) {
-    	Intent browserIntent = new Intent("android.intent.action.VIEW", Uri.parse(Settings.WEBSITE_URL));
-    	startActivity(browserIntent);
+    	Intent browserIntent = null;
+    	
+    	switch (view.getId()) {
+    	case R.id.buttonAndre:
+			browserIntent = new Intent("android.intent.action.VIEW", Uri.parse(Settings.URL_ANDRE));
+			break;
+    	case R.id.buttonAndreas:
+			browserIntent = new Intent("android.intent.action.VIEW", Uri.parse(Settings.URL_ANDREAS));
+			break;
+    	case R.id.buttonChris:
+			browserIntent = new Intent("android.intent.action.VIEW", Uri.parse(Settings.URL_CHRIS));
+			break;
+    	case R.id.buttonFHS:
+			browserIntent = new Intent("android.intent.action.VIEW", Uri.parse(Settings.URL_FH));
+			break;
+    	case R.id.buttonFrancois:
+			browserIntent = new Intent("android.intent.action.VIEW", Uri.parse(Settings.URL_FRANCOIS));
+			break;
+    	case R.id.buttonHans:
+			browserIntent = new Intent("android.intent.action.VIEW", Uri.parse(Settings.URL_HANS));
+			break;
+    	case R.id.buttonManuel:
+			browserIntent = new Intent("android.intent.action.VIEW", Uri.parse(Settings.URL_MANUEL));
+			break;
+    	case R.id.buttonMediaCube:
+			browserIntent = new Intent("android.intent.action.VIEW", Uri.parse(Settings.URL_MEDIACUBE));
+			break;
+    	case R.id.buttonRunnersHigh:
+			browserIntent = new Intent("android.intent.action.VIEW", Uri.parse(Settings.URL_RUNNERSHIGH));
+			break;
+    	case R.id.buttonWebi:
+			browserIntent = new Intent("android.intent.action.VIEW", Uri.parse(Settings.URL_WEBI));
+			break;
+
+		default:
+			Log.e("RunnersHigh", "unexpected buttonclick");
+			break;
+		}
+    	
+    	if (browserIntent != null) startActivity(browserIntent);
     }
 }
