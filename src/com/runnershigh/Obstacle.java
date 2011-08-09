@@ -17,6 +17,10 @@ public class Obstacle extends RHDrawable {
 	public Obstacle(float _x, float _y, float _z, float _width, float _height, char type){
 		super((int)_x, (int)_y, (int)_z, (int)_width, (int)_height);
 		
+		x=_x;
+		y=_y;
+		z=_z;
+		
 		ObstacleType=type;
 		ObstacleRect = new Rect ((int)x, (int)y, (int)x+(int)width, (int)y+(int)height);
 		
@@ -43,55 +47,7 @@ public class Obstacle extends RHDrawable {
 		centerY=y;
 	}
 	
-	public Obstacle(Obstacle GivenObstacle){
-		super((int)GivenObstacle.getX(), (int)GivenObstacle.getY(), (int)GivenObstacle.z, GivenObstacle.getWidth(), GivenObstacle.getHeight());
-		x = GivenObstacle.getX();
-		y = GivenObstacle.getY();
-		width = GivenObstacle.getWidth();
-		height = GivenObstacle.getHeight();
-		ObstacleRect = GivenObstacle.getObstacleRect();
-		ObstacleType = GivenObstacle.getType();
-		
-		float textureCoordinates[] = { 0.0f, 1.0f, //
-				1.0f, 1.0f, //
-				0.0f, 0.0f, //
-				1.0f, 0.0f, //
-		};
 
-		short[] indices = new short[] { 0, 1, 2, 1, 3, 2 };
-
-		float[] vertices = new float[] { 0, 0, 0, width, 0, 0.0f, 0, height,
-				0.0f, width, height, 0.0f };
-
-		setIndices(indices);
-		setVertices(vertices);
-		setTextureCoordinates(textureCoordinates);
-	}
-	public int getWidth(){
-		return (int)width;
-	}
-	public int getHeight(){
-		return (int)height;
-	}
-	public char getType(){
-		return ObstacleType;
-	}
-	public void setType(char type){
-		ObstacleType = type;
-	}
-	
-	public float getX(){
-		return x;
-	}
-	public float getY(){
-		return y;
-	}
-	public void setX(float _x){
-		x=centerX=_x;
-	}
-	public void setY(float _y){
-		y=centerY=_y;
-	}
 	public void setObstacleRect(float l, float r, float top, float bottom){
 		ObstacleRect.left=(int)l;
 		ObstacleRect.right=(int)r;
@@ -101,9 +57,7 @@ public class Obstacle extends RHDrawable {
 	public void setObstacleRectRight(int r){
 		ObstacleRect.right=r;
 	}
-	public Rect getObstacleRect(){
-		return ObstacleRect;
-	}
+
 	public void updateObstacleRect(int levelPosition){
 		ObstacleRect.left -= levelPosition;
 		ObstacleRect.right -= levelPosition;

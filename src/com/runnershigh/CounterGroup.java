@@ -11,9 +11,14 @@ public class CounterGroup extends CounterDigit{
 	private int lastCounterValueTens;
 	private int lastCounterValueHundreds;
 	private int lastCounterValueThousands;
+	private int counterValueOnes = 0;
+	private int counterValueTens = 0;
+	private int counterValueHundreds = 0;
+	private int counterValueThousands = 0;
+	private int size;
 	
 	
-	public CounterGroup(int _x, int _y, int _z, int _width, int _height, int _FrameUpdateTime){
+	public CounterGroup(float _x, float _y, float _z, float _width, float _height, int _FrameUpdateTime){
 		super((int)_x, (int)_y, (int)_z, (int)_width, (int)_height);
 		x=_x;
 		y=_y;
@@ -30,7 +35,7 @@ public class CounterGroup extends CounterDigit{
 
 	@Override
 	public void draw(GL10 gl) {
-		int size = mChildren.size();
+		size = mChildren.size();
 		for (int i = 0; i < size; i++)
 			mChildren.get(i).draw(gl);
 	}
@@ -105,24 +110,24 @@ public class CounterGroup extends CounterDigit{
 		if(  System.currentTimeMillis() > (LastFrameChangeTime+FrameUpdateTime) ){
 			LastFrameChangeTime=System.currentTimeMillis();
 			
-			int counterValueOnes = counterValue % 10; 
+			counterValueOnes = counterValue % 10; 
 			if(lastCounterValueOnes != counterValueOnes){
 				mChildren.get(3).setDigitTo(counterValueOnes);
 				lastCounterValueOnes = counterValueOnes;
 			}
 			
-			int counterValueTens = (counterValue % 100) / 10 ;
+			counterValueTens = (counterValue % 100) / 10 ;
 			if(lastCounterValueTens != counterValueTens){
 				mChildren.get(2).setDigitTo(counterValueTens);
 				lastCounterValueTens = counterValueTens;
 			}			
-			int counterValueHundreds = (counterValue % 1000 ) / 100;
+			counterValueHundreds = (counterValue % 1000 ) / 100;
 			if(lastCounterValueHundreds != counterValueHundreds){
 				mChildren.get(1).setDigitTo(counterValueHundreds);
 				lastCounterValueHundreds = counterValueHundreds;
 			}
 			
-			int counterValueThousands = counterValue / 1000;
+			counterValueThousands = counterValue / 1000;
 			if(lastCounterValueThousands != counterValueThousands){
 				mChildren.get(0).setDigitTo(counterValueThousands);
 				lastCounterValueThousands = counterValueThousands;

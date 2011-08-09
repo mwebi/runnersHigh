@@ -1,6 +1,5 @@
 package com.runnershigh;
 
-import android.graphics.Rect;
 import android.util.Log;
 
 public class PlayerSprite extends Mesh {
@@ -11,8 +10,9 @@ public class PlayerSprite extends Mesh {
 	private int FrameUpdateTime;
 	private float numberOfFrames;
 	private float textureWidthOfOneFrame;
+	private float textureCoordinates[] = {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,};
 	
-	public PlayerSprite(float _x, float _y, float _z, int _width, int _height, int _FrameUpdateTime, int _numberOfFrames) {
+	public PlayerSprite(float _x, float _y, float _z, float _width, float _height, int _FrameUpdateTime, int _numberOfFrames) {
 		x = _x;
 		y = _y;
 		z = _z;
@@ -41,10 +41,7 @@ public class PlayerSprite extends Mesh {
 		setTextureCoordinates(textureCoordinates);
 		
 		LastFrameChangeTime = System.currentTimeMillis();
-	}
-	
-	public Rect getRect() {
-		return new Rect((int)x,(int)(y+height),(int)(x+width),(int)y);
+		
 	}
 	
 	public void setWidth(int width)
@@ -80,11 +77,16 @@ public class PlayerSprite extends Mesh {
 			currentFrame++;
 			if(currentFrame==numberOfFrames)
 				currentFrame=0;
-			float textureCoordinates[] = {textureWidthOfOneFrame*currentFrame, 1.0f, //
-					textureWidthOfOneFrame*currentFrame+textureWidthOfOneFrame, 1.0f, //
-					textureWidthOfOneFrame*currentFrame, 0.0f, //
-					textureWidthOfOneFrame*currentFrame+textureWidthOfOneFrame, 0.0f, //
-			};
+			
+			textureCoordinates[0] = textureWidthOfOneFrame*currentFrame;
+			textureCoordinates[1] = 1.0f;
+			textureCoordinates[2] = textureWidthOfOneFrame*currentFrame+textureWidthOfOneFrame;
+			textureCoordinates[3] = 1.0f;
+			textureCoordinates[4] = textureWidthOfOneFrame*currentFrame;
+			textureCoordinates[5] = 0.0f;
+			textureCoordinates[6] = textureWidthOfOneFrame*currentFrame+textureWidthOfOneFrame;
+			textureCoordinates[7] = 0.0f;
+
 			setTextureCoordinates(textureCoordinates);
 		}
 	}

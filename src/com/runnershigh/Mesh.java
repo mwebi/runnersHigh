@@ -21,6 +21,7 @@ import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
 
 import javax.microedition.khronos.opengles.GL10;
+import javax.microedition.khronos.opengles.GL11;
 
 import android.graphics.Bitmap;
 import android.opengl.GLUtils;
@@ -53,6 +54,8 @@ public class Mesh {
 	
 	private int mWrapS;
 	private int mWrapT;
+	
+	private ByteBuffer byteBuf;
 
 	// The number of indices.
 	private int mNumOfIndices = -1;
@@ -180,12 +183,10 @@ public class Mesh {
 	 * 
 	 * @param textureCoords
 	 */
-	protected void setTextureCoordinates(float[] textureCoords) { // New
-		// function.
+	protected void setTextureCoordinates(float[] textureCoords) { 
 		// float is 4 bytes, therefore we multiply the number if
 		// vertices with 4.
-		ByteBuffer byteBuf = ByteBuffer
-				.allocateDirect(textureCoords.length * 4);
+		byteBuf = ByteBuffer.allocateDirect(textureCoords.length * 4);
 		byteBuf.order(ByteOrder.nativeOrder());
 		mTextureBuffer = byteBuf.asFloatBuffer();
 		mTextureBuffer.put(textureCoords);
@@ -251,13 +252,19 @@ public class Mesh {
 		gl.glGenTextures(1, textures, 0);
 		mTextureId = textures[0];
 
+		gl.glHint(GL10.GL_PERSPECTIVE_CORRECTION_HINT, GL10.GL_FASTEST);
+
+		if ( gl instanceof GL11 ) {
+		        gl.glTexParameterf(GL11.GL_TEXTURE_2D, GL11.GL_GENERATE_MIPMAP, GL11.GL_TRUE);
+		} 
+		
 		// ...and bind it to our array
 		gl.glBindTexture(GL10.GL_TEXTURE_2D, mTextureId);
 		// Create Nearest Filtered Texture
 		gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MIN_FILTER,
-				GL10.GL_LINEAR);
+				GL10.GL_NEAREST);
 		gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MAG_FILTER,
-				GL10.GL_LINEAR);
+				GL10.GL_NEAREST);
 		
 		// Different possible texture parameters, e.g. GL10.GL_CLAMP_TO_EDGE
 		gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_WRAP_S,

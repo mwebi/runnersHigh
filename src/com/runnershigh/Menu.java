@@ -2,23 +2,45 @@ package com.runnershigh;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Toast;
 
 public class Menu extends Activity {
-
+	MediaPlayer menuLoop;
+	private Toast loadMessage;
+	
     @Override
     public void onCreate(Bundle savedInstanceState) {
     	requestWindowFeature(Window.FEATURE_NO_TITLE);  
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		
     	super.onCreate(savedInstanceState);
-        setContentView(R.layout.menu);   
+        setContentView(R.layout.menu); 
+        
+
+		loadMessage = Toast.makeText(getApplicationContext(), "Game loading", 3000 );
+		loadMessage.setGravity(Gravity.CENTER|Gravity.CENTER, 0, 0);
+        
+        /*
+        menuLoop = MediaPlayer.create(getApplicationContext(), R.raw.menu);  
+        menuLoop.setLooping(true);
+        menuLoop.seekTo(0);
+        menuLoop.setVolume(0.5f, 0.5f);
+        menuLoop.start();
+        */
     }
     
     public void playGame(View view) {
+
+		// Loading Toast
+//		loadMessage.show();
+		
     	Intent myIntent = new Intent (this, main.class);
     	startActivity (myIntent);
     }

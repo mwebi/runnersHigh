@@ -1,14 +1,14 @@
 package com.runnershigh;
 
-import android.graphics.Rect;
 import android.util.Log;
 
 public class CounterDigit extends Mesh {
 	protected float width;
 	protected float height;
 	protected int digitValue;
+	protected float textureCoordinates[] = {0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f};
 	
-	public CounterDigit(int _x, int _y, int _z, int _width, int _height) {
+	public CounterDigit(float _x, float _y, float _z, float _width, float _height) {
 		x = _x;
 		y = _y;
 		z = _z;
@@ -32,10 +32,6 @@ public class CounterDigit extends Mesh {
 		setIndices(indices);
 		setVertices(vertices);
 		setTextureCoordinates(textureCoordinates);
-	}
-	
-	public Rect getRect() {
-		return new Rect((int)x,(int)(y+height),(int)(x+width),(int)y);
 	}
 	
 	public void setWidth(int width)
@@ -80,11 +76,15 @@ public class CounterDigit extends Mesh {
 	public void setDigitTo(int value) {
 		digitValue=value;
 		
-		float textureCoordinates[] = {0.0625f*digitValue, 1.0f, //
-				0.0625f*digitValue+0.0625f, 1.0f, //
-				0.0625f*digitValue, 0.0f, //
-				0.0625f*digitValue+0.0625f, 0.0f, //
-		};
+		textureCoordinates[0] = 0.0625f*digitValue;
+		textureCoordinates[1] = 1.0f;
+		textureCoordinates[2] = 0.0625f*digitValue+0.0625f;
+		textureCoordinates[3] = 1.0f;
+		textureCoordinates[4] = 0.0625f*digitValue;
+		textureCoordinates[5] = 0.0f;
+		textureCoordinates[6] = 0.0625f*digitValue+0.0625f;
+		textureCoordinates[7] = 0.0f;
+		
 		setTextureCoordinates(textureCoordinates);
 		
 	}

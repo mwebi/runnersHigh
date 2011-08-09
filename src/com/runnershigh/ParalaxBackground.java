@@ -78,7 +78,7 @@ public class ParalaxBackground extends Group {
 	}
 	
 	
-	public void updat(){
+	public void update(){
 		backgroundLayer1.x -= 1;
 		if (backgroundLayer1.x < -mWidth*2)
 			backgroundLayer1.x = 0;

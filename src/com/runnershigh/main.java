@@ -1,33 +1,40 @@
 package com.runnershigh;
 
-import com.runnershigh.OpenGLRenderer;
+import javax.microedition.khronos.opengles.GL10;
+
+import com.highscore.HighscoreAdapter;
+
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Paint;
+import android.graphics.Rect;
 import android.media.MediaPlayer;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.os.PowerManager;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
 import android.view.MotionEvent;
+import android.view.SurfaceHolder;
 import android.view.Window;
 import android.view.WindowManager;
 
-
-
 public class main extends Activity {
 		PowerManager.WakeLock wakeLock ;
-		MediaPlayer musicPlayerIntro;
+		//MediaPlayer musicPlayerIntro;
 		MediaPlayer musicPlayerLoop;
 		boolean MusicLoopStartedForFirstTime = false;
-		boolean paused =false;
-		
-		boolean RHDEBUG = false;
-		
+		boolean paused = false;
+
+		boolean isRunning = false;
+
+	    private static final int SLEEP_TIME = 300;
+	    
 		/** Called when the activity is first created. */
 	    @Override
 		public void onCreate(Bundle savedInstanceState) {
@@ -43,12 +50,12 @@ public class main extends Activity {
 	        SoundManager.initSounds(this);
 	        SoundManager.loadSounds();
 	        
-	        musicPlayerIntro = MediaPlayer.create(getApplicationContext(), R.raw.nyanintro);
-	        musicPlayerIntro.start();
-	        musicPlayerIntro.setVolume(0.5f, 0.5f);
-	        musicPlayerIntro.setLooping(false);
+	        //musicPlayerIntro = MediaPlayer.create(getApplicationContext(), R.raw.nyanintro);
+	        //musicPlayerIntro.start();
+	        //musicPlayerIntro.setVolume(0.5f, 0.5f);
+	        //musicPlayerIntro.setLooping(false);
 	        
-	        musicPlayerLoop= MediaPlayer.create(getApplicationContext(), R.raw.nyanloop);
+	        musicPlayerLoop = MediaPlayer.create(getApplicationContext(), R.raw.gamebackground);
 	        musicPlayerLoop.setLooping(true);
 			musicPlayerLoop.seekTo(0);
 			musicPlayerLoop.setVolume(0.5f, 0.5f);
@@ -58,22 +65,25 @@ public class main extends Activity {
 			
 			//setContentView(R.layout.runnershigh);	        
 			//(RunnersHighView) findViewById(R.id.runnersHighViewXML);
+			isRunning = true;
 			RunnersHighView gameView = new RunnersHighView(getApplicationContext()); 
 			setContentView(gameView);	     
 		}	
 		
 	    @Override
 	    protected void onDestroy() {
-	    	Log.d("debug", "onDestroy");
+	    	if(Settings.RHDEBUG)
+	    		Log.d("debug", "onDestroy main");
+	    	isRunning = false;
 			wakeLock.release();
-			musicPlayerIntro.release();
 			musicPlayerLoop.release();
 			SoundManager.cleanup();
 			super.onDestroy();
 		}
 		@Override
 		public void onResume() {
-			Log.d("debug", "onResume");
+			if(Settings.RHDEBUG)
+				Log.d("debug", "onResume");
 			wakeLock.acquire();
 			if(MusicLoopStartedForFirstTime)
 				musicPlayerLoop.start();
@@ -82,18 +92,21 @@ public class main extends Activity {
 		}
 		@Override
 		public void onStop() {
-			Log.d("debug", "onStop");
+			if(Settings.RHDEBUG)
+				Log.d("debug", "onStop");
 			super.onStop();
 		}
 		@Override
 		public void onRestart() {
-			Log.d("debug", "onRestart");
+			if(Settings.RHDEBUG)
+				Log.d("debug", "onRestart");
 			paused=false;
 			super.onRestart();
 		}
 		@Override
 		public void onPause() {
-			Log.d("debug", "onPause");
+			if(Settings.RHDEBUG)
+				Log.d("debug", "onPause");
 			paused=true;
 			wakeLock.release();
 			musicPlayerLoop.pause();
@@ -104,6 +117,15 @@ public class main extends Activity {
 			Intent myIntent = new Intent (this, HighScoreForm.class);
 			myIntent.putExtra("score", score);			
 			startActivity (myIntent);
+		}
+		
+		public void sleep() {
+			try {
+				Thread.sleep(SLEEP_TIME);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
     
 	public class RunnersHighView extends GLSurfaceView implements Runnable {
@@ -122,7 +144,6 @@ public class main extends Activity {
 		private float blackImgAlpha;
 		private boolean scoreWasSaved = false;
 		private boolean deathSoundPlayed = false;
-		Paint paint = new Paint();
 		private OpenGLRenderer mRenderer;
 		private CounterGroup mCounterGroup;
 		private CounterDigit mCounterDigit1;
@@ -135,83 +156,161 @@ public class main extends Activity {
 		public  boolean doUpdateCounter = true;
 		private long timeAtLastSecond;
 		private int runCycleCounter;
+		private ProgressDialog loadingDialog;
+		private HighscoreAdapter highScoreAdapter;
+
+		private int mTotalHighscores = 0;
+		private int mHighscore1 = 0;
+		private int mHighscore2 = 0;
+		private int mHighscore3 = 0;
+		private int mHighscore4 = 0;
+		private int mHighscore5 = 0;
+
+		private HighscoreMark mHighscoreMark1 = null;
+		private HighscoreMark mHighscoreMark2 = null;
+		private HighscoreMark mHighscoreMark3 = null;
+		private HighscoreMark mHighscoreMark4 = null;
+		private HighscoreMark mHighscoreMark5 = null;
 		
+		private Bitmap mHighscoreMarkBitmap;
+		private RHDrawable mNewHighscore;
+		
+		private int totalScore = 0;
+		private boolean threeKwasplayed = false;
+
 		public RunnersHighView(Context context) {
 			super(context);
 			
-			Display display = ((WindowManager) getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
-			width= display.getWidth(); 
-			height= display.getHeight();
-			Util.getInstance().setScreenHeight(height);
-			Util.getInstance().setAppContext(context);
-			
-			
-			paint.setARGB(0xff, 0x00, 0x00, 0x00);;
-			paint.setAntiAlias(true);
-			paint.setTextSize(16);
-			
 			mRenderer = new OpenGLRenderer();
 			this.setRenderer(mRenderer);
+
+			Util.getInstance().setAppContext(context);
+			
+
+	        Thread rHThread = new Thread(this);
+			rHThread.start();
+			
+//			
+//			initialize();
+		}
+		
+		private void initialize() {
+			Context context = Util.getInstance().getAppContext();
+			
+			Rect rectgle= new Rect();
+			Window window= getWindow();
+			window.getDecorView().getWindowVisibleDisplayFrame(rectgle);
+			int StatusBarHeight= rectgle.bottom;
+			int contentViewTop= 
+			    window.findViewById(Window.ID_ANDROID_CONTENT).getTop();
+			int TitleBarHeight= contentViewTop - StatusBarHeight;
+
+			Log.e("*** Jorgesys :: ", "StatusBar Height= " + StatusBarHeight + " , TitleBar Height = " + TitleBarHeight); 
+			
+			DisplayMetrics metrics = new DisplayMetrics();
+            getWindowManager().getDefaultDisplay().getMetrics(metrics);
+			
+            Log.e("debug" , "dpi: " + metrics.densityDpi);
+			
+			Display display = ((WindowManager) getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+			width= display.getWidth();  
+			height= Math.abs(rectgle.top - rectgle.bottom);
+			
+			if(Settings.RHDEBUG)
+				Log.d("debug", "displaywidth: " + width + ", displayheight: " + height);
+			
+			Log.e("debug", "displaywidth: " + width + ", displayheight: " + height);
+			
+			Util.mScreenHeight=height;
+			Util.mScreenWidth=width;
+			Util.mWidthHeightRatio=width/height;
 			
 			background = new ParalaxBackground(width, height);
 
-			background.loadLayerFar(BitmapFactory.decodeResource(context.getResources(),
-					R.drawable.backgroundlayer3));
-			background.loadLayerMiddle(BitmapFactory.decodeResource(context.getResources(),
-					R.drawable.backgroundlayer2));
-			background.loadLayerNear(BitmapFactory.decodeResource(context.getResources(),
-					R.drawable.backgroundlayer1));
-
-			Log.d("debug", "before addMesh");
 			mRenderer.addMesh(background);
+			sleep();
+			
+			background.loadLayerFar(BitmapFactory.decodeResource(context.getResources(),
+					R.drawable.backgroundlayer3_compr));
+			sleep();
+			background.loadLayerMiddle(BitmapFactory.decodeResource(context.getResources(),
+					R.drawable.backgroundlayer2_compr));
+			sleep();
+			background.loadLayerNear(BitmapFactory.decodeResource(context.getResources(),
+					R.drawable.backgroundlayer1_compr));
+			sleep();
+
+			if(Settings.RHDEBUG)
+				Log.d("debug", "before addMesh");
+			
 			
 			resetButtonImg = BitmapFactory.decodeResource(context.getResources(),R.drawable.resetbutton);
-			resetButton = new Button(350, height-50-10, -2, 100, 50);
+			resetButton = new Button(Util.getPercentOfScreenWidth(75), height-Util.getPercentOfScreenHeight(22), -2, 
+									 Util.getPercentOfScreenWidth(18), Util.getPercentOfScreenHeight(18));
 			resetButton.loadBitmap(resetButtonImg);
 			mRenderer.addMesh(resetButton);			
 			
 			saveButtonImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.savebutton);
-			saveButton = new Button(200, height-50-10, -2, 100, 50);
+			//saveButton = new Button(200, height-50-10, -2, 100, 50);
+			saveButton = new Button(Util.getPercentOfScreenWidth(50), height-Util.getPercentOfScreenHeight(22), -2, 
+					 				Util.getPercentOfScreenWidth(18), Util.getPercentOfScreenHeight(18));
 			saveButton.loadBitmap(saveButtonImg);
 			mRenderer.addMesh(saveButton);
 			
-			player = new Player(getApplicationContext(), mRenderer, height);
-			
 			level = new Level(context, mRenderer, width, height);
+			sleep();
 			
+			if(Settings.RHDEBUG)
+				Log.d("debug", "after player creation");
+//			loadingDialog = new ProgressDialog( context );
+//		    loadingDialog.setProgressStyle(0);
+//		    loadingDialog.setMessage("Loading Highscore ...");
 			
+		    if(Settings.RHDEBUG)
+				Log.d("debug", "after loading messages");
+		    
+		    highScoreAdapter = new HighscoreAdapter(context);
+
+		    if(Settings.RHDEBUG)
+		    	Log.d("debug", "after HighscoreAdapter");
+		    
 			//new counter
-			CounterYourScoreImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.yourscore);
-			CounterYourScoreDrawable = new RHDrawable(20, height-16-20, 1, CounterYourScoreImg.getWidth(), CounterYourScoreImg.getHeight());
+			CounterYourScoreImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.scorebackground);
+			CounterYourScoreDrawable = new RHDrawable(Util.getPercentOfScreenWidth(5), height-Util.getPercentOfScreenHeight(12), 1, Util.getPercentOfScreenWidth(27), Util.getPercentOfScreenHeight(7));
 			CounterYourScoreDrawable.loadBitmap(CounterYourScoreImg); 
 			mRenderer.addMesh(CounterYourScoreDrawable);
+
+			if(Settings.RHDEBUG)
+				Log.d("debug", "after CounterYourScoreDrawable addMesh");
 			
 			CounterFont = BitmapFactory.decodeResource(context.getResources(), R.drawable.numberfont);
-			mCounterGroup = new CounterGroup(70, height-20-20, 1, 128*4, 20, 25);
+			mCounterGroup = new CounterGroup(Util.getPercentOfScreenWidth(9), height-Util.getPercentOfScreenHeight(12.5f), 1, Util.getPercentOfScreenWidth(16), Util.getPercentOfScreenHeight(6), 25);
 			
-			for(int i=70; i<130; i+=15){
-				if(i==115){
-					mCounterDigit1 = new CounterDigit(i, height-20-20, 1, 16, 20);
-					mCounterDigit1.loadBitmap(CounterFont); 
-					mCounterGroup.add(mCounterDigit1);
-				}
-				if(i==100){
-					mCounterDigit2 = new CounterDigit(i, height-20-20, 1, 16, 20);
-					mCounterDigit2.loadBitmap(CounterFont); 
-					mCounterGroup.add(mCounterDigit2);
-				}
-				if(i==85){
-					mCounterDigit3 = new CounterDigit(i, height-20-20, 1, 16, 20);
-					mCounterDigit3.loadBitmap(CounterFont); 
-					mCounterGroup.add(mCounterDigit3);
-				}
-				if(i==70){
-					mCounterDigit4 = new CounterDigit(i, height-20-20, 1, 16, 20);
-					mCounterDigit4.loadBitmap(CounterFont); 
-					mCounterGroup.add(mCounterDigit4);
-				}
-			}
+			if(Settings.RHDEBUG)
+				Log.d("debug", "after mCounterGroup");
+			
+
+			mCounterDigit1 = new CounterDigit(Util.getPercentOfScreenWidth(14), height-Util.getPercentOfScreenHeight(12.5f), 1, Util.getPercentOfScreenWidth(4), Util.getPercentOfScreenHeight(6.5f));
+			mCounterDigit1.loadBitmap(CounterFont); 
+			mCounterGroup.add(mCounterDigit1);
+
+			mCounterDigit2 = new CounterDigit(Util.getPercentOfScreenWidth(17.5f), height-Util.getPercentOfScreenHeight(12.5f), 1, Util.getPercentOfScreenWidth(4), Util.getPercentOfScreenHeight(6.5f));
+			mCounterDigit2.loadBitmap(CounterFont); 
+			mCounterGroup.add(mCounterDigit2);
+
+			mCounterDigit3 = new CounterDigit(Util.getPercentOfScreenWidth(21), height-Util.getPercentOfScreenHeight(12.5f), 1, Util.getPercentOfScreenWidth(4), Util.getPercentOfScreenHeight(6.5f));
+			mCounterDigit3.loadBitmap(CounterFont); 
+			mCounterGroup.add(mCounterDigit3);
+
+			mCounterDigit4 = new CounterDigit(Util.getPercentOfScreenWidth(24.5f), height-Util.getPercentOfScreenHeight(12.5f), 1, Util.getPercentOfScreenWidth(4), Util.getPercentOfScreenHeight(6.5f));
+			mCounterDigit4.loadBitmap(CounterFont); 
+			mCounterGroup.add(mCounterDigit4);
+			
 			mRenderer.addMesh(mCounterGroup);
+			sleep();
+			
+			if(Settings.RHDEBUG)
+				Log.d("debug", "after counter");
 			
 			blackImg = Bitmap.createBitmap(16, 16, Bitmap.Config.ARGB_4444);
 			//blackImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.resetbutton);
@@ -220,25 +319,91 @@ public class main extends Activity {
 			blackImgAlpha=1;
 			blackRHD.setColor(0, 0, 0, blackImgAlpha);
 			blackRHD.loadBitmap(blackImg);
-			mRenderer.addMesh(blackRHD);
+			//mRenderer.addMesh(blackRHD);
+			
+			mHighscoreMarkBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.highscoremark);
+			 
+			mNewHighscore = new RHDrawable(width/2 - 128, height/2 - 64, -2, 256, 128);
+			mNewHighscore.loadBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.new_highscore));
+			mRenderer.addMesh(mNewHighscore);
+
+			if(Settings.showHighscoreMarks)
+				initHighscoreMarks();
 			
 			timeAtLastSecond = System.currentTimeMillis();
 	        runCycleCounter=0;
-			
-	        Thread rHThread = new Thread(this);
-			rHThread.start();
-		}
 
+			player = new Player(getApplicationContext(), mRenderer, height);
+			sleep();
+//	        
+			
+//	        Thread rHThread = new Thread(this);
+//			rHThread.start();
+			
+			if(Settings.RHDEBUG)
+				Log.d("debug", "RunnersHighView constructor ended");
+		}
+		
+		public void surfaceChanged(SurfaceHolder holder) {
+			Log.e("debug", "surfaceChanged");
+		}
+		
+		public void onSurfaceChanged(SurfaceHolder holder) {
+			Log.e("debug", "onSurfaceChanged");
+		}
+				
+		public int getAmountOfLocalHighscores() {
+			highScoreAdapter.open();
+		    Cursor cursor = highScoreAdapter.fetchScores("0");
+		    int amount = cursor.getCount();
+		    highScoreAdapter.close();
+			return amount;
+		}
+		
+		public int getHighscore(long id) {		    
+			highScoreAdapter.open();
+			if (mTotalHighscores >= id)
+			{
+			    Cursor cursor = highScoreAdapter.getHighscore(id);
+			    String hs = cursor.getString(cursor.getColumnIndexOrThrow(highScoreAdapter.KEY_SCORE));
+			    highScoreAdapter.close();		    
+			    return new Integer(hs);
+			}
+			else
+				return 0;
+		}
+		
+		@SuppressWarnings("unused")
 		public void run() {
+
+			if(Settings.RHDEBUG)
+				Log.d("debug", "run method started");
+					
 			// wait until the intro is over
 			// this gives the app enough time to load
 			try{
-				//Thread.sleep(500);
-				while(musicPlayerIntro.isPlaying()){
-					blackImgAlpha-=0.0025; 
-					blackRHD.setColor(0, 0, 0, blackImgAlpha);
+				//loadingDialog.show();
+
+				while(!mRenderer.firstFrameDone)
 					Thread.sleep(10);
-				}
+				
+				initialize();
+				
+				if(Settings.RHDEBUG)
+					Log.d("debug", "first frame done");
+
+				if(!musicPlayerLoop.isPlaying())
+					musicPlayerLoop.start();
+				MusicLoopStartedForFirstTime=true;
+				
+//				long timeAtStart = System.currentTimeMillis();
+//				while (System.currentTimeMillis() < timeAtStart + 2000)
+//				{
+//					blackImgAlpha-=0.005; 
+//					blackRHD.setColor(0, 0, 0, blackImgAlpha);
+//					Thread.sleep(10);
+//				}
+				//loadingDialog.hide();
 			}
 			catch (InterruptedException e)
 			{
@@ -248,19 +413,35 @@ public class main extends Activity {
 			blackRHD.setColor(0, 0, 0, 0);
 			blackRHD.z=-1.0f;
 			//mRenderer.removeMesh(blackRHD); //TODO: find a way to remove mesh without runtime errors
+
+			long timeForOneCycle=0;
+			long currentTimeTaken=0;
+			long starttime = 0;
 			
-			if(!musicPlayerLoop.isPlaying())
-				musicPlayerLoop.start();
-			MusicLoopStartedForFirstTime=true;
-	        
-			while(true/*!paused*/){
-				long starttime = System.currentTimeMillis();
+			while(isRunning){
+				starttime= System.currentTimeMillis();
+
 				player.playerSprite.setFrameUpdateTime( (level.baseSpeedMax+level.extraSpeedMax)*10 -((level.baseSpeed+level.extraSpeed)*10) );
 				if (player.update()) {
+						if(Settings.RHDEBUG){
+							currentTimeTaken = System.currentTimeMillis()- starttime;
+							Log.d("runtime", "time after player update: " + Integer.toString((int)currentTimeTaken));
+						}
 						level.update();
-						background.updat();
+						if(Settings.RHDEBUG){
+							currentTimeTaken = System.currentTimeMillis()- starttime;
+							Log.d("runtime", "time after level update: " + Integer.toString((int)currentTimeTaken));
+						}
+						background.update();
+						if(Settings.RHDEBUG){
+							currentTimeTaken = System.currentTimeMillis()- starttime;
+							Log.d("runtime", "time after background update: " + Integer.toString((int)currentTimeTaken));
+						}
+						if(Settings.showHighscoreMarks)
+							updateHighscoreMarks();
+						
 				} else {
-					if(player.getPosY() < 0){
+					if(player.y < 0){
 						doUpdateCounter=false;
 						resetButton.setShowButton(true);
 						resetButton.z = 1.0f;
@@ -269,6 +450,10 @@ public class main extends Activity {
 						if(!deathSoundPlayed){
 							SoundManager.playSound(7, 1);
 							deathSoundPlayed=true;
+						}
+						if(Settings.showHighscoreMarks){
+							if (totalScore > mHighscore1)
+								mNewHighscore.z = 1.0f;
 						}
 					}
 				}
@@ -279,12 +464,24 @@ public class main extends Activity {
 				
 				
 				if(doUpdateCounter)
-					mCounterGroup.tryToSetCounterTo(level.getScoreCounter());
+				{
+					totalScore = level.getDistanceScore() + player.getBonusScore();
+					mCounterGroup.tryToSetCounterTo(totalScore);
+					
+					if(totalScore>=3000 && threeKwasplayed==false)
+					{
+						threeKwasplayed=true;
+						SoundManager.playSound(2, 1);
+					}
+				}
+					
 
-				long timeForOneCycle= System.currentTimeMillis()- starttime;
-				//Log.d("runtime", "timeForOneCycle: " + Integer.toString((int)timeForOneCycle));
-				
-				//postInvalidate();
+				if(Settings.RHDEBUG){				
+					timeForOneCycle= System.currentTimeMillis()- starttime;
+					Log.d("runtime", "time after counter update: " + Integer.toString((int)timeForOneCycle));
+				}
+				timeForOneCycle= System.currentTimeMillis()- starttime;
+
 				if(timeForOneCycle>9)
 					timeForOneCycle=9;
 				
@@ -295,31 +492,145 @@ public class main extends Activity {
 				}
 				runCycleCounter++;
 				
-				//long timeForOneCycle= System.currentTimeMillis()- starttime;
-				if((System.currentTimeMillis() - timeAtLastSecond) > 1000 && RHDEBUG){
+				if(Settings.RHDEBUG){
+					currentTimeTaken = System.currentTimeMillis()- starttime;
+					Log.d("runtime", "time after thread sleep : " + Integer.toString((int)currentTimeTaken));
+				}
+				
+				timeForOneCycle= System.currentTimeMillis()- starttime;
+				if((System.currentTimeMillis() - timeAtLastSecond) > 1000 && Settings.RHDEBUG)
+				{
 					timeAtLastSecond = System.currentTimeMillis();
 					Log.d("runtime", "run cycles per second: " + Integer.toString(runCycleCounter));
 					runCycleCounter=0;
 				}
+				if(Settings.RHDEBUG){
+					timeForOneCycle= System.currentTimeMillis()- starttime;
+					Log.d("runtime", "overall time for this run: " + Integer.toString((int)timeForOneCycle));
+				}
+			}
+			
+			if(Settings.RHDEBUG)
+				Log.d("debug", "run method ended");
+			
+		}
+		
+		private void initHighscoreMarks()
+		{
+			mTotalHighscores = getAmountOfLocalHighscores();
+
+			if(Settings.RHDEBUG)
+				Log.d("debug", "mTotalHighscores: " + mTotalHighscores);
+			
+			// awesome switch usage XD // TODO: remove this comment :D
+			switch(mTotalHighscores)
+			{
+			default:
+			case 5:
+				mHighscore5 = getHighscore(5);
+				if (mHighscoreMark5 == null)
+					mHighscoreMark5 = new HighscoreMark(mRenderer, mHighscoreMarkBitmap, CounterFont);
+				mHighscoreMark5.setMarkTo(5, mHighscore5);
+				mHighscoreMark5.z = 0.0f;
+			case 4:
+				mHighscore4 = getHighscore(4);
+				if (mHighscoreMark4 == null)
+					mHighscoreMark4 = new HighscoreMark(mRenderer, mHighscoreMarkBitmap, CounterFont);
+				mHighscoreMark4.setMarkTo(4, mHighscore4);
+				mHighscoreMark4.z = 0.0f;
+			case 3:
+				mHighscore3 = getHighscore(3);
+				if (mHighscoreMark3 == null)
+					mHighscoreMark3 = new HighscoreMark(mRenderer, mHighscoreMarkBitmap, CounterFont);
+				mHighscoreMark3.setMarkTo(3, mHighscore3);
+				mHighscoreMark3.z = 0.0f;
+			case 2:
+				mHighscore2 = getHighscore(2);
+				if (mHighscoreMark2 == null)
+					mHighscoreMark2 = new HighscoreMark(mRenderer, mHighscoreMarkBitmap, CounterFont);
+				mHighscoreMark2.setMarkTo(2, mHighscore2);
+				mHighscoreMark2.z = 0.0f;
+			case 1:
+				mHighscore1 = getHighscore(1);
+
+				if(Settings.RHDEBUG)
+					Log.d("debug", "mHighscore1: " + mHighscore1);
+				
+				if (mHighscoreMark1 == null)
+					mHighscoreMark1 = new HighscoreMark(mRenderer, mHighscoreMarkBitmap, CounterFont);
+				mHighscoreMark1.setMarkTo(1, mHighscore1);
+
+				mHighscoreMark1.z = 0.0f;
+			case 0:
 			}
 		}
 		
-		/*public void draw(Canvas canvas) {
-			
+		private void updateHighscoreMarks()
+		{	
+			switch(mTotalHighscores)
+			{
+			default:
+			case 5:
+				if (mHighscoreMark5 != null)
+				{
+					if (totalScore < mHighscore5)
+						mHighscoreMark5.x = (mHighscore5 - totalScore) * 10 + player.x;
+					else
+						mHighscoreMark5.x = 0;
+				}
+			case 4:
+				if (mHighscoreMark4 != null)
+				{
+					if (totalScore < mHighscore4)
+						mHighscoreMark4.x = (mHighscore4 - totalScore) * 10 + player.x;
+					else
+					{
+						mHighscoreMark4.x = 0;
+						if (mHighscoreMark5 != null)
+							mHighscoreMark5.z = -2.0f;
+					}
+				}
+			case 3:
+				if (mHighscoreMark3 != null)
+				{
+					if (totalScore < mHighscore3)
+						mHighscoreMark3.x = (mHighscore3 - totalScore) * 10 + player.x;
+					else
+					{
+						mHighscoreMark3.x = 0;
+						if (mHighscoreMark4 != null)
+							mHighscoreMark4.z = -2.0f;
+					}
+				}
+			case 2:
+				if (mHighscoreMark2 != null)
+				{
+					if (totalScore < mHighscore2)
+						mHighscoreMark2.x = (mHighscore2 - totalScore) * 10 + player.x;
+					else
+					{
+						mHighscoreMark2.x = 0;
+						if (mHighscoreMark3 != null)
+							mHighscoreMark3.z = -2.0f;
+					}
+				}
+			case 1:
+				if (mHighscoreMark1 != null)
+				{
+					if (totalScore < mHighscore1)
+						mHighscoreMark1.x = (mHighscore1 - totalScore) * 10 + player.x;
+					else
+					{
+						mHighscoreMark1.x = 0;
+						if (mHighscoreMark2 != null)
+							mHighscoreMark2.z = -2.0f;
+					}
+				}
+			case 0:
+			}
 
-			canvas.drawText("Your Score: " + Integer.toString(level.getScoreCounter()), 20, 20, paint);
-			
-			if (resetButton.getShowButton())
-				resetButton.drawButton(canvas);
-			if (saveButton.getShowButton() && !scoreWasSaved)
-				saveButton.drawButton(canvas);
-
-			level.draw(canvas);
-			player.draw(canvas);
-			
 		}
-		*/
-
+		
 
 		public boolean onTouchEvent(MotionEvent event) {
 			if(event.getAction() == MotionEvent.ACTION_UP)
@@ -341,6 +652,14 @@ public class main extends Activity {
 						deathSoundPlayed=false;
 						SoundManager.playSound(1, 1);
 						doUpdateCounter=true;
+						
+						if(Settings.showHighscoreMarks){
+							mNewHighscore.z = -2.0f;
+							initHighscoreMarks();
+						}
+							
+						threeKwasplayed = false;
+						totalScore = 0;
 					}
 					else if(saveButton.isClicked( event.getX(), Util.getInstance().toScreenY((int)event.getY())  ) && !scoreWasSaved){
 						//save score
@@ -349,7 +668,7 @@ public class main extends Activity {
 						saveButton.lastX = saveButton.x;
 						saveButton.x = -5000;
 						
-						saveScore(level.getScoreCounter());
+						saveScore(totalScore);
 
 						//play save sound
 						SoundManager.playSound(4, 1);

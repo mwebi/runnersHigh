@@ -1,9 +1,7 @@
 package com.runnershigh;
 
-import java.util.Currency;
-import java.util.Random;
-import java.util.Vector;
 
+import java.util.Random;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -16,16 +14,17 @@ import android.util.Log;
 public class Level {
 	private int width;
 	private int height;
-	private int levelPosition;
-	private int lastLevelPosition;
+	private float levelPosition;
 	private float deltaLevelPosition;
-	public static float scoreCounter;
-	private boolean threeKwasplayed;
+	//public static float scoreCounter;
 	public float baseSpeed;
 	public float baseSpeedMax;
 	public float baseSpeedStart;
+	public float baseSpeedAcceleration;
 	public float extraSpeed;
+	public float extraSpeedStart;
 	public float extraSpeedMax;
+	public float extraSpeedAcceleration;
 	
 	public static Block[] blockData;
 	public static final int maxBlocks = 5;
@@ -79,19 +78,26 @@ public class Level {
 	private Random randomGenerator;
 	
 	public Level(Context context, OpenGLRenderer glrenderer, int _width, int _heigth) {
-		//Log.d("debug", "in Level constructor");
+		if(Settings.RHDEBUG)
+			Log.d("debug", "in Level constructor");
+		
 		width = _width;
 		height = _heigth;
 		levelPosition = 0;
-		lastLevelPosition = 0;
+		//lastLevelPosition = 0;
 		deltaLevelPosition = 0;
-		scoreCounter = 0;
-		baseSpeedStart = 1;
+		//scoreCounter = 0;
+		
+		baseSpeedStart = Util.getPercentOfScreenWidth(0.075f);
 		baseSpeed = baseSpeedStart;
-		baseSpeedMax = 3.0f;
-		extraSpeed = 0;
-		extraSpeedMax = 4f;
-		threeKwasplayed = false;
+		baseSpeedMax = Util.getPercentOfScreenWidth(0.375f);
+		baseSpeedAcceleration = baseSpeed*0.025f;
+		
+		extraSpeedStart = Util.getPercentOfScreenWidth(0.025f);
+		extraSpeed = extraSpeedStart;
+		extraSpeedMax = Util.getPercentOfScreenWidth(0.5f);
+		extraSpeedAcceleration = extraSpeed * 0.010f;
+		
 		renderer = glrenderer;
 		
 		randomGenerator = new Random();
@@ -146,21 +152,25 @@ public class Level {
 			
 
 			
-			if (0 > blockData[leftBlockIndex].getRect().right) {
+			if (0 > blockData[leftBlockIndex].BlockRect.right) {
 				appendBlockToEnd();
 				
 				if (BlockCounter > 10)
 					decideIfAndWhatObstaclesSpawn();
 			}
 			
+			baseSpeedAcceleration = baseSpeed * 0.005f;
+			extraSpeedAcceleration = extraSpeed * 0.005f;
+			
 			if(baseSpeed < baseSpeedMax)
-				baseSpeed+=0.025; //baseSpeed+=0.025;
+				baseSpeed+=baseSpeedAcceleration; //baseSpeed+=0.025;
 			
 			if(extraSpeed < extraSpeedMax)
-				extraSpeed+=0.001; //extraSpeed+=0.001;
+				extraSpeed+=extraSpeedAcceleration; //0.001; //extraSpeed+=0.001;
+			
 			if(slowDown){
 				//extraSpeed=0;
-				baseSpeed=1;
+				baseSpeed=baseSpeedStart;
 				slowDown=false;
 			}
 			
@@ -170,11 +180,12 @@ public class Level {
 
 
 			//Log.d("debug", "deltaLevelPosition/10: " + deltaLevelPosition/10);
-			scoreCounter += deltaLevelPosition/10;
+			//scoreCounter += deltaLevelPosition/10;
 			
 			for (int i = 0; i < maxBlocks; i++)
 			{
 				blockData[i].x -= deltaLevelPosition;
+				blockData[i].updateRect();
 			}
 			
 			for (int i = 0; i < maxObstaclesJumper; i++)
@@ -193,35 +204,35 @@ public class Level {
 				obstacleDataBonus[i].centerX -= deltaLevelPosition;
 			}
 			
-			if(scoreCounter>=3000 && threeKwasplayed==false){
-				threeKwasplayed=true;
-				SoundManager.playSound(2, 1);
-			}
 			
-			lastLevelPosition=levelPosition;
+			//lastLevelPosition=levelPosition;
 			//Log.d("debug", "in update after value mod");
 		}	
 	}
 	
 	private void initializeBlocks(Boolean firstTime) {
-		Log.d("debug", "in initializeBlocks");
+		if(Settings.RHDEBUG)
+			Log.d("debug", "in initializeBlocks");
 		//Log.d("debug", "blockData.size() -> " + Integer.toString(blockData.size()) );
 		
 		if (firstTime)
 			blockData[0] = new Block();
 		blockData[0].x = 0;
 		blockData[0].setWidth(width);
-		blockData[0].setHeight(50);
-
-		Log.d("debug", "after blockdata 0");
+		blockData[0].setHeight(Settings.FirstBlockHeight);
+		blockData[0].updateRect();
+		
+		if(Settings.RHDEBUG)
+			Log.d("debug", "after blockdata 0");
 
 		if(firstTime)
 			renderer.addMesh(blockData[0]);
 		
 		leftBlockIndex = 1;
 		rightBlockIndex = 0;
-
-		Log.d("debug", "before for");
+		
+		if(Settings.RHDEBUG)
+			Log.d("debug", "before for");
 		
 		for(int i = 1; i < maxBlocks; i++)
 		{
@@ -231,20 +242,22 @@ public class Level {
 			if (firstTime)
 				renderer.addMesh(blockData[i]);
 			appendBlockToEnd();
+			blockData[i].updateRect();
 		}
-		Log.d("debug", "left initializeBlocks");
+		if(Settings.RHDEBUG)
+			Log.d("debug", "left initializeBlocks");
 	}
 	
 	private void appendBlockToEnd()
 	{
 		//Log.d("debug", "in appendBlockToEnd");
-		int newHeight;
-		int oldHeight;
-		int newWidth;
-		int distance;
-		int newLeft;
+		float newHeight;
+		float oldHeight;
+		float newWidth;
+		float distance;
+		float newLeft;
 		
-		oldHeight = blockData[rightBlockIndex].getRect().top;
+		oldHeight = blockData[rightBlockIndex].BlockRect.top;
 		
 		if (oldHeight > height/2)
 			newHeight = (int)(Math.random()*height/3*2 + height/8);
@@ -260,7 +273,7 @@ public class Level {
 			distance = Player.width+2;
 		
 		Block lastBlock = blockData[rightBlockIndex];
-		newLeft = lastBlock.getRect().right + distance;
+		newLeft = lastBlock.BlockRect.right + distance;
 		
 		blockData[leftBlockIndex].setHeight(newHeight);
 		blockData[leftBlockIndex].setWidth(newWidth);
@@ -285,7 +298,7 @@ public class Level {
 		{
 			if (firstTime)
 			{
-				obstacleDataJumper[i] = new Obstacle(-1000, 0, 0, obstacleJumpImg.getWidth(), obstacleJumpImg.getHeight(), 'j');
+				obstacleDataJumper[i] = new Obstacle(-1000, 0, 0.9f, 30, 10, 'j');
 				renderer.addMesh(obstacleDataJumper[i]);
 				obstacleDataJumper[i].loadBitmap(obstacleJumpImg);
 			}
@@ -296,7 +309,7 @@ public class Level {
 		{
 			if (firstTime)
 			{
-				obstacleDataSlower[i] = new Obstacle(-1000, 0, 0, obstacleSlowImg.getWidth(), obstacleSlowImg.getHeight(), 's');
+				obstacleDataSlower[i] = new Obstacle(-1000, 0, 0.9f, 35, 10, 's');
 				renderer.addMesh(obstacleDataSlower[i]);				
 				obstacleDataSlower[i].loadBitmap(obstacleSlowImg);
 			}
@@ -308,11 +321,11 @@ public class Level {
 		{
 			if (firstTime)
 			{
-				obstacleDataBonus[i] = new Obstacle(-1000, 0, 0, 35, 35, 'b');
+				obstacleDataBonus[i] = new Obstacle(-1000, 0, 0.9f, 35, 35, 'b');
 				renderer.addMesh(obstacleDataBonus[i]);
 				obstacleDataBonus[i].loadBitmap(obstacleBonusImg);
 			}
-			obstacleDataBonus[i].x = -1000;
+			obstacleDataBonus[i].centerX = -1000;
 			obstacleDataBonus[i].didTrigger = false;
 		}
 	}
@@ -392,15 +405,15 @@ public class Level {
 			
 		    obstacleLeft =  
 		    	blockData[rightBlockIndex].x + blockData[rightBlockIndex].mWidth
-    			- newSlowObstacle.getWidth() - fraction; 
+    			- newSlowObstacle.width - fraction; 
 		    
-		    newSlowObstacle.setX(obstacleLeft);
-		    newSlowObstacle.setY(blockData[rightBlockIndex].mHeight);
+		    newSlowObstacle.x = obstacleLeft;
+		    newSlowObstacle.y = blockData[rightBlockIndex].mHeight;
 		    newSlowObstacle.setObstacleRect(
 		    		obstacleLeft,
-		    		obstacleLeft+newSlowObstacle.getWidth(),
+		    		obstacleLeft+newSlowObstacle.width,
 		    		blockData[rightBlockIndex].mHeight,
-		    		blockData[rightBlockIndex].mHeight-newSlowObstacle.getHeight());
+		    		blockData[rightBlockIndex].mHeight-newSlowObstacle.height);
 			
 		    leftSlowerIndex++;
 		    if (leftSlowerIndex == maxObstaclesSlower)
@@ -414,24 +427,26 @@ public class Level {
 		
 		if (spawnJumper)
 		{
-			Log.d("debug", "in spawnJumper");
+			if(Settings.RHDEBUG)
+				Log.d("debug", "in spawnJumper");
 			float obstacleLeft;
 			Obstacle newJumpObstacle = obstacleDataJumper[leftJumperIndex];
 			newJumpObstacle.didTrigger = false;
 			
 			long fraction = (long)(blockData[rightBlockIndex].mWidth * 0.33 * randomGenerator.nextDouble());
 			
-			obstacleLeft =  (blockData[rightBlockIndex].x + newJumpObstacle.getWidth() + fraction);
+			obstacleLeft =  (blockData[rightBlockIndex].x + newJumpObstacle.width + fraction);
 		
-			newJumpObstacle.setX(obstacleLeft);
-		    newJumpObstacle.setY(blockData[rightBlockIndex].mHeight);
+			newJumpObstacle.x = obstacleLeft;
+		    newJumpObstacle.y = blockData[rightBlockIndex].mHeight;
 		    newJumpObstacle.setObstacleRect(
 		    		obstacleLeft,
-		    		obstacleLeft+newJumpObstacle.getWidth(),
+		    		obstacleLeft+newJumpObstacle.width,
 		    		blockData[rightBlockIndex].mHeight,
-		    		blockData[rightBlockIndex].mHeight-newJumpObstacle.getHeight());
-
-		    Log.d("debug", "x: " + newJumpObstacle.x +
+		    		blockData[rightBlockIndex].mHeight-newJumpObstacle.height);
+		    
+		    if(Settings.RHDEBUG)
+		    	Log.d("debug", "x: " + newJumpObstacle.x +
 		    		" / y: " + newJumpObstacle.y +
 		    		" / z: " + newJumpObstacle.z);
 		    
@@ -448,7 +463,9 @@ public class Level {
 		
 		if (spawnBonus)
 		{
-			Log.d("debug", "in spawnBonus");
+			if(Settings.RHDEBUG)
+				Log.d("debug", "in spawnBonus");
+			
 			float range = blockData[rightBlockIndex].mWidth;
 			
 			int bonusLeft;
@@ -468,12 +485,12 @@ public class Level {
 		    newBonus.y = newBonus.centerY = blockData[rightBlockIndex].mHeight+50+randomGenerator.nextInt(75);
 		    
 		    newBonus.setObstacleRect(bonusLeft,
-		    		bonusLeft+newBonus.getWidth(),
+		    		bonusLeft+newBonus.width,
 		    		blockData[rightBlockIndex].mHeight,
-		    		blockData[rightBlockIndex].mHeight-newBonus.getHeight());
+		    		blockData[rightBlockIndex].mHeight-newBonus.height);
 		    
-
-		    Log.d("debug", "x: " + newBonus.x +
+		    if(Settings.RHDEBUG)
+		    	Log.d("debug", "x: " + newBonus.x +
 		    		" / y: " + newBonus.y +
 		    		" / z: " + newBonus.z);
 		    
@@ -488,27 +505,27 @@ public class Level {
 		}
 	}
 	
-	public int getScoreCounter() {
-		return (int)scoreCounter;
+	public int getDistanceScore()
+	{
+		return (int)(levelPosition / 10);
 	}
+	
 	public void lowerSpeed() {
 		slowDown = true;
 	}
-	public int getLevelPosition(){
+	public float getLevelPosition(){
 		return levelPosition;
 	}
 	public void reset() {
-		scoreCounter=0;
 		synchronized (blockData) {
 			levelPosition = 0;
 			
 			initializeBlocks(false);
 			initializeObstacles(false);
 			
-			this.baseSpeed = baseSpeedStart;
-			this.extraSpeed = 0;
+			baseSpeed = baseSpeedStart;
+			extraSpeed = extraSpeedStart;
 			BlockCounter=0;
-
 		}
 	}
 }

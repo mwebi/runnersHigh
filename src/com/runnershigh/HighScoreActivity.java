@@ -27,13 +27,13 @@ import org.json.JSONArray;
 
 import android.app.AlertDialog;
 import android.app.ListActivity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -48,12 +48,14 @@ import com.highscore.HighscoreAdapter;
 public class HighScoreActivity extends ListActivity {
 	
 	private HighscoreAdapter highScoreAdapter = null;
-	
+
 	private static final String SHOW_LIMIT = "10";
-	private static final String POST_HIGHSCORE_URL = "http://rh.fidrelity.at/post/post_highscore.php";
-	private static final String GET_HIGHSCORE_URL = "http://rh.fidrelity.at/best.php";
+	private static final String POST_HIGHSCORE_URL = Settings.HIGHSCORE_POST_URL; // "http://rh.fidrelity.at/post/post_highscore.php";
+	private static final String GET_HIGHSCORE_URL = Settings.HIGHSCORE_GET_URL; // "http://rh.fidrelity.at/best.php";
 	
 	private boolean isOnlineView = false;
+	
+	private ProgressDialog loadingDialog;
 	
 	private final String[] empty = new String[0];	
 	// ---------------------------------------------------
@@ -76,7 +78,11 @@ public class HighScoreActivity extends ListActivity {
         		clearHighscore();        		
         	}
         });        
-       */
+       */        
+        loadingDialog = new ProgressDialog( this );
+        loadingDialog.setProgressStyle(0);
+        loadingDialog.setMessage("Loading Highscore ...");
+        //loadingDialog.setCancelable(false);
 
         switchHighScoreButton("Online");        
         registerForContextMenu(getListView());
@@ -91,8 +97,7 @@ public class HighScoreActivity extends ListActivity {
     	// Online List
     	if(onlineData.length > 0) {
     		setListAdapter(new ArrayAdapter<String>(this, R.layout.list_single_row, onlineData));
-    		switchHighScoreButton("LOCAL");
-    	         		
+    		switchHighScoreButton("LOCAL");    	         		
     	// Local List
     	} else {   
     		
@@ -119,6 +124,7 @@ public class HighScoreActivity extends ListActivity {
 	        setListAdapter(adapter);
 	        switchHighScoreButton("ONLINE");
     	}
+    	loadingDialog.hide();
     }
        
     // ---------------------------------------------------------
@@ -130,7 +136,7 @@ public class HighScoreActivity extends ListActivity {
     	if(!isOnline()) {
     		highScoreAdapter.toastMessage(R.string.hs_error_no_internet);
     	} else {
-    	
+    		
 	    	try {
 	    		HttpClient client = new DefaultHttpClient();  
 	    		String getURL = GET_HIGHSCORE_URL + "?size=" + Integer.toString(size);
@@ -161,12 +167,11 @@ public class HighScoreActivity extends ListActivity {
     
     // ---------------------------------------------------------
     // Switch Views
-    private void switchHighScoreButton(String state) {
-    	
-    	final Button getOnlineHS = (Button) findViewById(R.id.onlineHSButton);
+    private void switchHighScoreButton(String state) {    	
+    	Button getOnlineHS = (Button) findViewById(R.id.onlineHSButton);
     	
     	if(state == "ONLINE") {
-    		
+    		loadingDialog.show();
     		getOnlineHS.setText(R.string.hs_bttn_getonline);
 	        getOnlineHS.setOnClickListener(new View.OnClickListener() {
 				public void onClick(View v) {
@@ -215,10 +220,7 @@ public class HighScoreActivity extends ListActivity {
     @Override
     protected void onListItemClick(ListView l, View v, int position, final long id) {
         super.onListItemClick(l, v, position, id);
-        
-        String g = isOnlineView ? "true" : "false";
-        
-        Log.i("isOnlineView", g);
+               
         if(isOnlineView == true)
         	return;    
         
@@ -243,6 +245,8 @@ public class HighScoreActivity extends ListActivity {
         	// Push score online
         	if(isonline == 1) {
         		highScoreAdapter.toastMessage(R.string.hs_already_pushed);
+        	} else if(!isOnline()) {
+        		highScoreAdapter.toastMessage(R.string.hs_error_no_internet);
         	} else {
         	        		
         		// Create a new HttpClient and Post Header

@@ -2,51 +2,79 @@ package com.runnershigh;
 
 import android.content.Context;
 
-import java.util.TimerTask;
-import java.util.Vector;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
+import android.util.Log;
 
 public class Player{
-	private static float MAX_JUMP_HEIGHT = 100;  //TODO: make MAX_JUMP_HEIGHT < 100 possible
-	private static float MIN_JUMP_HEIGHT = 10;
+	private static float MAX_JUMP_HEIGHT = Util.getPercentOfScreenHeight(17);  //50
+	//private static float MIN_JUMP_HEIGHT = Util.getPercentOfScreenHeight(5);  //30
 	public Bitmap playerImg;
 	private float lastPosY;
-	static public int width;
-	private int height;
-	private float x;
-	private float y;
+	static public float width;
+	static public float height;
+	public float x;
+	public float y;
 	private boolean jumping = false;
 	private boolean jumpingsoundplayed = true;
+	private boolean onGround = false;
 	private boolean reachedPeak = false;
 	private boolean slowSoundplayed = false;
 	private float jumpStartY;
+	
 	private float velocity = 0;
+	private float velocityMax = 0;
+	private float velocityDownfallSpeed = 0;
+	
 	private Rect playerRect;
+	private Rect ObstacleRect;
 	private float speedoffsetX = 0;
+	private float speedoffsetXStart;
+	private float speedoffsetXMax;
+	private float speedoffsetXStep;
 	private Bitmap playerSpriteImg; 
 	public PlayerSprite playerSprite;
 	
+	public int bonusItems = 0;
+	private int bonusScorePerItem = 200;
+	
 
 	public Player(Context context, OpenGLRenderer glrenderer, int ScreenHeight) {
-		x = 70; 
-		y = 200;
+		x = Util.getPercentOfScreenWidth(9); //70; 
+		y = Settings.FirstBlockHeight+Util.getPercentOfScreenHeight(4);
 		
-		width = 40; //60; nyan cat pre minimalize //62; playersprite settings
-		height = 30; //42; nyan cat pre minimalize //63; playersprite settings
+		width = Util.getPercentOfScreenWidth(9); //40; dicker //40; nyan cat //60; nyan cat pre minimalize //62; playersprite settings
+		height = width*Util.mWidthHeightRatio; //40; dicker //30;  nyan cat //42; nyan cat pre minimalize //63; playersprite settings
 		
-		playerSpriteImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.nyansprite);
-		playerSprite = new PlayerSprite(x, y, 1, width, height, 25, 6); 
+		velocityMax = Util.getPercentOfScreenHeight(2); //9 Util.getPercentOfScreenHeight(1.875f)
+		velocityDownfallSpeed = velocityMax/20;
+		
+		speedoffsetXStart = x;
+		speedoffsetXMax = Util.getPercentOfScreenWidth(7);
+		speedoffsetXStep = Util.getPercentOfScreenWidth(0.002f);
+		
+		playerSpriteImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.bastardchar512x128);
+		playerSprite = new PlayerSprite(x, y, 0.5f, width, height, 25, 8); 
 		playerSprite.loadBitmap(playerSpriteImg); 
 		glrenderer.addMesh(playerSprite);
+		
+		playerRect = new Rect();
+		playerRect.left =(int)x;
+		playerRect.top =(int)(y+height);
+		playerRect.right =(int)(x+width);
+		playerRect.bottom =(int)y;
+		
+		ObstacleRect = new Rect();
 	}
 	
 	public void setJump(boolean jump) {
 		if(!jump)
+		{
 			reachedPeak = true;
+		}
 		
-		if(reachedPeak) return;
+		if(reachedPeak || !onGround) return;
 		
 		jumpStartY = y;
 		jumping = true;
@@ -62,37 +90,55 @@ public class Player{
 			SoundManager.playSound(3, 1);
 			jumpingsoundplayed = true;
 		}
-		if (jumping && velocity >= 0) {
-			if(y - jumpStartY < MIN_JUMP_HEIGHT || !reachedPeak) {
-				float modifier = (MAX_JUMP_HEIGHT - (y - jumpStartY))/30; //TODO: make MAX_JUMP_HEIGHT < 100 possible
-				
-				velocity += 0.4981f * modifier;
+		
+		if (jumping && !reachedPeak) {
+			velocity += 1.5f * (MAX_JUMP_HEIGHT - (y - jumpStartY)) / 100.f;
+
+
+			if(Settings.RHDEBUG){
+				Log.d("debug", "y: " + (y));
+				Log.d("debug", "y + height: " + (y + height));
+				//Log.d("debug", "velocity: " + velocity);
+				//Log.d("debug", "modifier: " + (MAX_JUMP_HEIGHT - (y - jumpStartY)) / 100.0f);
+				//Log.d("debug", "MAX_JUMP_HEIGHT - (y - jumpStartY): " + (MAX_JUMP_HEIGHT - (y - jumpStartY)));
 			}
-			if(y - jumpStartY >= MAX_JUMP_HEIGHT) {
-				reachedPeak = true;			
+
+			if(y - jumpStartY >= MAX_JUMP_HEIGHT)
+			{
+				reachedPeak = true;
 			}
 		}
+		else
+		{
+			velocity -= velocityDownfallSpeed; 
+		}
 		
-		velocity -= 0.4981f;
 		
-		if (velocity < -9)
-			velocity = -9;
-		else if (velocity > 9)
-			velocity = 9;
+		if (velocity < -velocityMax) 
+			velocity = -velocityMax;
+		else if (velocity > velocityMax)
+			velocity = velocityMax;
 		
 		y += velocity;
 		
-		playerRect = new Rect((int)x,(int)y+height,(int)x+width,(int)y);
+		playerRect.left =(int)x;
+		playerRect.top =(int)(y+height);
+		playerRect.right =(int)(x+width);
+		playerRect.bottom =(int)y;
+		
+		onGround = false;
 		
 		for (int i = 0; i < Level.maxBlocks; i++)
 		{
-			if( checkIntersect(playerRect, Level.blockData[i].getRect()) ){
-				if(lastPosY >= Level.blockData[i].mHeight)
+			if( checkIntersect(playerRect, Level.blockData[i].BlockRect) )
+			{
+				if(lastPosY >= Level.blockData[i].mHeight && velocity <= 0)
 				{
 					y=Level.blockData[i].mHeight;
 					velocity = 0;
 					reachedPeak = false;
 					jumping = false;
+					onGround = true;
 				}
 				else{
 					// false -> player stops at left -> block mode
@@ -103,10 +149,10 @@ public class Player{
 		}
 		lastPosY = y;
 		
-		if(speedoffsetX<50)
-			speedoffsetX+=0.01;
+		if(speedoffsetX<speedoffsetXMax ) //50
+			speedoffsetX += speedoffsetXStep; //0.01
 		
-		x=70+speedoffsetX;
+		x=speedoffsetXStart+speedoffsetX;
 		
 		if(y + height < 0){
 			y = -height;
@@ -116,9 +162,7 @@ public class Player{
 		return true;
 	}	
 	
-	public boolean collidedWithObstacle(int levelPosition) {
-		
-		Rect ObstacleRect = new Rect();
+	public boolean collidedWithObstacle(float levelPosition) {
 		
 		for(int i = 0; i < Level.maxObstaclesJumper; i++)
 		{
@@ -132,7 +176,7 @@ public class Player{
 				Level.obstacleDataJumper[i].didTrigger=true;
 				
 				SoundManager.playSound(6, 1);
-				velocity = 6; //katapultiert den player wie ein trampolin nach oben
+				velocity = Util.getPercentOfScreenHeight(1.3f);//6; //katapultiert den player wie ein trampolin nach oben
 				
 			}
 		}
@@ -169,11 +213,10 @@ public class Player{
 				Level.obstacleDataBonus[i].didTrigger=true;
 
 				SoundManager.playSound(8, 1);
-				Level.scoreCounter+=200;
+				bonusItems++;
 				Level.obstacleDataBonus[i].z= -1;
 			}
 		}
-
 		slowSoundplayed=false;
 		return false;
 	}
@@ -201,26 +244,19 @@ public class Player{
 	}
 	
 	public void reset() {
-		x = 70; // x/y is bottom left corner of picture
-		y = 200;
 		velocity = 0;
+		x = 70; // x/y is bottom left corner of picture
+		y = Settings.FirstBlockHeight+20;
+		
 		speedoffsetX = 0;
+		bonusItems = 0;
 	}
 	
-	public int getPosX() {
-		return (int)x;
+	public int getBonusScore()
+	{
+		return bonusItems * bonusScorePerItem;
 	}
+	
 
-	public void setPosX(int posX) {
-		this.x = posX;
-	}
-
-	public int getPosY() {
-		return (int)y;
-	}
-
-	public void setPosY(int posY) {
-		this.y = posY;
-	}
 
 }
