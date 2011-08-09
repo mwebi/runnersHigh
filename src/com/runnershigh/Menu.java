@@ -39,7 +39,7 @@ public class Menu extends Activity {
     public void playGame(View view) {
 
 		// Loading Toast
-		loadMessage.show();
+//		loadMessage.show();
 		
     	Intent myIntent = new Intent (this, main.class);
     	startActivity (myIntent);

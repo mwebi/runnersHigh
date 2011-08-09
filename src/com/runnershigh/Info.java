@@ -44,14 +44,19 @@ public class Info extends Activity{
     	case R.id.buttonManuel:
 			browserIntent = new Intent("android.intent.action.VIEW", Uri.parse(Settings.URL_MANUEL));
 			break;
-    	case R.id.buttonMediaCube:
-			browserIntent = new Intent("android.intent.action.VIEW", Uri.parse(Settings.URL_MEDIACUBE));
-			break;
     	case R.id.buttonRunnersHigh:
 			browserIntent = new Intent("android.intent.action.VIEW", Uri.parse(Settings.URL_RUNNERSHIGH));
 			break;
     	case R.id.buttonWebi:
 			browserIntent = new Intent("android.intent.action.VIEW", Uri.parse(Settings.URL_WEBI));
+			break;
+
+    	case R.id.buttonMMT:
+			browserIntent = new Intent("android.intent.action.VIEW", Uri.parse(Settings.URL_MMT));
+			break;
+
+    	case R.id.buttonMMA:
+			browserIntent = new Intent("android.intent.action.VIEW", Uri.parse(Settings.URL_MMA));
 			break;
 
 		default:

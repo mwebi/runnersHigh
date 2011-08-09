@@ -110,7 +110,7 @@ public class OpenGLRenderer implements Renderer {
 		
 		if((System.currentTimeMillis() - timeAtLastSecond) > 1000 && Settings.RHDEBUG){
 			timeAtLastSecond = System.currentTimeMillis();
-			Log.d("frametime", "draws per second: " + Integer.toString(fpsCounter));
+			Log.d("framerate", "draws per second: " + Integer.toString(fpsCounter));
 			fpsCounter=0;
 		}
 		
