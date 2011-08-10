@@ -24,7 +24,6 @@ public class main extends Activity {
 		//MediaPlayer musicPlayerIntro;
 		MediaPlayer musicPlayerLoop;
 		boolean MusicLoopStartedForFirstTime = false;
-		boolean paused = false;
 
 		boolean isRunning = false;
 		
@@ -33,7 +32,6 @@ public class main extends Activity {
 		public void onCreate(Bundle savedInstanceState) {
 	    	super.onCreate(savedInstanceState);
 	    	//setContentView(R.layout.main);	 
-	    	paused=false;
 	    	
 	    	PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
 			wakeLock = pm.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK, "tag");
@@ -81,7 +79,7 @@ public class main extends Activity {
 			if(MusicLoopStartedForFirstTime)
 				musicPlayerLoop.start();
 			super.onResume();
-			paused=false;
+
 		}
 		@Override
 		public void onStop() {
@@ -93,14 +91,13 @@ public class main extends Activity {
 		public void onRestart() {
 			if(Settings.RHDEBUG)
 				Log.d("debug", "onRestart");
-			paused=false;
+
 			super.onRestart();
 		}
 		@Override
 		public void onPause() {
 			if(Settings.RHDEBUG)
 				Log.d("debug", "onPause");
-			paused=true;
 			wakeLock.release();
 			musicPlayerLoop.pause();
 			super.onPause();
@@ -166,8 +163,8 @@ public class main extends Activity {
 			super(context);
 			
 			Display display = ((WindowManager) getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
-			width= display.getWidth();  
-			height= display.getHeight();
+			width = display.getWidth();  
+			height = display.getHeight();
 			
 			if(Settings.RHDEBUG)
 				Log.d("debug", "displaywidth: " + width + ", displayheight: " + height);
@@ -323,7 +320,11 @@ public class main extends Activity {
 			// this gives the app enough time to load
 			try{
 				//loadingDialog.show();
-
+				if(Settings.RHDEBUG)
+					Log.d("debug", "run method in try");
+				if(Settings.RHDEBUG)
+					Log.d("debug", "mRenderer.firstFrameDone: " + mRenderer.firstFrameDone);
+			
 				while(!mRenderer.firstFrameDone)
 					Thread.sleep(10);
 				
@@ -348,6 +349,9 @@ public class main extends Activity {
 				e.printStackTrace();
 			}
 			
+			if(Settings.RHDEBUG)
+				Log.d("debug", "run method after try catch");
+			
 			blackRHD.setColor(0, 0, 0, 0);
 			blackRHD.z=-1.0f;
 			//mRenderer.removeMesh(blackRHD); //TODO: find a way to remove mesh without runtime errors
@@ -356,7 +360,10 @@ public class main extends Activity {
 			long currentTimeTaken=0;
 			long starttime = 0;
 			
+			if(Settings.RHDEBUG)
+				Log.d("debug", "run method befor while");
 			while(isRunning){
+				
 				starttime= System.currentTimeMillis();
 
 				player.playerSprite.setFrameUpdateTime( (level.baseSpeedMax+level.extraSpeedMax)*10 -((level.baseSpeed+level.extraSpeed)*10) );

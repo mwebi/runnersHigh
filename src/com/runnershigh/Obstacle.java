@@ -40,9 +40,9 @@ public class Obstacle extends RHDrawable {
 		setTextureCoordinates(textureCoordinates);
 		
 		didTrigger=false;
-		radX=radY=50;
+		radX=radY=(int)(_width*2); //50
 		angle=0;
-		orbitSpeed=0.05f; 
+		orbitSpeed=radX/1000; //0.05f; 
 		centerX=x;
 		centerY=y;
 	}

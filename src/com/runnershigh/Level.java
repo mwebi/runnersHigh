@@ -46,6 +46,16 @@ public class Level {
 	private int leftBonusIndex;
 	private int rightBonusIndex;
 
+	private float obstacleJumperWidth;
+	private float obstacleJumperHeight;
+	
+	private float obstacleSlowerWidth;
+	private float obstacleSlowerHeight;
+	
+	private float obstacleBonusWidth;
+	private float obstacleBonusHeight;
+	private float obstacleBonusDistanceToBlock;
+	
 	private final int OBSTACLEMASK_0_NO_OBSTACLE = 80;
 	private final int OBSTACLEMASK_1_JUMP = 30;
 	private final int OBSTACLEMASK_2_SLOW = 30;
@@ -98,6 +108,26 @@ public class Level {
 		extraSpeedMax = Util.getPercentOfScreenWidth(0.5f);
 		extraSpeedAcceleration = extraSpeed * 0.010f;
 		
+		obstacleJumperWidth = Util.getPercentOfScreenWidth(4);
+		obstacleJumperHeight = Util.getPercentOfScreenHeight(2);
+		
+		obstacleSlowerWidth = Util.getPercentOfScreenWidth(5);
+		obstacleSlowerHeight= Util.getPercentOfScreenHeight(2);
+		
+		obstacleBonusWidth = Util.getPercentOfScreenWidth(5);
+		obstacleBonusHeight = obstacleBonusWidth*Util.mWidthHeightRatio;
+		obstacleBonusDistanceToBlock = Util.getPercentOfScreenHeight(6);
+		
+		
+		if(Settings.RHDEBUG){
+			Log.d("debug", "obstacleJumperWidth" + obstacleJumperWidth);
+			Log.d("debug", "obstacleJumperHeight" + obstacleJumperHeight);
+			Log.d("debug", "obstacleSlowerWidth" + obstacleSlowerWidth);
+			Log.d("debug", "obstacleSlowerHeight" + obstacleSlowerHeight);
+			Log.d("debug", "obstacleBonusWidth" + obstacleBonusWidth);
+			Log.d("debug", "obstacleBonusHeight" + obstacleBonusHeight);
+			Log.d("debug", "obstacleBonusDistanceToBlock" + obstacleBonusDistanceToBlock);
+		}
 		renderer = glrenderer;
 		
 		randomGenerator = new Random();
@@ -121,9 +151,11 @@ public class Level {
 		obstacleDataBonus = new Obstacle[maxObstaclesBonus];
 		leftBonusIndex = 0;
 		rightBonusIndex = maxObstaclesBonus;
+
 		
 		obstacleSlowImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.obstacleslow );
 		obstacleJumpImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.obstaclejump );
+		obstacleBonusImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.bonusimage);
 		
 		Block.setTextureLeft(
 				BitmapFactory.decodeResource(
@@ -135,9 +167,7 @@ public class Level {
 				BitmapFactory.decodeResource(
 						context.getResources(), R.drawable.blockright ));
 		
-
-		obstacleBonusImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.bonusimage);
-
+		
 		slowDown = false;
 		
 		initializeBlocks(true);
@@ -298,7 +328,7 @@ public class Level {
 		{
 			if (firstTime)
 			{
-				obstacleDataJumper[i] = new Obstacle(-1000, 0, 0.9f, 30, 10, 'j');
+				obstacleDataJumper[i] = new Obstacle(-1000, 0, 0.9f, obstacleJumperWidth, obstacleJumperHeight, 'j');
 				renderer.addMesh(obstacleDataJumper[i]);
 				obstacleDataJumper[i].loadBitmap(obstacleJumpImg);
 			}
@@ -309,7 +339,7 @@ public class Level {
 		{
 			if (firstTime)
 			{
-				obstacleDataSlower[i] = new Obstacle(-1000, 0, 0.9f, 35, 10, 's');
+				obstacleDataSlower[i] = new Obstacle(-1000, 0, 0.9f, obstacleSlowerWidth, obstacleSlowerHeight, 's');
 				renderer.addMesh(obstacleDataSlower[i]);				
 				obstacleDataSlower[i].loadBitmap(obstacleSlowImg);
 			}
@@ -321,7 +351,7 @@ public class Level {
 		{
 			if (firstTime)
 			{
-				obstacleDataBonus[i] = new Obstacle(-1000, 0, 0.9f, 35, 35, 'b');
+				obstacleDataBonus[i] = new Obstacle(-1000, 0, 0.9f, obstacleBonusWidth, obstacleBonusHeight, 'b');
 				renderer.addMesh(obstacleDataBonus[i]);
 				obstacleDataBonus[i].loadBitmap(obstacleBonusImg);
 			}
@@ -482,7 +512,7 @@ public class Level {
 		    
 		    //set new coordinates
 		    newBonus.x = newBonus.centerX = bonusLeft;
-		    newBonus.y = newBonus.centerY = blockData[rightBlockIndex].mHeight+50+randomGenerator.nextInt(75);
+		    newBonus.y = newBonus.centerY = blockData[rightBlockIndex].mHeight+obstacleBonusDistanceToBlock+randomGenerator.nextInt(75);
 		    
 		    newBonus.setObstacleRect(bonusLeft,
 		    		bonusLeft+newBonus.width,
