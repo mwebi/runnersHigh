@@ -54,7 +54,7 @@ public class main extends Activity {
 	        musicPlayerLoop = MediaPlayer.create(getApplicationContext(), R.raw.gamebackground);
 	        musicPlayerLoop.setLooping(true);
 			musicPlayerLoop.seekTo(0);
-			musicPlayerLoop.setVolume(0.5f, 0.5f);
+			musicPlayerLoop.setVolume(0.3f, 0.3f);
 	        
 			requestWindowFeature(Window.FEATURE_NO_TITLE);  
 			getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -140,6 +140,8 @@ public class main extends Activity {
 		private Bitmap saveButtonImg;
 		private RHDrawable blackRHD;
 		private Bitmap blackImg;
+		private RHDrawable gameLoadingRHD;
+		private Bitmap gameLoadingImg;
 		private float blackImgAlpha;
 		private boolean scoreWasSaved = false;
 		private boolean deathSoundPlayed = false;
@@ -194,6 +196,8 @@ public class main extends Activity {
 		}
 		
 		private void initialize() {
+			if(Settings.RHDEBUG)
+				Log.d("debug", "initialize begin");
 			Context context = Util.getInstance().getAppContext();
 			
 			Rect rectgle= new Rect();
@@ -224,6 +228,13 @@ public class main extends Activity {
 			Util.mScreenWidth=width;
 			Util.mWidthHeightRatio=width/height;
 			
+ 
+			gameLoadingImg = BitmapFactory.decodeResource(context.getResources(),R.drawable.loading);
+			gameLoadingRHD = new RHDrawable(0, 0, 1, width, height);
+			gameLoadingRHD.loadBitmap(gameLoadingImg);
+			mRenderer.addMesh(gameLoadingRHD);
+			
+	        
 			background = new ParalaxBackground(width, height);
 
 			mRenderer.addMesh(background);
@@ -239,6 +250,7 @@ public class main extends Activity {
 					R.drawable.backgroundlayer1_compr));
 			sleep();
 
+			
 			if(Settings.RHDEBUG)
 				Log.d("debug", "before addMesh");
 			
@@ -259,6 +271,9 @@ public class main extends Activity {
 			level = new Level(context, mRenderer, width, height);
 			sleep();
 			
+			player = new Player(getApplicationContext(), mRenderer, height);
+			sleep();
+			
 			if(Settings.RHDEBUG)
 				Log.d("debug", "after player creation");
 //			loadingDialog = new ProgressDialog( context );
@@ -275,7 +290,7 @@ public class main extends Activity {
 		    
 			//new counter
 			CounterYourScoreImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.scorebackground);
-			CounterYourScoreDrawable = new RHDrawable(Util.getPercentOfScreenWidth(5), height-Util.getPercentOfScreenHeight(12), 1, Util.getPercentOfScreenWidth(27), Util.getPercentOfScreenHeight(7));
+			CounterYourScoreDrawable = new RHDrawable(Util.getPercentOfScreenWidth(5), height-Util.getPercentOfScreenHeight(12), 0.90f, Util.getPercentOfScreenWidth(27), Util.getPercentOfScreenHeight(7));
 			CounterYourScoreDrawable.loadBitmap(CounterYourScoreImg); 
 			mRenderer.addMesh(CounterYourScoreDrawable);
 
@@ -283,25 +298,25 @@ public class main extends Activity {
 				Log.d("debug", "after CounterYourScoreDrawable addMesh");
 			
 			CounterFont = BitmapFactory.decodeResource(context.getResources(), R.drawable.numberfont);
-			mCounterGroup = new CounterGroup(Util.getPercentOfScreenWidth(9), height-Util.getPercentOfScreenHeight(12.5f), 1, Util.getPercentOfScreenWidth(16), Util.getPercentOfScreenHeight(6), 25);
+			mCounterGroup = new CounterGroup(Util.getPercentOfScreenWidth(9), height-Util.getPercentOfScreenHeight(12.5f), 0.90f, Util.getPercentOfScreenWidth(16), Util.getPercentOfScreenHeight(6), 25);
 			
 			if(Settings.RHDEBUG)
 				Log.d("debug", "after mCounterGroup");
 			
 
-			mCounterDigit1 = new CounterDigit(Util.getPercentOfScreenWidth(14), height-Util.getPercentOfScreenHeight(12.5f), 1, Util.getPercentOfScreenWidth(4), Util.getPercentOfScreenHeight(6.5f));
+			mCounterDigit1 = new CounterDigit(Util.getPercentOfScreenWidth(14), height-Util.getPercentOfScreenHeight(12.5f), 0.90f, Util.getPercentOfScreenWidth(4), Util.getPercentOfScreenHeight(6.5f));
 			mCounterDigit1.loadBitmap(CounterFont); 
 			mCounterGroup.add(mCounterDigit1);
 
-			mCounterDigit2 = new CounterDigit(Util.getPercentOfScreenWidth(17.5f), height-Util.getPercentOfScreenHeight(12.5f), 1, Util.getPercentOfScreenWidth(4), Util.getPercentOfScreenHeight(6.5f));
+			mCounterDigit2 = new CounterDigit(Util.getPercentOfScreenWidth(17.5f), height-Util.getPercentOfScreenHeight(12.5f), 0.90f, Util.getPercentOfScreenWidth(4), Util.getPercentOfScreenHeight(6.5f));
 			mCounterDigit2.loadBitmap(CounterFont); 
 			mCounterGroup.add(mCounterDigit2);
 
-			mCounterDigit3 = new CounterDigit(Util.getPercentOfScreenWidth(21), height-Util.getPercentOfScreenHeight(12.5f), 1, Util.getPercentOfScreenWidth(4), Util.getPercentOfScreenHeight(6.5f));
+			mCounterDigit3 = new CounterDigit(Util.getPercentOfScreenWidth(21), height-Util.getPercentOfScreenHeight(12.5f), 0.90f, Util.getPercentOfScreenWidth(4), Util.getPercentOfScreenHeight(6.5f));
 			mCounterDigit3.loadBitmap(CounterFont); 
 			mCounterGroup.add(mCounterDigit3);
 
-			mCounterDigit4 = new CounterDigit(Util.getPercentOfScreenWidth(24.5f), height-Util.getPercentOfScreenHeight(12.5f), 1, Util.getPercentOfScreenWidth(4), Util.getPercentOfScreenHeight(6.5f));
+			mCounterDigit4 = new CounterDigit(Util.getPercentOfScreenWidth(24.5f), height-Util.getPercentOfScreenHeight(12.5f), 0.90f, Util.getPercentOfScreenWidth(4), Util.getPercentOfScreenHeight(6.5f));
 			mCounterDigit4.loadBitmap(CounterFont); 
 			mCounterGroup.add(mCounterDigit4);
 			
@@ -311,14 +326,17 @@ public class main extends Activity {
 			if(Settings.RHDEBUG)
 				Log.d("debug", "after counter");
 			
-			blackImg = Bitmap.createBitmap(16, 16, Bitmap.Config.ARGB_4444);
-			//blackImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.resetbutton);
+
+			blackImg = Bitmap.createBitmap(16, 16, Bitmap.Config.ARGB_8888);
 			blackRHD = new RHDrawable(0, 0, 1, width, height);
 			blackImg.eraseColor(-16777216);
 			blackImgAlpha=1;
 			blackRHD.setColor(0, 0, 0, blackImgAlpha);
 			blackRHD.loadBitmap(blackImg);
-			//mRenderer.addMesh(blackRHD);
+			mRenderer.addMesh(blackRHD);
+			
+			gameLoadingRHD.z = -1.0f;
+			
 			
 			mHighscoreMarkBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.highscoremark);
 			 
@@ -329,18 +347,13 @@ public class main extends Activity {
 			if(Settings.showHighscoreMarks)
 				initHighscoreMarks();
 			
+			
+			
 			timeAtLastSecond = System.currentTimeMillis();
 	        runCycleCounter=0;
 
-			player = new Player(getApplicationContext(), mRenderer, height);
-			sleep();
-//	        
-			
-//	        Thread rHThread = new Thread(this);
-//			rHThread.start();
-			
 			if(Settings.RHDEBUG)
-				Log.d("debug", "RunnersHighView constructor ended");
+				Log.d("debug", "RunnersHighView initiation ended");
 		}
 		
 		public void surfaceChanged(SurfaceHolder holder) {
@@ -392,20 +405,23 @@ public class main extends Activity {
 				
 				initialize();
 				
+
+				long timeAtStart = System.currentTimeMillis();
+				while (System.currentTimeMillis() < timeAtStart + 2000)
+				{
+					blackImgAlpha-=0.005;
+					blackRHD.setColor(0, 0, 0, blackImgAlpha);
+					Thread.sleep(10);
+				}
+				
 				if(Settings.RHDEBUG)
-					Log.d("debug", "first frame done");
+					Log.d("debug", "after fade in");
 
 				if(!musicPlayerLoop.isPlaying())
 					musicPlayerLoop.start();
 				MusicLoopStartedForFirstTime=true;
 				
-//				long timeAtStart = System.currentTimeMillis();
-//				while (System.currentTimeMillis() < timeAtStart + 2000)
-//				{
-//					blackImgAlpha-=0.005; 
-//					blackRHD.setColor(0, 0, 0, blackImgAlpha);
-//					Thread.sleep(10);
-//				}
+
 				//loadingDialog.hide();
 			}
 			catch (InterruptedException e)
@@ -416,8 +432,8 @@ public class main extends Activity {
 			if(Settings.RHDEBUG)
 				Log.d("debug", "run method after try catch");
 			
-			blackRHD.setColor(0, 0, 0, 0);
 			blackRHD.z=-1.0f;
+			blackRHD.setColor(0, 0, 0, 0);
 			//mRenderer.removeMesh(blackRHD); //TODO: find a way to remove mesh without runtime errors
 
 			long timeForOneCycle=0;

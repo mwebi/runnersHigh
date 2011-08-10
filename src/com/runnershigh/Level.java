@@ -6,7 +6,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.Paint;
 import android.graphics.Rect;
 import android.util.Log;
 
@@ -80,7 +79,6 @@ public class Level {
 	private Bitmap obstacleBonusImg;
 	
 	private boolean slowDown;
-	Paint paint;
 	Rect blockRect;
 	private int BlockCounter;
 	private OpenGLRenderer renderer;
@@ -133,10 +131,6 @@ public class Level {
 		renderer = glrenderer;
 		
 		randomGenerator = new Random();
-		
-		paint = new Paint();
-		paint.setColor(Color.RED);
-		paint.setStyle(Paint.Style.FILL);
 		
 		blockData = new Block[maxBlocks];
 		leftBlockIndex = 0;

@@ -83,6 +83,7 @@ public class OpenGLRenderer implements Renderer {
 	 */
 
 	public void onDrawFrame(GL10 gl) {
+		//Log.d("debug", "onDrawFrame ");
 		if(Settings.RHDEBUG){
 			starttime = System.currentTimeMillis();
 			currentTimeTaken= System.currentTimeMillis()- starttime;
