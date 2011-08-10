@@ -9,13 +9,16 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Rect;
 import android.media.MediaPlayer;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.os.PowerManager;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
 import android.view.MotionEvent;
+import android.view.SurfaceHolder;
 import android.view.Window;
 import android.view.WindowManager;
 
@@ -26,7 +29,9 @@ public class main extends Activity {
 		boolean MusicLoopStartedForFirstTime = false;
 
 		boolean isRunning = false;
-		
+
+	    private static final int SLEEP_TIME = 300;
+	    
 		/** Called when the activity is first created. */
 	    @Override
 		public void onCreate(Bundle savedInstanceState) {
@@ -108,6 +113,19 @@ public class main extends Activity {
 			myIntent.putExtra("score", score);			
 			startActivity (myIntent);
 		}
+
+		public void sleep() {
+			sleep(SLEEP_TIME);
+		}
+
+		public void sleep(int time) {
+			try {
+				Thread.sleep(time);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
     
 	public class RunnersHighView extends GLSurfaceView implements Runnable {
 		private Player player;
@@ -162,35 +180,68 @@ public class main extends Activity {
 		public RunnersHighView(Context context) {
 			super(context);
 			
+			mRenderer = new OpenGLRenderer();
+			this.setRenderer(mRenderer);
+
+			Util.getInstance().setAppContext(context);
+			
+
+	        Thread rHThread = new Thread(this);
+			rHThread.start();
+			
+//			
+//			initialize();
+		}
+		
+		private void initialize() {
+			Context context = Util.getInstance().getAppContext();
+			
+			Rect rectgle= new Rect();
+			Window window= getWindow();
+			window.getDecorView().getWindowVisibleDisplayFrame(rectgle);
+			int StatusBarHeight= rectgle.bottom;
+			int contentViewTop= 
+			    window.findViewById(Window.ID_ANDROID_CONTENT).getTop();
+			int TitleBarHeight= contentViewTop - StatusBarHeight;
+
+			Log.e("*** Jorgesys :: ", "StatusBar Height= " + StatusBarHeight + " , TitleBar Height = " + TitleBarHeight); 
+			
+			DisplayMetrics metrics = new DisplayMetrics();
+            getWindowManager().getDefaultDisplay().getMetrics(metrics);
+			
+            Log.e("debug" , "dpi: " + metrics.densityDpi);
+			
 			Display display = ((WindowManager) getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
-			width = display.getWidth();  
-			height = display.getHeight();
+			width= display.getWidth();  
+			height= Math.abs(rectgle.top - rectgle.bottom);
 			
 			if(Settings.RHDEBUG)
 				Log.d("debug", "displaywidth: " + width + ", displayheight: " + height);
 			
+			Log.e("debug", "displaywidth: " + width + ", displayheight: " + height);
+			
 			Util.mScreenHeight=height;
 			Util.mScreenWidth=width;
 			Util.mWidthHeightRatio=width/height;
-			Util.getInstance().setAppContext(context);
-			
-			
-			mRenderer = new OpenGLRenderer();
-			this.setRenderer(mRenderer);
 			
 			background = new ParalaxBackground(width, height);
 
+			mRenderer.addMesh(background);
+			sleep();
+			
 			background.loadLayerFar(BitmapFactory.decodeResource(context.getResources(),
 					R.drawable.backgroundlayer3_compr));
+			sleep();
 			background.loadLayerMiddle(BitmapFactory.decodeResource(context.getResources(),
 					R.drawable.backgroundlayer2_compr));
+			sleep();
 			background.loadLayerNear(BitmapFactory.decodeResource(context.getResources(),
 					R.drawable.backgroundlayer1_compr));
+			sleep();
 
 			if(Settings.RHDEBUG)
 				Log.d("debug", "before addMesh");
 			
-			mRenderer.addMesh(background);
 			
 			resetButtonImg = BitmapFactory.decodeResource(context.getResources(),R.drawable.resetbutton);
 			resetButton = new Button(Util.getPercentOfScreenWidth(75), height-Util.getPercentOfScreenHeight(22), -2, 
@@ -206,14 +257,13 @@ public class main extends Activity {
 			mRenderer.addMesh(saveButton);
 			
 			level = new Level(context, mRenderer, width, height);
-
-			player = new Player(getApplicationContext(), mRenderer, height);
+			sleep();
 			
 			if(Settings.RHDEBUG)
 				Log.d("debug", "after player creation");
-			loadingDialog = new ProgressDialog( context );
-		    loadingDialog.setProgressStyle(0);
-		    loadingDialog.setMessage("Loading Highscore ...");
+//			loadingDialog = new ProgressDialog( context );
+//		    loadingDialog.setProgressStyle(0);
+//		    loadingDialog.setMessage("Loading Highscore ...");
 			
 		    if(Settings.RHDEBUG)
 				Log.d("debug", "after loading messages");
@@ -256,6 +306,7 @@ public class main extends Activity {
 			mCounterGroup.add(mCounterDigit4);
 			
 			mRenderer.addMesh(mCounterGroup);
+			sleep();
 			
 			if(Settings.RHDEBUG)
 				Log.d("debug", "after counter");
@@ -267,7 +318,7 @@ public class main extends Activity {
 			blackImgAlpha=1;
 			blackRHD.setColor(0, 0, 0, blackImgAlpha);
 			blackRHD.loadBitmap(blackImg);
-			mRenderer.addMesh(blackRHD);
+			//mRenderer.addMesh(blackRHD);
 			
 			mHighscoreMarkBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.highscoremark);
 			 
@@ -280,15 +331,26 @@ public class main extends Activity {
 			
 			timeAtLastSecond = System.currentTimeMillis();
 	        runCycleCounter=0;
+
+			player = new Player(getApplicationContext(), mRenderer, height);
+			sleep();
+//	        
 			
-	        
-	        Thread rHThread = new Thread(this);
-			rHThread.start();
+//	        Thread rHThread = new Thread(this);
+//			rHThread.start();
 			
 			if(Settings.RHDEBUG)
 				Log.d("debug", "RunnersHighView constructor ended");
 		}
 		
+		public void surfaceChanged(SurfaceHolder holder) {
+			Log.e("debug", "surfaceChanged");
+		}
+		
+		public void onSurfaceChanged(SurfaceHolder holder) {
+			Log.e("debug", "onSurfaceChanged");
+		}
+				
 		public int getAmountOfLocalHighscores() {
 			highScoreAdapter.open();
 		    Cursor cursor = highScoreAdapter.fetchScores("0");
@@ -328,6 +390,8 @@ public class main extends Activity {
 				while(!mRenderer.firstFrameDone)
 					Thread.sleep(10);
 				
+				initialize();
+				
 				if(Settings.RHDEBUG)
 					Log.d("debug", "first frame done");
 
@@ -335,13 +399,13 @@ public class main extends Activity {
 					musicPlayerLoop.start();
 				MusicLoopStartedForFirstTime=true;
 				
-				long timeAtStart = System.currentTimeMillis();
-				while (System.currentTimeMillis() < timeAtStart + 2000)
-				{
-					blackImgAlpha-=0.005; 
-					blackRHD.setColor(0, 0, 0, blackImgAlpha);
-					Thread.sleep(10);
-				}
+//				long timeAtStart = System.currentTimeMillis();
+//				while (System.currentTimeMillis() < timeAtStart + 2000)
+//				{
+//					blackImgAlpha-=0.005; 
+//					blackRHD.setColor(0, 0, 0, blackImgAlpha);
+//					Thread.sleep(10);
+//				}
 				//loadingDialog.hide();
 			}
 			catch (InterruptedException e)
@@ -360,13 +424,18 @@ public class main extends Activity {
 			long currentTimeTaken=0;
 			long starttime = 0;
 			
-			if(Settings.RHDEBUG)
-				Log.d("debug", "run method befor while");
+			if(Settings.RHDEBUG)				Log.d("debug", "run method befor while");//			long debugTime = System.currentTimeMillis(); // FIXME DEBUG TIME FOR VIDEO CAPTURE
+			
 			while(isRunning){
 				
 				starttime= System.currentTimeMillis();
+				
+//				if (debugTime + 15000 < starttime) sleep(100); // FIXME DEBUG TIME FOR VIDEO CAPTURE
 
-				player.playerSprite.setFrameUpdateTime( (level.baseSpeedMax+level.extraSpeedMax)*10 -((level.baseSpeed+level.extraSpeed)*10) );
+				player.playerSprite.setFrameUpdateTime(
+						(level.baseSpeedMax+level.extraSpeedMax)*10 - 
+						((level.baseSpeed+level.extraSpeed)*10) +
+						60 );
 				if (player.update()) {
 						if(Settings.RHDEBUG){
 							currentTimeTaken = System.currentTimeMillis()- starttime;

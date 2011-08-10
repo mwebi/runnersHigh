@@ -35,6 +35,8 @@ public class Player{
 	private float speedoffsetXStep;
 	private Bitmap playerSpriteImg; 
 	public PlayerSprite playerSprite;
+	private boolean fingerOnScreen = false;
+	private float bonusVelocity = 0;
 	
 	public int bonusItems = 0;
 	private int bonusScorePerItem = 200;
@@ -69,9 +71,11 @@ public class Player{
 	}
 	
 	public void setJump(boolean jump) {
+		fingerOnScreen = jump;
 		if(!jump)
 		{
 			reachedPeak = true;
+			bonusVelocity = 0.0f;
 		}
 		
 		if(reachedPeak || !onGround) return;
@@ -119,7 +123,11 @@ public class Player{
 		else if (velocity > velocityMax)
 			velocity = velocityMax;
 		
-		y += velocity;
+		y += velocity + bonusVelocity;
+
+		bonusVelocity-= 0.05f;
+		if (bonusVelocity < 0)
+			bonusVelocity = 0;
 		
 		playerRect.left =(int)x;
 		playerRect.top =(int)(y+height);
@@ -139,6 +147,7 @@ public class Player{
 					reachedPeak = false;
 					jumping = false;
 					onGround = true;
+					bonusVelocity = 0.0f;
 				}
 				else{
 					// false -> player stops at left -> block mode
@@ -176,8 +185,10 @@ public class Player{
 				Level.obstacleDataJumper[i].didTrigger=true;
 				
 				SoundManager.playSound(6, 1);
-				velocity = Util.getPercentOfScreenHeight(1.3f);//6; //katapultiert den player wie ein trampolin nach oben
+				velocity = Util.getPercentOfScreenHeight(2.6f);//6; //katapultiert den player wie ein trampolin nach oben
 				
+				if (fingerOnScreen)
+					bonusVelocity = Util.getPercentOfScreenHeight(2.0f);
 			}
 		}
 		

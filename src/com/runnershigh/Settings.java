@@ -21,7 +21,9 @@ public class Settings {
 	static final String URL_WEBI = "http://mwebi.multimediatechnology.at/";
 	
 	static final String URL_FH = "http://www.fh-salzburg.ac.at";
-	static final String URL_MEDIACUBE = "http://mediacube.at";
+	static final String URL_MMA = "http://multimediaart.at/";
+	static final String URL_MMT = "http://multimediatechnology.at/";
+	
 	
 	static final boolean RHDEBUG = false;
 	
