@@ -110,15 +110,15 @@ public class Level {
 		extraSpeedMax = Util.getPercentOfScreenWidth(0.5f);
 		extraSpeedAcceleration = extraSpeed * 0.010f;
 		
-		obstacleJumperWidth = Util.getPercentOfScreenWidth(4);
-		obstacleJumperHeight = Util.getPercentOfScreenHeight(2);
+		obstacleJumperWidth = Util.getPercentOfScreenWidth(5);
+		obstacleJumperHeight = Util.getPercentOfScreenHeight(3);
 		
-		obstacleSlowerWidth = Util.getPercentOfScreenWidth(5);
-		obstacleSlowerHeight= Util.getPercentOfScreenHeight(2);
+		obstacleSlowerWidth = Util.getPercentOfScreenWidth(6);
+		obstacleSlowerHeight= Util.getPercentOfScreenHeight(3);
 		
 		obstacleBonusWidth = Util.getPercentOfScreenWidth(5);
 		obstacleBonusHeight = obstacleBonusWidth*Util.mWidthHeightRatio;
-		obstacleBonusDistanceToBlock = Util.getPercentOfScreenHeight(6);
+		obstacleBonusDistanceToBlock = Util.getPercentOfScreenHeight(12);
 		
 		
 		if(Settings.RHDEBUG){
@@ -232,8 +232,8 @@ public class Level {
 			
 			for (int i = 0; i < maxObstaclesBonus; i++)
 			{
-				obstacleDataBonus[i].updateObstacleCircleMovement();
 				obstacleDataBonus[i].centerX -= deltaLevelPosition;
+				obstacleDataBonus[i].updateObstacleCircleMovement();
 			}
 			
 			

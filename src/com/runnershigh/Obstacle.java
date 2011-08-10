@@ -42,7 +42,7 @@ public class Obstacle extends RHDrawable {
 		didTrigger=false;
 		radX=radY=(int)(_width*2); //50
 		angle=0;
-		orbitSpeed=radX/1000; //0.05f; 
+		orbitSpeed=_width/1000; //radX/1000; //0.05f; 
 		centerX=x;
 		centerY=y;
 	}

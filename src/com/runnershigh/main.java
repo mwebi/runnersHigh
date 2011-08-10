@@ -424,7 +424,9 @@ public class main extends Activity {
 			long currentTimeTaken=0;
 			long starttime = 0;
 			
-			if(Settings.RHDEBUG)				Log.d("debug", "run method befor while");//			long debugTime = System.currentTimeMillis(); // FIXME DEBUG TIME FOR VIDEO CAPTURE
+			if(Settings.RHDEBUG)				
+				Log.d("debug", "run method befor while");
+			//			long debugTime = System.currentTimeMillis(); // FIXME DEBUG TIME FOR VIDEO CAPTURE
 			
 			while(isRunning){
 				
