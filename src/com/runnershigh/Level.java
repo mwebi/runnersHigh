@@ -76,6 +76,8 @@ public class Level {
 	private OpenGLRenderer renderer;
 	
 	private Random randomGenerator;
+	private boolean lastBlockWasSmall = false;
+	private int minBlockWidth = 0;
 	
 	public Level(Context context, OpenGLRenderer glrenderer, int _width, int _heigth) {
 		if(Settings.RHDEBUG)
@@ -250,12 +252,19 @@ public class Level {
 	
 	private void appendBlockToEnd()
 	{
+		if (minBlockWidth == 0) {
+			minBlockWidth =
+					Block.getTextureLeftWidth() + 
+					Block.getTextureRightWidth() + 
+					Block.getTextureMiddleWidth() * 2;
+		}
 		//Log.d("debug", "in appendBlockToEnd");
 		float newHeight;
 		float oldHeight;
 		float newWidth;
 		float distance;
 		float newLeft;
+		boolean thisBlockIsSmall = false;
 		
 		oldHeight = blockData[rightBlockIndex].BlockRect.top;
 		
@@ -264,10 +273,24 @@ public class Level {
 		else
 			newHeight = (int)(Math.random()*height/4 + height/8);
 		
-		newWidth = (int)(Math.random()*width/3+width/3);
+		if (lastBlockWasSmall) lastBlockWasSmall = false;
+		else if (50 - BlockCounter <= 0) thisBlockIsSmall = true;
+		else thisBlockIsSmall = (randomGenerator.nextInt(50 - BlockCounter) <= 5);
+		
+		if (thisBlockIsSmall) {
+			newWidth = minBlockWidth;
+			lastBlockWasSmall = true;
+		}
+		else {
+			newWidth = (int)(Math.random()*width/3+width/3);
+		}
+		
 		newWidth -= (newWidth - Block.getTextureLeftWidth() - Block.getTextureRightWidth()) % (Block.getTextureMiddleWidth());
 		
 		distance = (int)(Math.random()*width/16+width/12); 
+		
+//		newWidth = width/2; // FIXME REMOVE DEBUG VALUE
+//		distance = width/11; // FIXME REMOVE DEBUG VALUE
 		
 		if(distance <= Player.width)
 			distance = Player.width+2;
@@ -298,7 +321,10 @@ public class Level {
 		{
 			if (firstTime)
 			{
-				obstacleDataJumper[i] = new Obstacle(-1000, 0, 0.9f, 30, 10, 'j');
+				obstacleDataJumper[i] =
+						new Obstacle(
+								-1000, 0, 0.9f,
+								obstacleJumpImg.getWidth(), obstacleJumpImg.getHeight(), 'j');
 				renderer.addMesh(obstacleDataJumper[i]);
 				obstacleDataJumper[i].loadBitmap(obstacleJumpImg);
 			}
@@ -507,7 +533,7 @@ public class Level {
 	
 	public int getDistanceScore()
 	{
-		return (int)(levelPosition / 10);
+		return (int)(levelPosition * 800 / width / 10);
 	}
 	
 	public void lowerSpeed() {

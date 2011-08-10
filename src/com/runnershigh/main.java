@@ -1,7 +1,5 @@
 package com.runnershigh;
 
-import javax.microedition.khronos.opengles.GL10;
-
 import com.highscore.HighscoreAdapter;
 
 import android.app.Activity;
@@ -118,10 +116,14 @@ public class main extends Activity {
 			myIntent.putExtra("score", score);			
 			startActivity (myIntent);
 		}
-		
+
 		public void sleep() {
+			sleep(SLEEP_TIME);
+		}
+
+		public void sleep(int time) {
 			try {
-				Thread.sleep(SLEEP_TIME);
+				Thread.sleep(time);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -418,10 +420,17 @@ public class main extends Activity {
 			long currentTimeTaken=0;
 			long starttime = 0;
 			
+//			long debugTime = System.currentTimeMillis(); // FIXME DEBUG TIME FOR VIDEO CAPTURE
+			
 			while(isRunning){
 				starttime= System.currentTimeMillis();
+				
+//				if (debugTime + 15000 < starttime) sleep(100); // FIXME DEBUG TIME FOR VIDEO CAPTURE
 
-				player.playerSprite.setFrameUpdateTime( (level.baseSpeedMax+level.extraSpeedMax)*10 -((level.baseSpeed+level.extraSpeed)*10) );
+				player.playerSprite.setFrameUpdateTime(
+						(level.baseSpeedMax+level.extraSpeedMax)*10 - 
+						((level.baseSpeed+level.extraSpeed)*10) +
+						60 );
 				if (player.update()) {
 						if(Settings.RHDEBUG){
 							currentTimeTaken = System.currentTimeMillis()- starttime;
