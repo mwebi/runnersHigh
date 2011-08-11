@@ -3,14 +3,13 @@
     android:orientation="horizontal"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="@drawable/startscreen">
+    android:background="@drawable/menu_background">
 
 
 	<LinearLayout android:id="@+id/linearLayout2"
 		android:orientation="vertical"
 		android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_weight="1">
+        android:layout_height="fill_parent" android:layout_weight="2" android:layout_marginBottom="10dp" android:layout_marginLeft="10dp">
         
 	        <View
 		        android:layout_width="fill_parent"
@@ -25,30 +24,29 @@
         		android:layout_height="fill_parent"
 				android:layout_weight="3"
 				android:onClick="playGame" 
-				android:background="@drawable/bttn_play"
-			/>
+				android:background="@drawable/menu_button_play_game"
+			android:layout_margin="5dp"/>
 			<Button android:id="@+id/highscoreButton"
 				android:layout_width="fill_parent"
         		android:layout_height="fill_parent"
 				android:layout_weight="3"
-				android:background="@drawable/bttn_highscore"
+				android:background="@drawable/menu_button_highscore"
 				android:onClick="showScore"
-			/>	
+			android:layout_margin="5dp"/>	
 		
 			<Button android:id="@+id/infoButton" 
 				android:layout_width="fill_parent" 
 				android:layout_height="fill_parent"
 				android:layout_weight="3" 
-				android:background="@drawable/bttn_info"
+				android:background="@drawable/menu_button_information"
 				android:onClick="showInfo"
-			/>
+			android:layout_margin="5dp"/>
 	</LinearLayout>
 	<LinearLayout android:id="@+id/linearLayout3"
 		android:orientation="vertical"
 		android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_weight="1"
-        android:gravity="right">	
+        android:gravity="right" android:layout_weight="1">	
 			
         	<View
 		        android:layout_width="fill_parent"

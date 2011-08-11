@@ -5,25 +5,43 @@
   android:layout_width="fill_parent"
   android:layout_height="fill_parent"
   android:padding="10dp"
-  android:background="#FFFFFF">
-    <LinearLayout android:id="@+id/linearLayout4" android:layout_width="match_parent" android:layout_height="wrap_content">
-        <Button android:onClick="visitWebsite" android:layout_width="wrap_content" android:id="@+id/buttonRunnersHigh" android:background="@drawable/runners_high" android:layout_height="wrap_content"></Button>
-        <Button android:onClick="visitWebsite" android:layout_width="wrap_content" android:id="@+id/buttonFHS" android:background="@drawable/info_fh_logo" android:layout_height="wrap_content"></Button>
+  android:background="@drawable/info_background">
+    <LinearLayout android:id="@+id/linearLayout5" android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1">
+        <Button android:id="@+id/buttonRunnersHigh" android:background="@drawable/logo_runnershigh" android:onClick="visitWebsite" android:layout_height="match_parent" android:layout_width="match_parent" android:layout_weight="1"></Button>
+         <View
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:scaleType="fitCenter"
+            android:layout_weight="1"/>
+
+        <Button android:id="@+id/button1" android:layout_height="wrap_content" android:text="Button" android:layout_width="match_parent" android:layout_weight="1"></Button>
     </LinearLayout>
-    <LinearLayout android:id="@+id/linearLayout1" android:layout_height="wrap_content" android:layout_width="wrap_content">
-        <LinearLayout android:orientation="vertical" android:id="@+id/linearLayout2" android:layout_height="wrap_content" android:layout_width="wrap_content">
-            <Button android:onClick="visitWebsite" android:layout_height="wrap_content" android:layout_width="wrap_content" android:background="@drawable/info_mmt_logo" android:id="@+id/buttonMMT"></Button>
-            <Button android:onClick="visitWebsite" android:id="@+id/buttonAndre" android:text="Andre" android:layout_width="wrap_content" android:layout_height="wrap_content"></Button>
-            <Button android:onClick="visitWebsite" android:id="@+id/buttonChris" android:text="Chris" android:layout_width="wrap_content" android:layout_height="wrap_content"></Button>
-            <Button android:onClick="visitWebsite" android:id="@+id/buttonFrancois" android:text="Francois" android:layout_width="wrap_content" android:layout_height="wrap_content"></Button>
-            <Button android:onClick="visitWebsite" android:id="@+id/buttonWebi" android:text="Webi" android:layout_width="wrap_content" android:layout_height="wrap_content"></Button>
+    <LinearLayout android:id="@+id/linearLayout1" android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:gravity="center">
+        <LinearLayout android:orientation="vertical" android:id="@+id/linearLayout2" android:layout_height="wrap_content" android:layout_weight="1" android:layout_width="match_parent">
+            <ImageView android:layout_width="wrap_content" android:src="@drawable/info_programming" android:id="@+id/ImageView01" android:layout_weight="1" android:layout_height="match_parent" android:layout_marginBottom="10dp"></ImageView>
+            <Button android:onClick="visitWebsite" android:id="@+id/buttonAndre" android:background="@drawable/info_andre_schweighofer" android:layout_width="wrap_content" android:layout_weight="1" android:layout_height="match_parent"></Button>
+            <Button android:onClick="visitWebsite" android:id="@+id/buttonWebi" android:background="@drawable/info_michael_webersdorfer" android:layout_width="wrap_content" android:layout_weight="1" android:layout_height="match_parent"></Button>
+            <Button android:onClick="visitWebsite" android:id="@+id/buttonFrancois" android:background="@drawable/info_francois_weber" android:layout_width="wrap_content" android:layout_weight="1" android:layout_height="match_parent"></Button>
+            <Button android:onClick="visitWebsite" android:id="@+id/buttonChris" android:background="@drawable/info_christian_winkler" android:layout_width="wrap_content" android:layout_weight="1" android:layout_height="match_parent"></Button>
         </LinearLayout>
-        <LinearLayout android:orientation="vertical" android:id="@+id/linearLayout3" android:layout_weight="1" android:layout_height="wrap_content" android:layout_width="wrap_content">
-            <Button android:onClick="visitWebsite" android:layout_height="wrap_content" android:layout_width="wrap_content" android:background="@drawable/info_mma_logo" android:id="@+id/buttonMMA"></Button>
-            <Button android:onClick="visitWebsite" android:id="@+id/buttonAndreas" android:text="NaglStudio" android:layout_width="wrap_content" android:layout_height="wrap_content"></Button>
-            <Button android:onClick="visitWebsite" android:id="@+id/buttonManuel" android:text="Manuel" android:layout_width="wrap_content" android:layout_height="wrap_content"></Button>
-            <Button android:onClick="visitWebsite" android:id="@+id/buttonHans" android:text="Hans (Maulwurf)" android:layout_width="wrap_content" android:layout_height="wrap_content"></Button>
+        <View android:layout_width="fill_parent" android:layout_weight="1" android:layout_height="fill_parent"></View>
+        <LinearLayout android:orientation="vertical" android:id="@+id/linearLayout3" android:layout_height="wrap_content" android:layout_weight="1" android:layout_width="match_parent">
+            <ImageView android:id="@+id/imageView2" android:layout_width="wrap_content" android:src="@drawable/info_design" android:layout_weight="1" android:layout_height="0dp"></ImageView>
+            <Button android:onClick="visitWebsite" android:id="@+id/buttonHans" android:background="@drawable/info_hans_christian_kogler" android:layout_width="wrap_content" android:layout_weight="1" android:layout_height="0dp"></Button>
+            <Button android:onClick="visitWebsite" android:id="@+id/buttonManuel" android:background="@drawable/info_manuel_lehermayr" android:layout_width="wrap_content" android:layout_weight="1" android:layout_height="0dp"></Button>
+            <Button android:onClick="visitWebsite" android:id="@+id/buttonAndreas" android:background="@drawable/info_andreas_nagl" android:layout_width="wrap_content" android:layout_weight="1" android:layout_height="0dp"></Button>
+            <Button android:onClick="visitWebsite" android:id="@+id/buttonMario" android:background="@drawable/info_mario_reichmann" android:layout_width="wrap_content" android:layout_weight="1" android:layout_height="0dp"></Button>
         </LinearLayout>
+    </LinearLayout>
+    <LinearLayout android:id="@+id/linearLayout6" android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:gravity="bottom">
+        <Button android:id="@+id/buttonMMT" android:layout_height="wrap_content" android:background="@drawable/logo_mmt" android:onClick="visitWebsite" android:layout_width="match_parent" android:layout_weight="3"></Button>
+        <View android:layout_width="fill_parent" android:layout_height="fill_parent" android:layout_weight="4"></View>
+        <Button android:layout_weight="3" android:layout_height="wrap_content" android:onClick="visitWebsite" android:layout_width="match_parent" android:id="@+id/buttonFHS" android:background="@drawable/logo_fhs"></Button>
+        <View
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:scaleType="fitCenter" android:layout_weight="4"/>
+        <Button android:layout_weight="3" android:layout_height="wrap_content" android:onClick="visitWebsite" android:layout_width="match_parent" android:id="@+id/buttonMMA" android:background="@drawable/logo_mma"></Button>
     </LinearLayout>	    
 	
 </LinearLayout>

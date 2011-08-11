@@ -124,21 +124,21 @@ public class Level {
 		leftBonusIndex = 0;
 		rightBonusIndex = maxObstaclesBonus;
 		
-		obstacleSlowImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.obstacleslow );
-		obstacleJumpImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.obstaclejump );
+		obstacleSlowImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.game_obstacle_slow );
+		obstacleJumpImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.game_obstacle_jump );
 		
 		Block.setTextureLeft(
 				BitmapFactory.decodeResource(
-						context.getResources(), R.drawable.blockleft ));
+						context.getResources(), R.drawable.game_block_left ));
 		Block.setTextureMiddle(
 				BitmapFactory.decodeResource(
-						context.getResources(), R.drawable.blockmiddle ));
+						context.getResources(), R.drawable.game_block_middle ));
 		Block.setTextureRight(
 				BitmapFactory.decodeResource(
-						context.getResources(), R.drawable.blockright ));
+						context.getResources(), R.drawable.game_block_right ));
 		
 
-		obstacleBonusImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.bonusimage);
+		obstacleBonusImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.game_obstacle_bonus);
 
 		slowDown = false;
 		

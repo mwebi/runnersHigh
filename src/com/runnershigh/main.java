@@ -202,17 +202,9 @@ public class main extends Activity {
 			Rect rectgle= new Rect();
 			Window window= getWindow();
 			window.getDecorView().getWindowVisibleDisplayFrame(rectgle);
-			int StatusBarHeight= rectgle.bottom;
-			int contentViewTop= 
-			    window.findViewById(Window.ID_ANDROID_CONTENT).getTop();
-			int TitleBarHeight= contentViewTop - StatusBarHeight;
 
-			Log.e("*** Jorgesys :: ", "StatusBar Height= " + StatusBarHeight + " , TitleBar Height = " + TitleBarHeight); 
-			
 			DisplayMetrics metrics = new DisplayMetrics();
             getWindowManager().getDefaultDisplay().getMetrics(metrics);
-			
-            Log.e("debug" , "dpi: " + metrics.densityDpi);
 			
 			Display display = ((WindowManager) getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
 			width= display.getWidth();  
@@ -220,8 +212,6 @@ public class main extends Activity {
 			
 			if(Settings.RHDEBUG)
 				Log.d("debug", "displaywidth: " + width + ", displayheight: " + height);
-			
-			Log.e("debug", "displaywidth: " + width + ", displayheight: " + height);
 			
 			Util.mScreenHeight=height;
 			Util.mScreenWidth=width;
@@ -233,29 +223,37 @@ public class main extends Activity {
 			sleep();
 			
 			background.loadLayerFar(BitmapFactory.decodeResource(context.getResources(),
-					R.drawable.backgroundlayer3_compr));
+					R.drawable.game_background_layer_3));
 			sleep();
 			background.loadLayerMiddle(BitmapFactory.decodeResource(context.getResources(),
-					R.drawable.backgroundlayer2_compr));
+					R.drawable.game_background_layer_2));
 			sleep();
 			background.loadLayerNear(BitmapFactory.decodeResource(context.getResources(),
-					R.drawable.backgroundlayer1_compr));
+					R.drawable.game_background_layer_1));
 			sleep();
 
 			if(Settings.RHDEBUG)
 				Log.d("debug", "before addMesh");
 			
 			
-			resetButtonImg = BitmapFactory.decodeResource(context.getResources(),R.drawable.resetbutton);
-			resetButton = new Button(Util.getPercentOfScreenWidth(75), height-Util.getPercentOfScreenHeight(22), -2, 
-									 Util.getPercentOfScreenWidth(18), Util.getPercentOfScreenHeight(18));
+			resetButtonImg = BitmapFactory.decodeResource(context.getResources(),R.drawable.game_button_play_again);
+			resetButton = new Button(
+					Util.getPercentOfScreenWidth(75), 
+					height-Util.getPercentOfScreenHeight(15),
+					-2, 
+					Util.getPercentOfScreenWidth(20), 
+					Util.getPercentOfScreenHeight(10));
 			resetButton.loadBitmap(resetButtonImg);
 			mRenderer.addMesh(resetButton);			
 			
-			saveButtonImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.savebutton);
+			saveButtonImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.game_button_save);
 			//saveButton = new Button(200, height-50-10, -2, 100, 50);
-			saveButton = new Button(Util.getPercentOfScreenWidth(50), height-Util.getPercentOfScreenHeight(22), -2, 
-					 				Util.getPercentOfScreenWidth(18), Util.getPercentOfScreenHeight(18));
+			saveButton = new Button(
+					Util.getPercentOfScreenWidth(50), 
+					height-Util.getPercentOfScreenHeight(15),
+					-2, 
+					Util.getPercentOfScreenWidth(20),
+					Util.getPercentOfScreenHeight(10));
 			saveButton.loadBitmap(saveButtonImg);
 			mRenderer.addMesh(saveButton);
 			
@@ -277,34 +275,64 @@ public class main extends Activity {
 		    	Log.d("debug", "after HighscoreAdapter");
 		    
 			//new counter
-			CounterYourScoreImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.scorebackground);
-			CounterYourScoreDrawable = new RHDrawable(Util.getPercentOfScreenWidth(5), height-Util.getPercentOfScreenHeight(12), 1, Util.getPercentOfScreenWidth(27), Util.getPercentOfScreenHeight(7));
+			CounterYourScoreImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.game_background_score);
+			CounterYourScoreDrawable = new RHDrawable(
+					Util.getPercentOfScreenWidth(5),
+					height-Util.getPercentOfScreenHeight(15), 
+					1, 
+					Util.getPercentOfScreenWidth(27), 
+					Util.getPercentOfScreenHeight(10));
 			CounterYourScoreDrawable.loadBitmap(CounterYourScoreImg); 
 			mRenderer.addMesh(CounterYourScoreDrawable);
 
 			if(Settings.RHDEBUG)
 				Log.d("debug", "after CounterYourScoreDrawable addMesh");
 			
-			CounterFont = BitmapFactory.decodeResource(context.getResources(), R.drawable.numberfont);
-			mCounterGroup = new CounterGroup(Util.getPercentOfScreenWidth(9), height-Util.getPercentOfScreenHeight(12.5f), 1, Util.getPercentOfScreenWidth(16), Util.getPercentOfScreenHeight(6), 25);
+			CounterFont = BitmapFactory.decodeResource(context.getResources(), R.drawable.game_numberfont);
+			mCounterGroup = new CounterGroup(
+					Util.getPercentOfScreenWidth(14), 
+					height-Util.getPercentOfScreenHeight(13.5f),
+					1, Util.getPercentOfScreenWidth(16), 
+					Util.getPercentOfScreenHeight(6), 
+					25);
 			
 			if(Settings.RHDEBUG)
 				Log.d("debug", "after mCounterGroup");
 			
 
-			mCounterDigit1 = new CounterDigit(Util.getPercentOfScreenWidth(14), height-Util.getPercentOfScreenHeight(12.5f), 1, Util.getPercentOfScreenWidth(4), Util.getPercentOfScreenHeight(6.5f));
+			mCounterDigit1 = new CounterDigit(
+					Util.getPercentOfScreenWidth(19), 
+					height-Util.getPercentOfScreenHeight(13.5f), 
+					1, 
+					Util.getPercentOfScreenWidth(3), 
+					Util.getPercentOfScreenHeight(6));
 			mCounterDigit1.loadBitmap(CounterFont); 
 			mCounterGroup.add(mCounterDigit1);
 
-			mCounterDigit2 = new CounterDigit(Util.getPercentOfScreenWidth(17.5f), height-Util.getPercentOfScreenHeight(12.5f), 1, Util.getPercentOfScreenWidth(4), Util.getPercentOfScreenHeight(6.5f));
+			mCounterDigit2 = new CounterDigit(
+					Util.getPercentOfScreenWidth(22),
+					height-Util.getPercentOfScreenHeight(13.5f),
+					1,
+					Util.getPercentOfScreenWidth(3), 
+					Util.getPercentOfScreenHeight(6));
 			mCounterDigit2.loadBitmap(CounterFont); 
 			mCounterGroup.add(mCounterDigit2);
 
-			mCounterDigit3 = new CounterDigit(Util.getPercentOfScreenWidth(21), height-Util.getPercentOfScreenHeight(12.5f), 1, Util.getPercentOfScreenWidth(4), Util.getPercentOfScreenHeight(6.5f));
+			mCounterDigit3 = new CounterDigit(
+					Util.getPercentOfScreenWidth(25),
+					height-Util.getPercentOfScreenHeight(13.5f), 
+					1,
+					Util.getPercentOfScreenWidth(3), 
+					Util.getPercentOfScreenHeight(6));
 			mCounterDigit3.loadBitmap(CounterFont); 
 			mCounterGroup.add(mCounterDigit3);
 
-			mCounterDigit4 = new CounterDigit(Util.getPercentOfScreenWidth(24.5f), height-Util.getPercentOfScreenHeight(12.5f), 1, Util.getPercentOfScreenWidth(4), Util.getPercentOfScreenHeight(6.5f));
+			mCounterDigit4 = new CounterDigit(
+					Util.getPercentOfScreenWidth(28),
+					height-Util.getPercentOfScreenHeight(13.5f),
+					1, 
+					Util.getPercentOfScreenWidth(3), 
+					Util.getPercentOfScreenHeight(6));
 			mCounterDigit4.loadBitmap(CounterFont); 
 			mCounterGroup.add(mCounterDigit4);
 			
@@ -323,10 +351,10 @@ public class main extends Activity {
 			blackRHD.loadBitmap(blackImg);
 			//mRenderer.addMesh(blackRHD);
 			
-			mHighscoreMarkBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.highscoremark);
+			mHighscoreMarkBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.game_highscoremark);
 			 
 			mNewHighscore = new RHDrawable(width/2 - 128, height/2 - 64, -2, 256, 128);
-			mNewHighscore.loadBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.new_highscore));
+			mNewHighscore.loadBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.game_new_highscore));
 			mRenderer.addMesh(mNewHighscore);
 
 			if(Settings.showHighscoreMarks)
@@ -459,6 +487,8 @@ public class main extends Activity {
 						if(!deathSoundPlayed){
 							SoundManager.playSound(7, 1);
 							deathSoundPlayed=true;
+							
+							System.gc(); //do garbage collection
 						}
 						if(Settings.showHighscoreMarks){
 							if (totalScore > mHighscore1)
@@ -475,6 +505,7 @@ public class main extends Activity {
 				if(doUpdateCounter)
 				{
 					totalScore = level.getDistanceScore() + player.getBonusScore();
+//					mCounterGroup.tryToSetCounterTo(mRenderer.fps); // DEBUG FPS
 					mCounterGroup.tryToSetCounterTo(totalScore);
 					
 					if(totalScore>=3000 && threeKwasplayed==false)
