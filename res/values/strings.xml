@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="hello">Hello World, main!</string>
-    <string name="app_name">runnersHigh</string>
+    <string name="app_name">RunnersHigh</string>
 	<string name="score">tah score</string>
 	<string name="hs_title">High-Score</string>
 	<string name="hs_error_name_empty">Name is empty !</string>

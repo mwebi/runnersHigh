@@ -108,11 +108,11 @@ public class Level {
 		extraSpeedMax = Util.getPercentOfScreenWidth(0.5f);
 		extraSpeedAcceleration = extraSpeed * 0.010f;
 		
-		obstacleJumperWidth = Util.getPercentOfScreenWidth(5);
-		obstacleJumperHeight = Util.getPercentOfScreenHeight(3);
+		obstacleJumperWidth = Util.getPercentOfScreenWidth(3);
+		obstacleJumperHeight = Util.getPercentOfScreenHeight(7);
 		
 		obstacleSlowerWidth = Util.getPercentOfScreenWidth(6);
-		obstacleSlowerHeight= Util.getPercentOfScreenHeight(3);
+		obstacleSlowerHeight= Util.getPercentOfScreenHeight(6);
 		
 		obstacleBonusWidth = Util.getPercentOfScreenWidth(5);
 		obstacleBonusHeight = obstacleBonusWidth*Util.mWidthHeightRatio;
@@ -149,21 +149,22 @@ public class Level {
 		rightBonusIndex = maxObstaclesBonus;
 
 		
-		obstacleSlowImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.obstacleslow );
-		obstacleJumpImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.obstaclejump );
-		obstacleBonusImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.bonusimage);
+		obstacleSlowImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.game_obstacle_slow );
+		obstacleJumpImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.game_obstacle_jump );
+		obstacleBonusImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.game_obstacle_bonus);
+
 		
 		Block.setTextureLeft(
 				BitmapFactory.decodeResource(
-						context.getResources(), R.drawable.blockleft ));
+						context.getResources(), R.drawable.game_block_left ));
 		Block.setTextureMiddle(
 				BitmapFactory.decodeResource(
-						context.getResources(), R.drawable.blockmiddle ));
+						context.getResources(), R.drawable.game_block_middle ));
 		Block.setTextureRight(
 				BitmapFactory.decodeResource(
-						context.getResources(), R.drawable.blockright ));
+						context.getResources(), R.drawable.game_block_right ));
 		
-		
+
 		slowDown = false;
 		
 		initializeBlocks(true);
