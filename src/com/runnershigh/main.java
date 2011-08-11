@@ -140,9 +140,10 @@ public class main extends Activity {
 		private Bitmap saveButtonImg;
 		private RHDrawable blackRHD;
 		private Bitmap blackImg;
+		private float blackImgAlpha;
 		private RHDrawable gameLoadingRHD;
 		private Bitmap gameLoadingImg;
-		private float blackImgAlpha;
+
 		private boolean scoreWasSaved = false;
 		private boolean deathSoundPlayed = false;
 		private OpenGLRenderer mRenderer;
@@ -178,6 +179,7 @@ public class main extends Activity {
 		
 		private int totalScore = 0;
 		private boolean threeKwasplayed = false;
+		private boolean gameIsLoading = true;
 
 		public RunnersHighView(Context context) {
 			super(context);
@@ -186,7 +188,7 @@ public class main extends Activity {
 			this.setRenderer(mRenderer);
 
 			Util.getInstance().setAppContext(context);
-			
+			Util.getInstance().setAppRenderer(mRenderer);
 
 	        Thread rHThread = new Thread(this);
 			rHThread.start();
@@ -273,12 +275,15 @@ public class main extends Activity {
 			
 			player = new Player(getApplicationContext(), mRenderer, height);
 			sleep();
-			
+		
 			if(Settings.RHDEBUG)
 				Log.d("debug", "after player creation");
 //			loadingDialog = new ProgressDialog( context );
 //		    loadingDialog.setProgressStyle(0);
 //		    loadingDialog.setMessage("Loading Highscore ...");
+		
+			
+
 			
 		    if(Settings.RHDEBUG)
 				Log.d("debug", "after loading messages");
@@ -351,7 +356,8 @@ public class main extends Activity {
 			
 			timeAtLastSecond = System.currentTimeMillis();
 	        runCycleCounter=0;
-
+	        
+	        
 			if(Settings.RHDEBUG)
 				Log.d("debug", "RunnersHighView initiation ended");
 		}
@@ -439,6 +445,8 @@ public class main extends Activity {
 			long timeForOneCycle=0;
 			long currentTimeTaken=0;
 			long starttime = 0;
+			
+	        gameIsLoading = false;
 			
 			if(Settings.RHDEBUG)				
 				Log.d("debug", "run method befor while");
@@ -665,50 +673,52 @@ public class main extends Activity {
 		
 
 		public boolean onTouchEvent(MotionEvent event) {
-			if(event.getAction() == MotionEvent.ACTION_UP)
-				player.setJump(false);
-			
-			else if(event.getAction() == MotionEvent.ACTION_DOWN){
-				if (resetButton.getShowButton() || saveButton.getShowButton()) {
-					if(resetButton.isClicked( event.getX(), Util.getInstance().toScreenY((int)event.getY()) ) ){
-						System.gc(); //do garbage collection
-						player.reset();
-						level.reset();
-						resetButton.setShowButton(false);
-						resetButton.z = -2.0f;
-						saveButton.setShowButton(false);
-						saveButton.z = -2.0f;
-						saveButton.x = saveButton.lastX; 
-						mCounterGroup.resetCounter();
-						scoreWasSaved=false;
-						deathSoundPlayed=false;
-						SoundManager.playSound(1, 1);
-						doUpdateCounter=true;
-						
-						if(Settings.showHighscoreMarks){
-							mNewHighscore.z = -2.0f;
-							initHighscoreMarks();
-						}
+			if(!gameIsLoading){
+				if(event.getAction() == MotionEvent.ACTION_UP)
+					player.setJump(false);
+				
+				else if(event.getAction() == MotionEvent.ACTION_DOWN){
+					if (resetButton.getShowButton() || saveButton.getShowButton()) {
+						if(resetButton.isClicked( event.getX(), Util.getInstance().toScreenY((int)event.getY()) ) ){
+							System.gc(); //do garbage collection
+							player.reset();
+							level.reset();
+							resetButton.setShowButton(false);
+							resetButton.z = -2.0f;
+							saveButton.setShowButton(false);
+							saveButton.z = -2.0f;
+							saveButton.x = saveButton.lastX; 
+							mCounterGroup.resetCounter();
+							scoreWasSaved=false;
+							deathSoundPlayed=false;
+							SoundManager.playSound(1, 1);
+							doUpdateCounter=true;
 							
-						threeKwasplayed = false;
-						totalScore = 0;
+							if(Settings.showHighscoreMarks){
+								mNewHighscore.z = -2.0f;
+								initHighscoreMarks();
+							}
+								
+							threeKwasplayed = false;
+							totalScore = 0;
+						}
+						else if(saveButton.isClicked( event.getX(), Util.getInstance().toScreenY((int)event.getY())  ) && !scoreWasSaved){
+							//save score
+							saveButton.setShowButton(false);
+							saveButton.z = -2.0f;
+							saveButton.lastX = saveButton.x;
+							saveButton.x = -5000;
+							
+							saveScore(totalScore);
+	
+							//play save sound
+							SoundManager.playSound(4, 1);
+							scoreWasSaved=true;
+						}
 					}
-					else if(saveButton.isClicked( event.getX(), Util.getInstance().toScreenY((int)event.getY())  ) && !scoreWasSaved){
-						//save score
-						saveButton.setShowButton(false);
-						saveButton.z = -2.0f;
-						saveButton.lastX = saveButton.x;
-						saveButton.x = -5000;
-						
-						saveScore(totalScore);
-
-						//play save sound
-						SoundManager.playSound(4, 1);
-						scoreWasSaved=true;
+					else {
+						player.setJump(true);
 					}
-				}
-				else {
-					player.setJump(true);
 				}
 			}
 			

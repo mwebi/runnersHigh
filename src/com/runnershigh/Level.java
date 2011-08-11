@@ -228,6 +228,7 @@ public class Level {
 			{
 				obstacleDataBonus[i].centerX -= deltaLevelPosition;
 				obstacleDataBonus[i].updateObstacleCircleMovement();
+				obstacleDataBonus[i].bonusScoreEffect.updateBonusScoreEffect(deltaLevelPosition);
 			}
 			
 			
@@ -373,6 +374,7 @@ public class Level {
 				obstacleDataBonus[i].loadBitmap(obstacleBonusImg);
 			}
 			obstacleDataBonus[i].centerX = -1000;
+			obstacleDataBonus[i].bonusScoreEffect.effectX=-1000;
 			obstacleDataBonus[i].didTrigger = false;
 		}
 	}

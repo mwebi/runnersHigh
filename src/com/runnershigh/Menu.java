@@ -24,7 +24,7 @@ public class Menu extends Activity {
         setContentView(R.layout.menu); 
         
 
-		loadMessage = Toast.makeText(getApplicationContext(), "Game loading", 3000 );
+		loadMessage = Toast.makeText(getApplicationContext(), "Game loading", 2000 );
 		loadMessage.setGravity(Gravity.CENTER|Gravity.CENTER, 0, 0);
         
         /*
@@ -39,7 +39,7 @@ public class Menu extends Activity {
     public void playGame(View view) {
 
 		// Loading Toast
-//		loadMessage.show();
+		//loadMessage.show();
 		
     	Intent myIntent = new Intent (this, main.class);
     	startActivity (myIntent);
