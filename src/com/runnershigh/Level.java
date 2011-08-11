@@ -6,7 +6,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.Paint;
 import android.graphics.Rect;
 import android.util.Log;
 
@@ -46,6 +45,16 @@ public class Level {
 	private int leftBonusIndex;
 	private int rightBonusIndex;
 
+	private float obstacleJumperWidth;
+	private float obstacleJumperHeight;
+	
+	private float obstacleSlowerWidth;
+	private float obstacleSlowerHeight;
+	
+	private float obstacleBonusWidth;
+	private float obstacleBonusHeight;
+	private float obstacleBonusDistanceToBlock;
+	
 	private final int OBSTACLEMASK_0_NO_OBSTACLE = 80;
 	private final int OBSTACLEMASK_1_JUMP = 30;
 	private final int OBSTACLEMASK_2_SLOW = 30;
@@ -70,7 +79,6 @@ public class Level {
 	private Bitmap obstacleBonusImg;
 	
 	private boolean slowDown;
-	Paint paint;
 	Rect blockRect;
 	private int BlockCounter;
 	private OpenGLRenderer renderer;
@@ -100,13 +108,29 @@ public class Level {
 		extraSpeedMax = Util.getPercentOfScreenWidth(0.5f);
 		extraSpeedAcceleration = extraSpeed * 0.010f;
 		
+		obstacleJumperWidth = Util.getPercentOfScreenWidth(3);
+		obstacleJumperHeight = Util.getPercentOfScreenHeight(7);
+		
+		obstacleSlowerWidth = Util.getPercentOfScreenWidth(6);
+		obstacleSlowerHeight= Util.getPercentOfScreenHeight(6);
+		
+		obstacleBonusWidth = Util.getPercentOfScreenWidth(5);
+		obstacleBonusHeight = obstacleBonusWidth*Util.mWidthHeightRatio;
+		obstacleBonusDistanceToBlock = Util.getPercentOfScreenHeight(12);
+		
+		
+		if(Settings.RHDEBUG){
+			Log.d("debug", "obstacleJumperWidth" + obstacleJumperWidth);
+			Log.d("debug", "obstacleJumperHeight" + obstacleJumperHeight);
+			Log.d("debug", "obstacleSlowerWidth" + obstacleSlowerWidth);
+			Log.d("debug", "obstacleSlowerHeight" + obstacleSlowerHeight);
+			Log.d("debug", "obstacleBonusWidth" + obstacleBonusWidth);
+			Log.d("debug", "obstacleBonusHeight" + obstacleBonusHeight);
+			Log.d("debug", "obstacleBonusDistanceToBlock" + obstacleBonusDistanceToBlock);
+		}
 		renderer = glrenderer;
 		
 		randomGenerator = new Random();
-		
-		paint = new Paint();
-		paint.setColor(Color.RED);
-		paint.setStyle(Paint.Style.FILL);
 		
 		blockData = new Block[maxBlocks];
 		leftBlockIndex = 0;
@@ -123,9 +147,12 @@ public class Level {
 		obstacleDataBonus = new Obstacle[maxObstaclesBonus];
 		leftBonusIndex = 0;
 		rightBonusIndex = maxObstaclesBonus;
+
 		
 		obstacleSlowImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.game_obstacle_slow );
 		obstacleJumpImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.game_obstacle_jump );
+		obstacleBonusImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.game_obstacle_bonus);
+
 		
 		Block.setTextureLeft(
 				BitmapFactory.decodeResource(
@@ -137,8 +164,6 @@ public class Level {
 				BitmapFactory.decodeResource(
 						context.getResources(), R.drawable.game_block_right ));
 		
-
-		obstacleBonusImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.game_obstacle_bonus);
 
 		slowDown = false;
 		
@@ -202,8 +227,8 @@ public class Level {
 			
 			for (int i = 0; i < maxObstaclesBonus; i++)
 			{
-				obstacleDataBonus[i].updateObstacleCircleMovement();
 				obstacleDataBonus[i].centerX -= deltaLevelPosition;
+				obstacleDataBonus[i].updateObstacleCircleMovement();
 			}
 			
 			
@@ -321,10 +346,7 @@ public class Level {
 		{
 			if (firstTime)
 			{
-				obstacleDataJumper[i] =
-						new Obstacle(
-								-1000, 0, 0.9f,
-								obstacleJumpImg.getWidth(), obstacleJumpImg.getHeight(), 'j');
+				obstacleDataJumper[i] = new Obstacle(-1000, 0, 0.9f, obstacleJumperWidth, obstacleJumperHeight, 'j');
 				renderer.addMesh(obstacleDataJumper[i]);
 				obstacleDataJumper[i].loadBitmap(obstacleJumpImg);
 			}
@@ -335,7 +357,7 @@ public class Level {
 		{
 			if (firstTime)
 			{
-				obstacleDataSlower[i] = new Obstacle(-1000, 0, 0.9f, 35, 10, 's');
+				obstacleDataSlower[i] = new Obstacle(-1000, 0, 0.9f, obstacleSlowerWidth, obstacleSlowerHeight, 's');
 				renderer.addMesh(obstacleDataSlower[i]);				
 				obstacleDataSlower[i].loadBitmap(obstacleSlowImg);
 			}
@@ -347,7 +369,7 @@ public class Level {
 		{
 			if (firstTime)
 			{
-				obstacleDataBonus[i] = new Obstacle(-1000, 0, 0.9f, 35, 35, 'b');
+				obstacleDataBonus[i] = new Obstacle(-1000, 0, 0.9f, obstacleBonusWidth, obstacleBonusHeight, 'b');
 				renderer.addMesh(obstacleDataBonus[i]);
 				obstacleDataBonus[i].loadBitmap(obstacleBonusImg);
 			}
@@ -508,7 +530,7 @@ public class Level {
 		    
 		    //set new coordinates
 		    newBonus.x = newBonus.centerX = bonusLeft;
-		    newBonus.y = newBonus.centerY = blockData[rightBlockIndex].mHeight+50+randomGenerator.nextInt(75);
+		    newBonus.y = newBonus.centerY = blockData[rightBlockIndex].mHeight+obstacleBonusDistanceToBlock+randomGenerator.nextInt(75);
 		    
 		    newBonus.setObstacleRect(bonusLeft,
 		    		bonusLeft+newBonus.width,
