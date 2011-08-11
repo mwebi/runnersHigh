@@ -291,7 +291,7 @@ public class main extends Activity {
 			CounterYourScoreDrawable = new RHDrawable(
 					Util.getPercentOfScreenWidth(5),
 					height-Util.getPercentOfScreenHeight(15), 
-					0, 
+					0.9f, 
 					Util.getPercentOfScreenWidth(27), 
 					Util.getPercentOfScreenHeight(10));
 
@@ -305,7 +305,7 @@ public class main extends Activity {
 			mCounterGroup = new CounterGroup(
 					Util.getPercentOfScreenWidth(14), 
 					height-Util.getPercentOfScreenHeight(13.5f),
-					0, Util.getPercentOfScreenWidth(16), 
+					0.9f, Util.getPercentOfScreenWidth(16), 
 					Util.getPercentOfScreenHeight(6), 
 					25);
 
@@ -318,7 +318,7 @@ public class main extends Activity {
 			mCounterDigit1 = new CounterDigit(
 					Util.getPercentOfScreenWidth(19), 
 					height-Util.getPercentOfScreenHeight(13.5f), 
-					0, 
+					0.9f, 
 					Util.getPercentOfScreenWidth(3), 
 					Util.getPercentOfScreenHeight(6));
 			mCounterDigit1.loadBitmap(CounterFont); 
@@ -327,7 +327,7 @@ public class main extends Activity {
 			mCounterDigit2 = new CounterDigit(
 					Util.getPercentOfScreenWidth(22),
 					height-Util.getPercentOfScreenHeight(13.5f),
-					0,
+					0.9f,
 					Util.getPercentOfScreenWidth(3), 
 					Util.getPercentOfScreenHeight(6));
 			mCounterDigit2.loadBitmap(CounterFont); 
@@ -336,7 +336,7 @@ public class main extends Activity {
 			mCounterDigit3 = new CounterDigit(
 					Util.getPercentOfScreenWidth(25),
 					height-Util.getPercentOfScreenHeight(13.5f), 
-					0,
+					0.9f,
 					Util.getPercentOfScreenWidth(3), 
 					Util.getPercentOfScreenHeight(6));
 			mCounterDigit3.loadBitmap(CounterFont); 
@@ -345,7 +345,7 @@ public class main extends Activity {
 			mCounterDigit4 = new CounterDigit(
 					Util.getPercentOfScreenWidth(28),
 					height-Util.getPercentOfScreenHeight(13.5f),
-					0, 
+					0.9f, 
 					Util.getPercentOfScreenWidth(3), 
 					Util.getPercentOfScreenHeight(6));
 
