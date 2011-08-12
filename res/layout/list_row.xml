@@ -12,12 +12,13 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_marginRight="25dp"
-    android:minWidth="80dp" />
+    android:minWidth="80dp"
+    android:textColor="#4C381D" />
  
  <TextView android:id="@+id/name"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:minWidth="180dp"
-    android:textColor="#FFFFFF" />
+    android:textColor="#876842" />
           
  </LinearLayout>

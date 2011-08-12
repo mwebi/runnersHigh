@@ -51,9 +51,9 @@
         	<View
 		        android:layout_width="fill_parent"
 		        android:layout_height="fill_parent"
-		        android:layout_weight="2"
 		        android:scaleType="fitCenter"
-	        />
+	        android:layout_weight="1"/>
+        	<Button android:onClick="playGameWithFPS" android:background="#0000" android:id="@+id/buttonFPS" android:layout_weight="1" android:layout_height="100dp" android:layout_width="100dp"></Button>
 	        
         	
         

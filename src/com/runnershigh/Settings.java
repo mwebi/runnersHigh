@@ -26,6 +26,8 @@ public class Settings {
 	
 	
 	static final boolean RHDEBUG = false;
+	static boolean SHOW_FPS = false;
+	
 	
 	static final boolean showHighscoreMarks = false;
 	

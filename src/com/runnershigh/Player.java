@@ -226,9 +226,11 @@ public class Player{
 
 			if( checkIntersect(playerRect, ObstacleRect) && !Level.obstacleDataBonus[i].didTrigger)
 			{
-				Level.obstacleDataBonus[i].didTrigger=true;
-
 				SoundManager.playSound(8, 1);
+				Level.obstacleDataBonus[i].didTrigger=true;
+				Level.obstacleDataBonus[i].bonusScoreEffect.effectX = Level.obstacleDataBonus[i].x;
+				Level.obstacleDataBonus[i].bonusScoreEffect.effectY = Level.obstacleDataBonus[i].y;
+				Level.obstacleDataBonus[i].bonusScoreEffect.doBonusScoreEffect=true;
 				bonusItems++;
 				Level.obstacleDataBonus[i].z= -1;
 			}

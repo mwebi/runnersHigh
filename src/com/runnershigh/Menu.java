@@ -27,7 +27,7 @@ public class Menu extends Activity {
         setContentView(R.layout.menu); 
         
 
-		loadMessage = Toast.makeText(getApplicationContext(), "Game loading", 3000 );
+		loadMessage = Toast.makeText(getApplicationContext(), "Game loading", 2000 );
 		loadMessage.setGravity(Gravity.CENTER|Gravity.CENTER, 0, 0);
         
         /*
@@ -42,7 +42,18 @@ public class Menu extends Activity {
     public void playGame(View view) {
 
 		// Loading Toast
-//		loadMessage.show();
+		//loadMessage.show();
+
+    	Settings.SHOW_FPS = false;
+    	Intent myIntent = new Intent (this, main.class);
+    	startActivityForResult(myIntent, 0);
+    }
+    
+    public void playGameWithFPS(View view) {
+
+		// Loading Toast
+		//loadMessage.show();
+    	Settings.SHOW_FPS = true;
 		
     	Intent myIntent = new Intent (this, main.class);
     	startActivityForResult(myIntent, 0);
@@ -66,8 +77,8 @@ public class Menu extends Activity {
     
     protected Dialog onCreateDialog(int id) {
     	return new AlertDialog.Builder(this)
-		  .setTitle("Error while starting game")
-		  .setMessage("Please give the system some time to clear memory between closing and restarting game.")
+		  .setTitle("Error while changing view")
+		  .setMessage("System needs some time to free memory. Please try again in 10 seconds.")
 		  .setCancelable(true)
 		  .create();
     }

@@ -9,7 +9,8 @@ public class Util {
 	public static int mScreenHeight = 0;
 	public static int mScreenWidth = 0;
 	public static int mWidthHeightRatio = 0;
-	private Context mContext = null;
+	private static Context mContext = null;
+	private static OpenGLRenderer mRenderer = null;
 	
 	public static synchronized Util getInstance() {
 		if(mInstance == null)
@@ -41,9 +42,19 @@ public class Util {
 		mContext = context;
 	}
 	
-	public Context getAppContext()
+	public static Context getAppContext()
 	{
 		assert(mContext != null);
 		return mContext;
+	}
+	public void setAppRenderer(OpenGLRenderer renderer)
+	{
+		mRenderer = renderer;
+	}
+	
+	public static OpenGLRenderer getAppRenderer()
+	{
+		assert(mRenderer != null);
+		return mRenderer;
 	}
 }
