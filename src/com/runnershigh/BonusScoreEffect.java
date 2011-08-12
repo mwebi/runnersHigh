@@ -47,8 +47,10 @@ public class BonusScoreEffect extends RHDrawable {
 				if(currentHeight<0)
 					currentHeight=0;
 			}
-			Log.d("debug", "currentWidth: " + currentWidth);
-			Log.d("debug", "currentHeight: " + currentHeight);
+			if (Settings.RHDEBUG) {
+				Log.d("debug", "currentWidth: " + currentWidth);
+				Log.d("debug", "currentHeight: " + currentHeight);
+			}
 			x=effectX-currentWidth/2-deltaLevelPosition;
 			y=effectY-currentHeight/2;
 			setWidth((int)currentWidth);
