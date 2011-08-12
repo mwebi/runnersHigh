@@ -10,9 +10,9 @@ public class ParalaxBackground extends Group {
 	private RHDrawable backgroundLayer2;
 	private RHDrawable backgroundLayer3;
 	
-	private Bitmap BGImg1;
-	private Bitmap BGImg2;
-	private Bitmap BGImg3;
+	private Bitmap BGImg1 = null;
+	private Bitmap BGImg2 = null;
+	private Bitmap BGImg3 = null;
 	
 	private int mWidth;
 	private int mHeight;
@@ -20,6 +20,12 @@ public class ParalaxBackground extends Group {
 	public ParalaxBackground(int width, int heigth) {
 		mWidth = width;
 		mHeight = heigth;
+	}
+	
+	public void cleanup() {
+		if (BGImg1 != null) BGImg1.recycle();
+		if (BGImg2 != null) BGImg2.recycle();
+		if (BGImg3 != null) BGImg3.recycle();
 	}
 	
 	

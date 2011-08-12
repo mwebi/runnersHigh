@@ -8,9 +8,8 @@ import android.graphics.Rect;
 import android.util.Log;
 
 public class Player{
-	private static float MAX_JUMP_HEIGHT = Util.getPercentOfScreenHeight(17);  //50
+	private static float MAX_JUMP_HEIGHT = Util.getPercentOfScreenHeight(15);  //50
 	//private static float MIN_JUMP_HEIGHT = Util.getPercentOfScreenHeight(5);  //30
-	public Bitmap playerImg;
 	private float lastPosY;
 	static public float width;
 	static public float height;
@@ -33,10 +32,11 @@ public class Player{
 	private float speedoffsetXStart;
 	private float speedoffsetXMax;
 	private float speedoffsetXStep;
-	private Bitmap playerSpriteImg; 
+	private Bitmap playerSpriteImg = null; 
 	public PlayerSprite playerSprite;
 	private boolean fingerOnScreen = false;
 	private float bonusVelocity = 0;
+	private float bonusVelocityDownfallSpeed = 0;
 	
 	public int bonusItems = 0;
 	private int bonusScorePerItem = 200;
@@ -50,7 +50,8 @@ public class Player{
 		height = width*Util.mWidthHeightRatio; //40; dicker //30;  nyan cat //42; nyan cat pre minimalize //63; playersprite settings
 		
 		velocityMax = Util.getPercentOfScreenHeight(2); //9 Util.getPercentOfScreenHeight(1.875f)
-		velocityDownfallSpeed = velocityMax/20;
+		velocityDownfallSpeed = velocityMax/30.0f;
+		bonusVelocityDownfallSpeed = velocityDownfallSpeed / 6.0f;
 		
 		speedoffsetXStart = x;
 		speedoffsetXMax = Util.getPercentOfScreenWidth(7);
@@ -68,6 +69,10 @@ public class Player{
 		playerRect.bottom =(int)y;
 		
 		ObstacleRect = new Rect();
+	}
+	
+	public void cleanup() {
+		if (playerSpriteImg != null) playerSpriteImg.recycle();
 	}
 	
 	public void setJump(boolean jump) {
@@ -125,7 +130,7 @@ public class Player{
 		
 		y += velocity + bonusVelocity;
 
-		bonusVelocity-= 0.05f;
+		bonusVelocity-= bonusVelocityDownfallSpeed;
 		if (bonusVelocity < 0)
 			bonusVelocity = 0;
 		
@@ -188,7 +193,7 @@ public class Player{
 				velocity = Util.getPercentOfScreenHeight(2.6f);//6; //katapultiert den player wie ein trampolin nach oben
 				
 				if (fingerOnScreen)
-					bonusVelocity = Util.getPercentOfScreenHeight(2.0f);
+					bonusVelocity = Util.getPercentOfScreenHeight(1.5f);
 			}
 		}
 		

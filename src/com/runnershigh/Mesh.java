@@ -79,6 +79,8 @@ public class Mesh {
 	public float ry = 0;
 
 	public float rz = 0;
+	
+	public boolean shouldBeDrawn = true;
 
 	/**
 	 * Render the mesh.
@@ -87,6 +89,8 @@ public class Mesh {
 	 *            the OpenGL context to render to.
 	 */
 	public void draw(GL10 gl) {
+		if (!shouldBeDrawn) return;
+		
 		gl.glPushMatrix();
 		// Counter-clockwise winding.
 		gl.glFrontFace(GL10.GL_CCW);

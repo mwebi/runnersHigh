@@ -100,7 +100,9 @@ public class OpenGLRenderer implements Renderer {
 		}
 		
 		// Draw our scene.
-		root.draw(gl);
+		synchronized (root) {
+			root.draw(gl);
+		}
 		fpsCounter++;
 		
 		
@@ -166,10 +168,14 @@ public class OpenGLRenderer implements Renderer {
 	 *            the mesh to add.
 	 */
 	public void addMesh(Mesh mesh) {
-		root.add(mesh);
+		synchronized (root) {
+			root.add(mesh);	
+		}
 	}
 	
 	public void removeMesh(Mesh mesh) {
-		root.remove(mesh);
+		synchronized (root) {
+			root.remove(mesh);
+		}
 	}
 }

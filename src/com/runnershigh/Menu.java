@@ -1,6 +1,9 @@
 package com.runnershigh;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Bundle;
@@ -42,7 +45,7 @@ public class Menu extends Activity {
 //		loadMessage.show();
 		
     	Intent myIntent = new Intent (this, main.class);
-    	startActivity (myIntent);
+    	startActivityForResult(myIntent, 0);
     }
     
     public void showScore(View view) {
@@ -53,5 +56,19 @@ public class Menu extends Activity {
     public void showInfo(View view) {
     	Intent myIntent = new Intent (this, Info.class);
     	startActivity (myIntent);
+    }
+    
+    protected void onActivityResult (int requestCode, int resultCode, Intent data) {
+    	if (resultCode == 1) {
+    		showDialog(1);
+    	}
+    }
+    
+    protected Dialog onCreateDialog(int id) {
+    	return new AlertDialog.Builder(this)
+		  .setTitle("Error while starting game")
+		  .setMessage("Please give the system some time to clear memory between closing and restarting game.")
+		  .setCancelable(true)
+		  .create();
     }
 }

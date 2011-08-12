@@ -18,17 +18,22 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
 import android.view.MotionEvent;
-import android.view.SurfaceHolder;
 import android.view.Window;
 import android.view.WindowManager;
 
 public class main extends Activity {
 		PowerManager.WakeLock wakeLock ;
+		
+		private static long lastCreationTime = 0;
+		private static final int MIN_CREATION_TIMEOUT = 10000;
+		
+		
 		//MediaPlayer musicPlayerIntro;
 		MediaPlayer musicPlayerLoop;
 		boolean MusicLoopStartedForFirstTime = false;
 
 		boolean isRunning = false;
+		RunnersHighView mGameView = null;
 
 	    private static final int SLEEP_TIME = 300;
 	    
@@ -36,6 +41,8 @@ public class main extends Activity {
 	    @Override
 		public void onCreate(Bundle savedInstanceState) {
 	    	super.onCreate(savedInstanceState);
+	    	
+	    	
 	    	//setContentView(R.layout.main);	 
 	    	
 	    	PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
@@ -62,8 +69,8 @@ public class main extends Activity {
 			//setContentView(R.layout.runnershigh);	        
 			//(RunnersHighView) findViewById(R.id.runnersHighViewXML);
 			isRunning = true;
-			RunnersHighView gameView = new RunnersHighView(getApplicationContext()); 
-			setContentView(gameView);	     
+			mGameView = new RunnersHighView(getApplicationContext()); 
+			setContentView(mGameView);	     
 		}	
 		
 	    @Override
@@ -74,6 +81,8 @@ public class main extends Activity {
 			wakeLock.release();
 			musicPlayerLoop.release();
 			SoundManager.cleanup();
+			if (mGameView != null) mGameView.cleanup();
+			System.gc();
 			super.onDestroy();
 		}
 		@Override
@@ -128,36 +137,34 @@ public class main extends Activity {
 		}
     
 	public class RunnersHighView extends GLSurfaceView implements Runnable {
-		private Player player;
-
+		private Player player = null;
 		private Level level;
 		private ParalaxBackground background;
 		private int width;
 		private int height;
-		private Button resetButton;
-		private Bitmap resetButtonImg;
-		private Button saveButton;
-		private Bitmap saveButtonImg;
-		private RHDrawable blackRHD;
-		private Bitmap blackImg;
-		private RHDrawable gameLoadingRHD;
-		private Bitmap gameLoadingImg;
+		private Button resetButton = null;
+		private Bitmap resetButtonImg = null;
+		private Button saveButton = null;
+		private Bitmap saveButtonImg = null;
+		private RHDrawable blackRHD = null;
+		private Bitmap blackImg = null;
+		private RHDrawable gameLoadingRHD = null;
+		private Bitmap gameLoadingImg = null;
 		private float blackImgAlpha;
 		private boolean scoreWasSaved = false;
 		private boolean deathSoundPlayed = false;
-		private OpenGLRenderer mRenderer;
+		private OpenGLRenderer mRenderer = null;
 		private CounterGroup mCounterGroup;
 		private CounterDigit mCounterDigit1;
 		private CounterDigit mCounterDigit2;
 		private CounterDigit mCounterDigit3;
 		private CounterDigit mCounterDigit4;
-		private Bitmap CounterFont; 
-		private Bitmap CounterYourScoreImg;
-		private RHDrawable CounterYourScoreDrawable;
+		private Bitmap CounterFont = null;; 
+		private Bitmap CounterYourScoreImg = null;;
+		private RHDrawable CounterYourScoreDrawable = null;;;
 		public  boolean doUpdateCounter = true;
 		private long timeAtLastSecond;
 		private int runCycleCounter;
-		private ProgressDialog loadingDialog;
 		private HighscoreAdapter highScoreAdapter;
 
 		private int mTotalHighscores = 0;
@@ -173,8 +180,8 @@ public class main extends Activity {
 		private HighscoreMark mHighscoreMark4 = null;
 		private HighscoreMark mHighscoreMark5 = null;
 		
-		private Bitmap mHighscoreMarkBitmap;
-		private RHDrawable mNewHighscore;
+		private Bitmap mHighscoreMarkBitmap = null;
+		private RHDrawable mNewHighscore = null;
 		
 		private int totalScore = 0;
 		private boolean threeKwasplayed = false;
@@ -195,6 +202,16 @@ public class main extends Activity {
 //			initialize();
 		}
 		
+		public void cleanup() {
+			if (saveButtonImg != null) saveButtonImg.recycle();
+			if (blackImg != null) blackImg.recycle();
+			if (resetButtonImg!= null) resetButtonImg.recycle();
+			if (background != null) background.cleanup();
+			if (mHighscoreMarkBitmap != null) mHighscoreMarkBitmap.recycle();
+			if (level != null) level.cleanup(); 
+			if (player != null) player.cleanup();
+		}
+
 		private void initialize() {
 			if(Settings.RHDEBUG)
 				Log.d("debug", "initialize begin");
@@ -219,27 +236,104 @@ public class main extends Activity {
 			Util.mWidthHeightRatio=width/height;
 			
  
+			BitmapFactory.Options options = new BitmapFactory.Options();
+			options.inTempStorage = new byte[16*1024];
+			
 			gameLoadingImg = BitmapFactory.decodeResource(context.getResources(),R.drawable.game_loading);
 			gameLoadingRHD = new RHDrawable(0, 0, 1, width, height);
 			gameLoadingRHD.loadBitmap(gameLoadingImg);
 			mRenderer.addMesh(gameLoadingRHD);
 			
+			long currentTime = System.currentTimeMillis();
+	    	
+	    	if (currentTime < lastCreationTime + MIN_CREATION_TIMEOUT) {
+	    		long sleeptime = MIN_CREATION_TIMEOUT - (currentTime - lastCreationTime);
+	    		lastCreationTime = currentTime;
+    			try {
+					Thread.sleep(sleeptime);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+					finish();
+				}
+	    	}
+	    	lastCreationTime = System.currentTimeMillis();
 	        
 			background = new ParalaxBackground(width, height);
 
 			mRenderer.addMesh(background);
 			sleep();
 			
-			background.loadLayerFar(BitmapFactory.decodeResource(context.getResources(),
-					R.drawable.game_background_layer_3));
-			sleep();
-			background.loadLayerMiddle(BitmapFactory.decodeResource(context.getResources(),
-					R.drawable.game_background_layer_2));
-			sleep();
-			background.loadLayerNear(BitmapFactory.decodeResource(context.getResources(),
-					R.drawable.game_background_layer_1));
-			sleep();
 
+			try {
+			
+				background.loadLayerFar(BitmapFactory.decodeResource(context.getResources(),
+						R.drawable.game_background_layer_3));
+				sleep();
+			} catch (OutOfMemoryError oome) {
+				System.gc();
+				try {
+					Thread.sleep(MIN_CREATION_TIMEOUT);
+			
+					background.loadLayerFar(BitmapFactory.decodeResource(context.getResources(),
+							R.drawable.game_background_layer_3));
+					sleep();
+
+				}catch (OutOfMemoryError e) { 
+					e.printStackTrace();
+					setResult(1);
+					finish();
+				} catch (InterruptedException e) {
+					setResult(0);
+					finish();
+				}
+			}
+			try {
+				background.loadLayerMiddle(BitmapFactory.decodeResource(context.getResources(),
+						R.drawable.game_background_layer_2));
+				sleep();
+			} catch (OutOfMemoryError oome) {
+				System.gc();
+				try {
+					Thread.sleep(MIN_CREATION_TIMEOUT);
+					background.loadLayerMiddle(BitmapFactory.decodeResource(context.getResources(),
+							R.drawable.game_background_layer_2));
+					sleep();
+
+				}catch (OutOfMemoryError e) { 
+					e.printStackTrace();
+					setResult(1);
+					finish();
+				} catch (InterruptedException e) {
+					setResult(0);
+					finish();
+				}
+			}
+
+
+			try {
+				background.loadLayerNear(BitmapFactory.decodeResource(context.getResources(),
+						R.drawable.game_background_layer_1));
+				sleep();
+
+			} catch (OutOfMemoryError oome) {
+				System.gc();
+				try {
+					Thread.sleep(MIN_CREATION_TIMEOUT);
+					background.loadLayerNear(BitmapFactory.decodeResource(context.getResources(),
+							R.drawable.game_background_layer_1));
+					sleep();
+
+				}catch (OutOfMemoryError e) { 
+					e.printStackTrace();
+					setResult(1);
+					finish();
+				} catch (InterruptedException e) {
+					setResult(0);
+					finish();
+				}
+			}
+			
+			
 			
 			if(Settings.RHDEBUG)
 				Log.d("debug", "before addMesh");
@@ -388,14 +482,6 @@ public class main extends Activity {
 				Log.d("debug", "RunnersHighView initiation ended");
 		}
 		
-		public void surfaceChanged(SurfaceHolder holder) {
-			Log.e("debug", "surfaceChanged");
-		}
-		
-		public void onSurfaceChanged(SurfaceHolder holder) {
-			Log.e("debug", "onSurfaceChanged");
-		}
-				
 		public int getAmountOfLocalHighscores() {
 			highScoreAdapter.open();
 		    Cursor cursor = highScoreAdapter.fetchScores("0");
@@ -446,11 +532,27 @@ public class main extends Activity {
 					Thread.sleep(10);
 				}
 				
+				
+				blackImg.recycle();
+				gameLoadingImg.recycle();
+				
+				blackRHD.shouldBeDrawn = false;
+				gameLoadingRHD.shouldBeDrawn = false;
+				
+				mRenderer.removeMesh(blackRHD);
+				mRenderer.removeMesh(gameLoadingRHD);
+				
 				if(Settings.RHDEBUG)
 					Log.d("debug", "after fade in");
 
-				if(!musicPlayerLoop.isPlaying())
-					musicPlayerLoop.start();
+				try {
+					if(!musicPlayerLoop.isPlaying())
+						musicPlayerLoop.start();
+				} catch (IllegalStateException e) {
+					e.printStackTrace();
+					Log.w("RH_RUN", "Illegal State Exception... do not restart game that quick... DUDE");
+				}
+				
 				MusicLoopStartedForFirstTime=true;
 				
 
@@ -482,6 +584,8 @@ public class main extends Activity {
 				
 //				if (debugTime + 15000 < starttime) sleep(100); // FIXME DEBUG TIME FOR VIDEO CAPTURE
 
+//				level.update(); // FIXME remove this line
+				
 				player.playerSprite.setFrameUpdateTime(
 						(level.baseSpeedMax+level.extraSpeedMax)*10 - 
 						((level.baseSpeed+level.extraSpeed)*10) +
@@ -528,12 +632,11 @@ public class main extends Activity {
 					level.lowerSpeed();
 				}
 				
-				
 				if(doUpdateCounter)
 				{
 					totalScore = level.getDistanceScore() + player.getBonusScore();
-//					mCounterGroup.tryToSetCounterTo(mRenderer.fps); // DEBUG FPS
-					mCounterGroup.tryToSetCounterTo(totalScore);
+					mCounterGroup.tryToSetCounterTo(mRenderer.fps); // DEBUG FPS
+//					mCounterGroup.tryToSetCounterTo(totalScore);
 					
 					if(totalScore>=3000 && threeKwasplayed==false)
 					{

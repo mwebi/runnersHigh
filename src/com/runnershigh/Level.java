@@ -74,9 +74,9 @@ public class Level {
 		OBSTACLEMASK_6_SLOW_BONUS +
 		OBSTACLEMASK_7_JUMP_SLOW_BONUS;
 	
-	private Bitmap obstacleSlowImg;
-	private Bitmap obstacleJumpImg;
-	private Bitmap obstacleBonusImg;
+	private Bitmap obstacleSlowImg = null;
+	private Bitmap obstacleJumpImg = null;
+	private Bitmap obstacleBonusImg = null;
 	
 	private boolean slowDown;
 	Rect blockRect;
@@ -172,6 +172,13 @@ public class Level {
 		
 	}
 	
+	public void cleanup() {
+		if (obstacleSlowImg != null) obstacleSlowImg.recycle();
+		if (obstacleJumpImg != null) obstacleJumpImg.recycle();
+		if (obstacleBonusImg != null) obstacleBonusImg.recycle();
+		Block.cleanup();
+	}
+	
 	public void update() {
 		
 		synchronized (blockData) {
@@ -198,6 +205,7 @@ public class Level {
 			if(slowDown){
 				//extraSpeed=0;
 				baseSpeed=baseSpeedStart;
+				extraSpeed /= 2;
 				slowDown=false;
 			}
 			
@@ -318,7 +326,7 @@ public class Level {
 //		distance = width/11; // FIXME REMOVE DEBUG VALUE
 		
 		if(distance <= Player.width)
-			distance = Player.width+2;
+			distance = Player.width+5;
 		
 		Block lastBlock = blockData[rightBlockIndex];
 		newLeft = lastBlock.BlockRect.right + distance;
