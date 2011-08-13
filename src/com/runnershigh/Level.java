@@ -29,12 +29,9 @@ public class Level {
 	public float extraSpeedMaxStart;
 	public float extraSpeedAcceleration;
 
-
-	
 	public int timeUntilNextSpeedIncreaseMillis;
-	public int timeToAddMillis;
 	
-	public int timeUntilLongBlocksStopMillis;
+
 	
 	public static Block[] blockData;
 	public static final int maxBlocks = 5;
@@ -46,12 +43,12 @@ public class Level {
 	private int leftSlowerIndex;
 	private int rightSlowerIndex;
 	
-	public static Obstacle[] obstacleDataJumper;
+	public static ObstacleJump[] obstacleDataJumper;
 	public static final int maxObstaclesJumper = maxBlocks;
 	private int leftJumperIndex;
 	private int rightJumperIndex;
 	
-	public static Obstacle[] obstacleDataBonus;
+	public static ObstacleBonus[] obstacleDataBonus;
 	public static final int maxObstaclesBonus = maxBlocks;
 	private int leftBonusIndex;
 	private int rightBonusIndex;
@@ -86,7 +83,6 @@ public class Level {
 		OBSTACLEMASK_7_JUMP_SLOW_BONUS;
 	
 	private Bitmap obstacleSlowImg = null;
-	private Bitmap obstacleJumpImg = null;
 	private Bitmap obstacleBonusImg = null;
 	
 	private boolean slowDown;
@@ -122,12 +118,10 @@ public class Level {
 		extraSpeedMax = extraSpeedMaxStart;
 		extraSpeedAcceleration = extraSpeed * 0.005f;
 		
-		timeUntilNextSpeedIncreaseMillis = 30000;		
-		timeToAddMillis = 10000;
-		timeUntilLongBlocksStopMillis = 40000;
+		timeUntilNextSpeedIncreaseMillis = Settings.TimeOfFirstSpeedIncrease;
 		
-		obstacleJumperWidth = Util.getPercentOfScreenWidth(3);
-		obstacleJumperHeight = Util.getPercentOfScreenHeight(7);
+		obstacleJumperWidth = Util.getPercentOfScreenWidth(4.875f);
+		obstacleJumperHeight = Util.getPercentOfScreenHeight(14.25f);
 		
 		obstacleSlowerWidth = Util.getPercentOfScreenWidth(6);
 		obstacleSlowerHeight= Util.getPercentOfScreenHeight(6);
@@ -158,17 +152,16 @@ public class Level {
 		leftSlowerIndex = 0;
 		rightSlowerIndex = maxObstaclesSlower;
 		
-		obstacleDataJumper = new Obstacle[maxObstaclesJumper];
+		obstacleDataJumper = new ObstacleJump[maxObstaclesJumper];
 		leftJumperIndex = 0;
 		rightJumperIndex = maxObstaclesJumper;
 		
-		obstacleDataBonus = new Obstacle[maxObstaclesBonus];
+		obstacleDataBonus = new ObstacleBonus[maxObstaclesBonus];
 		leftBonusIndex = 0;
 		rightBonusIndex = maxObstaclesBonus;
 
 		
 		obstacleSlowImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.game_obstacle_slow );
-		obstacleJumpImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.game_obstacle_jump );
 		obstacleBonusImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.game_obstacle_bonus);
 
 		
@@ -192,8 +185,10 @@ public class Level {
 	
 	public void cleanup() {
 		if (obstacleSlowImg != null) obstacleSlowImg.recycle();
-		if (obstacleJumpImg != null) obstacleJumpImg.recycle();
+		//if (obstacleJumpImg != null) obstacleJumpImg.recycle();
 		if (obstacleBonusImg != null) obstacleBonusImg.recycle();
+		//TODO clean bonus effect in obstacleBonus
+		//TODO clean jumper sprite in obstaclejump
 		Block.cleanup();
 	}
 	
@@ -206,7 +201,7 @@ public class Level {
 			
 			if (0 > blockData[leftBlockIndex].BlockRect.right) {
 				appendBlockToEnd();
-				
+
 				if(BlockCounter == 5)
 					appendObstaclesToEnd(false, false, true);
 				if(BlockCounter == 7)
@@ -221,10 +216,10 @@ public class Level {
 			extraSpeedAcceleration = extraSpeed * 0.002f;
 			
 			
-			Log.d("debug", "getTimeSinceRoundStartMillis: " + Util.getTimeSinceRoundStartMillis());	
+			//Log.d("debug", "getTimeSinceRoundStartMillis: " + Util.getTimeSinceRoundStartMillis());	
 			
 			if(Util.getTimeSinceRoundStartMillis() > timeUntilNextSpeedIncreaseMillis){
-				timeUntilNextSpeedIncreaseMillis += timeToAddMillis;
+				timeUntilNextSpeedIncreaseMillis += Settings.timeToFurtherSpeedIncreaseMillis;
 				baseSpeedMax += Util.getPercentOfScreenWidth(0.075f);
 			}
 			
@@ -257,6 +252,8 @@ public class Level {
 			for (int i = 0; i < maxObstaclesJumper; i++)
 			{
 				obstacleDataJumper[i].x -= deltaLevelPosition;
+				obstacleDataJumper[i].jumpSprite.x -= deltaLevelPosition;
+				obstacleDataJumper[i].jumpSprite.tryToSetNextFrame();
 			}
 			
 			for (int i = 0; i < maxObstaclesSlower; i++)
@@ -337,7 +334,8 @@ public class Level {
 		else
 			newHeight = (int)(Math.random()*height/4 + height/8);
 		
-		if(Util.getTimeSinceRoundStartMillis() > timeUntilLongBlocksStopMillis){
+		if(Util.getTimeSinceRoundStartMillis() > Settings.timeUntilLongBlocksStopMillis && Util.roundStartTime!=0){
+			//Log.d("debug", "in normal block generation ");	
 			if (lastBlockWasSmall) lastBlockWasSmall = false;
 			else if (50 - BlockCounter <= 0) thisBlockIsSmall = true;
 			else thisBlockIsSmall = (randomGenerator.nextInt(50 - BlockCounter) <= 5);
@@ -390,9 +388,7 @@ public class Level {
 		{
 			if (firstTime)
 			{
-				obstacleDataJumper[i] = new Obstacle(-1000, 0, 0.9f, obstacleJumperWidth, obstacleJumperHeight, 'j');
-				renderer.addMesh(obstacleDataJumper[i]);
-				obstacleDataJumper[i].loadBitmap(obstacleJumpImg);
+				obstacleDataJumper[i] = new ObstacleJump(-1000, 0, 0.9f, obstacleJumperWidth, obstacleJumperHeight, 'j', 60, 4);
 			}
 			obstacleDataJumper[i].x = -1000;
 			obstacleDataJumper[i].didTrigger = false;
@@ -413,7 +409,7 @@ public class Level {
 		{
 			if (firstTime)
 			{
-				obstacleDataBonus[i] = new Obstacle(-1000, 0, 0.9f, obstacleBonusWidth, obstacleBonusHeight, 'b');
+				obstacleDataBonus[i] = new ObstacleBonus(-1000, 0, 0.9f, obstacleBonusWidth, obstacleBonusHeight, 'b');
 				renderer.addMesh(obstacleDataBonus[i]);
 				obstacleDataBonus[i].loadBitmap(obstacleBonusImg);
 			}
@@ -523,7 +519,7 @@ public class Level {
 			if(Settings.RHDEBUG)
 				Log.d("debug", "in spawnJumper");
 			float obstacleLeft;
-			Obstacle newJumpObstacle = obstacleDataJumper[leftJumperIndex];
+			ObstacleJump newJumpObstacle = obstacleDataJumper[leftJumperIndex];
 			newJumpObstacle.didTrigger = false;
 			
 			long fraction = (long)(blockData[rightBlockIndex].mWidth * 0.33 * randomGenerator.nextDouble());
@@ -531,7 +527,9 @@ public class Level {
 			obstacleLeft =  (blockData[rightBlockIndex].x + newJumpObstacle.width + fraction);
 		
 			newJumpObstacle.x = obstacleLeft;
+			newJumpObstacle.jumpSprite.x = obstacleLeft;
 		    newJumpObstacle.y = blockData[rightBlockIndex].mHeight;
+		    newJumpObstacle.jumpSprite.y = blockData[rightBlockIndex].mHeight;
 		    newJumpObstacle.setObstacleRect(
 		    		obstacleLeft,
 		    		obstacleLeft+newJumpObstacle.width,
@@ -566,7 +564,7 @@ public class Level {
 		    // compute a fraction of the range, 0 <= frac < range
 		    double fraction = range * randomGenerator.nextDouble();
 		    
-			Obstacle newBonus = obstacleDataBonus[leftBonusIndex];
+			ObstacleBonus newBonus = obstacleDataBonus[leftBonusIndex];
 			newBonus.didTrigger = false;
 			
 		    newBonus.z=0;
@@ -615,6 +613,8 @@ public class Level {
 			
 			initializeBlocks(false);
 			initializeObstacles(false);
+			
+			timeUntilNextSpeedIncreaseMillis = Settings.TimeOfFirstSpeedIncrease;
 			
 			baseSpeed = baseSpeedStart;
 			extraSpeed = extraSpeedStart;

@@ -196,7 +196,7 @@ public class main extends Activity {
 
 			Util.getInstance().setAppContext(context);
 			Util.getInstance().setAppRenderer(mRenderer);
-
+			
 	        Thread rHThread = new Thread(this);
 			rHThread.start();
 			
@@ -217,6 +217,9 @@ public class main extends Activity {
 		private void initialize() {
 			if(Settings.RHDEBUG)
 				Log.d("debug", "initialize begin");
+			
+			long timeOfInitializationStart = System.currentTimeMillis();
+			
 			Context context = Util.getInstance().getAppContext();
 			
 			Rect rectgle= new Rect();
@@ -366,7 +369,7 @@ public class main extends Activity {
 			
 			player = new Player(getApplicationContext(), mRenderer, height);
 			sleep();
-		
+			
 			if(Settings.RHDEBUG)
 				Log.d("debug", "after player creation");
 //			loadingDialog = new ProgressDialog( context );
@@ -478,9 +481,14 @@ public class main extends Activity {
 				initHighscoreMarks();
 			
 			
+			//give the player time to read loading screen and controls
+			while(System.currentTimeMillis() < timeOfInitializationStart+Settings.TimeForLoadingScreenToBeVisible)
+				sleep(10);
 			
 			timeAtLastSecond = System.currentTimeMillis();
 	        runCycleCounter=0;
+	        
+	        
 	        
 	        
 			if(Settings.RHDEBUG)
@@ -609,6 +617,7 @@ public class main extends Activity {
 							Log.d("runtime", "time after level update: " + Integer.toString((int)currentTimeTaken));
 						}
 						background.update();
+						
 						if(Settings.RHDEBUG){
 							currentTimeTaken = System.currentTimeMillis()- starttime;
 							Log.d("runtime", "time after background update: " + Integer.toString((int)currentTimeTaken));

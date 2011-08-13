@@ -33,7 +33,7 @@ public class Player{
 	private float speedoffsetXMax;
 	private float speedoffsetXStep;
 	private Bitmap playerSpriteImg = null; 
-	public PlayerSprite playerSprite;
+	public Sprite playerSprite;
 	private boolean fingerOnScreen = false;
 	private float bonusVelocity = 0;
 	private float bonusVelocityDownfallSpeed = 0;
@@ -58,7 +58,7 @@ public class Player{
 		speedoffsetXStep = Util.getPercentOfScreenWidth(0.002f);
 		
 		playerSpriteImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.game_character_spritesheet);
-		playerSprite = new PlayerSprite(x, y, 0.5f, width, height, 25, 8); 
+		playerSprite = new Sprite(x, y, 0.5f, width, height, 25, 8); 
 		playerSprite.loadBitmap(playerSpriteImg); 
 		glrenderer.addMesh(playerSprite);
 		
