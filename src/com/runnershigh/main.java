@@ -343,22 +343,21 @@ public class main extends Activity {
 			
 			resetButtonImg = BitmapFactory.decodeResource(context.getResources(),R.drawable.game_button_play_again);
 			resetButton = new Button(
-					Util.getPercentOfScreenWidth(75), 
-					height-Util.getPercentOfScreenHeight(15),
+					Util.getPercentOfScreenWidth(72), 
+					height-Util.getPercentOfScreenHeight(18),
 					-2, 
-					Util.getPercentOfScreenWidth(20), 
-					Util.getPercentOfScreenHeight(10));
+					Util.getPercentOfScreenWidth(26), 
+					Util.getPercentOfScreenHeight(13));
 			resetButton.loadBitmap(resetButtonImg);
 			mRenderer.addMesh(resetButton);			
 			
 			saveButtonImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.game_button_save);
-			//saveButton = new Button(200, height-50-10, -2, 100, 50);
 			saveButton = new Button(
-					Util.getPercentOfScreenWidth(50), 
-					height-Util.getPercentOfScreenHeight(15),
+					Util.getPercentOfScreenWidth(42), 
+					height-Util.getPercentOfScreenHeight(18),
 					-2, 
-					Util.getPercentOfScreenWidth(20),
-					Util.getPercentOfScreenHeight(10));
+					Util.getPercentOfScreenWidth(26),
+					Util.getPercentOfScreenHeight(13));
 			saveButton.loadBitmap(saveButtonImg);
 			mRenderer.addMesh(saveButton);
 			
@@ -585,10 +584,11 @@ public class main extends Activity {
 			if(Settings.RHDEBUG)				
 				Log.d("debug", "run method befor while");
 			//			long debugTime = System.currentTimeMillis(); // FIXME DEBUG TIME FOR VIDEO CAPTURE
+			Util.roundStartTime = System.currentTimeMillis();
 			
 			while(isRunning){
 				
-				starttime= System.currentTimeMillis();
+				starttime = System.currentTimeMillis();
 				
 //				if (debugTime + 15000 < starttime) sleep(100); // FIXME DEBUG TIME FOR VIDEO CAPTURE
 
@@ -839,6 +839,7 @@ public class main extends Activity {
 								
 							threeKwasplayed = false;
 							totalScore = 0;
+							Util.roundStartTime = System.currentTimeMillis();
 						}
 						else if(saveButton.isClicked( event.getX(), Util.getInstance().toScreenY((int)event.getY())  ) && !scoreWasSaved){
 							//save score

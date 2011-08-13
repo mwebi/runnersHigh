@@ -16,14 +16,25 @@ public class Level {
 	private float levelPosition;
 	private float deltaLevelPosition;
 	//public static float scoreCounter;
+	
 	public float baseSpeed;
-	public float baseSpeedMax;
 	public float baseSpeedStart;
+	public float baseSpeedMax;
+	public float baseSpeedMaxStart;
 	public float baseSpeedAcceleration;
+	
 	public float extraSpeed;
 	public float extraSpeedStart;
 	public float extraSpeedMax;
+	public float extraSpeedMaxStart;
 	public float extraSpeedAcceleration;
+
+
+	
+	public int timeUntilNextSpeedIncreaseMillis;
+	public int timeToAddMillis;
+	
+	public int timeUntilLongBlocksStopMillis;
 	
 	public static Block[] blockData;
 	public static final int maxBlocks = 5;
@@ -86,6 +97,7 @@ public class Level {
 	private Random randomGenerator;
 	private boolean lastBlockWasSmall = false;
 	private int minBlockWidth = 0;
+
 	
 	public Level(Context context, OpenGLRenderer glrenderer, int _width, int _heigth) {
 		if(Settings.RHDEBUG)
@@ -98,15 +110,21 @@ public class Level {
 		deltaLevelPosition = 0;
 		//scoreCounter = 0;
 		
-		baseSpeedStart = Util.getPercentOfScreenWidth(0.075f);
-		baseSpeed = baseSpeedStart;
-		baseSpeedMax = Util.getPercentOfScreenWidth(0.375f);
+		baseSpeedStart = Util.getPercentOfScreenWidth(0.095f);
+		baseSpeed = baseSpeedStart;		
+		baseSpeedMaxStart = Util.getPercentOfScreenWidth(0.2f);
+		baseSpeedMax = baseSpeedMaxStart;
 		baseSpeedAcceleration = baseSpeed*0.025f;
 		
 		extraSpeedStart = Util.getPercentOfScreenWidth(0.025f);
 		extraSpeed = extraSpeedStart;
-		extraSpeedMax = Util.getPercentOfScreenWidth(0.5f);
-		extraSpeedAcceleration = extraSpeed * 0.010f;
+		extraSpeedMaxStart = Util.getPercentOfScreenWidth(0.5f);
+		extraSpeedMax = extraSpeedMaxStart;
+		extraSpeedAcceleration = extraSpeed * 0.005f;
+		
+		timeUntilNextSpeedIncreaseMillis = 30000;		
+		timeToAddMillis = 10000;
+		timeUntilLongBlocksStopMillis = 40000;
 		
 		obstacleJumperWidth = Util.getPercentOfScreenWidth(3);
 		obstacleJumperHeight = Util.getPercentOfScreenHeight(7);
@@ -189,21 +207,34 @@ public class Level {
 			if (0 > blockData[leftBlockIndex].BlockRect.right) {
 				appendBlockToEnd();
 				
-				if (BlockCounter > 10)
+				if(BlockCounter == 5)
+					appendObstaclesToEnd(false, false, true);
+				if(BlockCounter == 7)
+					appendObstaclesToEnd(true, false, false);
+				if(BlockCounter == 9)
+					appendObstaclesToEnd(false, true, false);
+				if (BlockCounter > 15)
 					decideIfAndWhatObstaclesSpawn();
 			}
 			
 			baseSpeedAcceleration = baseSpeed * 0.005f;
-			extraSpeedAcceleration = extraSpeed * 0.005f;
+			extraSpeedAcceleration = extraSpeed * 0.002f;
+			
+			
+			Log.d("debug", "getTimeSinceRoundStartMillis: " + Util.getTimeSinceRoundStartMillis());	
+			
+			if(Util.getTimeSinceRoundStartMillis() > timeUntilNextSpeedIncreaseMillis){
+				timeUntilNextSpeedIncreaseMillis += timeToAddMillis;
+				baseSpeedMax += Util.getPercentOfScreenWidth(0.075f);
+			}
 			
 			if(baseSpeed < baseSpeedMax)
-				baseSpeed+=baseSpeedAcceleration; //baseSpeed+=0.025;
+				baseSpeed+=baseSpeedAcceleration; 
 			
 			if(extraSpeed < extraSpeedMax)
-				extraSpeed+=extraSpeedAcceleration; //0.001; //extraSpeed+=0.001;
+				extraSpeed+=extraSpeedAcceleration; 
 			
 			if(slowDown){
-				//extraSpeed=0;
 				baseSpeed=baseSpeedStart;
 				extraSpeed /= 2;
 				slowDown=false;
@@ -272,11 +303,10 @@ public class Level {
 		
 		for(int i = 1; i < maxBlocks; i++)
 		{
-			if (firstTime)
+			if (firstTime){
 				blockData[i] = new Block();
-			
-			if (firstTime)
 				renderer.addMesh(blockData[i]);
+			}
 			appendBlockToEnd();
 			blockData[i].updateRect();
 		}
@@ -307,17 +337,22 @@ public class Level {
 		else
 			newHeight = (int)(Math.random()*height/4 + height/8);
 		
-		if (lastBlockWasSmall) lastBlockWasSmall = false;
-		else if (50 - BlockCounter <= 0) thisBlockIsSmall = true;
-		else thisBlockIsSmall = (randomGenerator.nextInt(50 - BlockCounter) <= 5);
+		if(Util.getTimeSinceRoundStartMillis() > timeUntilLongBlocksStopMillis){
+			if (lastBlockWasSmall) lastBlockWasSmall = false;
+			else if (50 - BlockCounter <= 0) thisBlockIsSmall = true;
+			else thisBlockIsSmall = (randomGenerator.nextInt(50 - BlockCounter) <= 5);
+			
+			if (thisBlockIsSmall) {
+				newWidth = minBlockWidth;
+				lastBlockWasSmall = true;
+			}
+			else {
+				newWidth = (int)(Math.random()*width/3+width/3);
+			}
+		}else{
+			newWidth = (int)(Math.random()*width/3+width*0.70f);
+		}
 		
-		if (thisBlockIsSmall) {
-			newWidth = minBlockWidth;
-			lastBlockWasSmall = true;
-		}
-		else {
-			newWidth = (int)(Math.random()*width/3+width/3);
-		}
 		
 		newWidth -= (newWidth - Block.getTextureLeftWidth() - Block.getTextureRightWidth()) % (Block.getTextureMiddleWidth());
 		
@@ -327,7 +362,7 @@ public class Level {
 //		distance = width/11; // FIXME REMOVE DEBUG VALUE
 		
 		if(distance <= Player.width)
-			distance = Player.width+5;
+			distance = Player.width+10;
 		
 		Block lastBlock = blockData[rightBlockIndex];
 		newLeft = lastBlock.BlockRect.right + distance;
@@ -583,6 +618,8 @@ public class Level {
 			
 			baseSpeed = baseSpeedStart;
 			extraSpeed = extraSpeedStart;
+			baseSpeedMax = baseSpeedMaxStart;		
+			extraSpeedMax = extraSpeedMaxStart;
 			BlockCounter=0;
 		}
 	}
