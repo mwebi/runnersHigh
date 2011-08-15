@@ -31,7 +31,7 @@ public class ObstacleBonus extends Obstacle {
 		centerX=x;
 		centerY=y;
 		
-		bonusScoreEffectImg = BitmapFactory.decodeResource(Util.getInstance().getAppContext().getResources(), R.drawable.bonusscore);
+		bonusScoreEffectImg = BitmapFactory.decodeResource(Util.getInstance().getAppContext().getResources(), R.drawable.game_bonusscore);
 		float bonusScoreEffectImgWidthHeightFector = bonusScoreEffectImg.getWidth()/bonusScoreEffectImg.getHeight();
 		float bonusScoreEffectWidth = Util.getPercentOfScreenWidth(20);
 		float bonusScoreEffectHeight = bonusScoreEffectWidth/bonusScoreEffectImgWidthHeightFector;

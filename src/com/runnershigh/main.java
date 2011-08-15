@@ -219,6 +219,7 @@ public class main extends Activity {
 				Log.d("debug", "initialize begin");
 			
 			long timeOfInitializationStart = System.currentTimeMillis();
+			Util.roundStartTime = System.currentTimeMillis();
 			
 			Context context = Util.getInstance().getAppContext();
 			
@@ -364,11 +365,13 @@ public class main extends Activity {
 			saveButton.loadBitmap(saveButtonImg);
 			mRenderer.addMesh(saveButton);
 			
+
+			player = new Player(getApplicationContext(), mRenderer, height);
+			sleep();
+			
 			level = new Level(context, mRenderer, width, height);
 			sleep();
 			
-			player = new Player(getApplicationContext(), mRenderer, height);
-			sleep();
 			
 			if(Settings.RHDEBUG)
 				Log.d("debug", "after player creation");
