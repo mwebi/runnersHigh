@@ -200,7 +200,7 @@ public class Level {
 
 			
 			if (0 > blockData[leftBlockIndex].BlockRect.right) {
-				appendBlockToEnd();
+				appendBlockToEnd(-1);
 
 				if(BlockCounter == 5)
 					appendObstaclesToEnd(false, false, true);
@@ -304,14 +304,14 @@ public class Level {
 				blockData[i] = new Block();
 				renderer.addMesh(blockData[i]);
 			}
-			appendBlockToEnd();
+			appendBlockToEnd(i);
 			blockData[i].updateRect();
 		}
 		if(Settings.RHDEBUG)
 			Log.d("debug", "left initializeBlocks");
 	}
 	
-	private void appendBlockToEnd()
+	private void appendBlockToEnd(int BlockNumber)
 	{
 		if (minBlockWidth == 0) {
 			minBlockWidth =
@@ -320,55 +320,78 @@ public class Level {
 					Block.getTextureMiddleWidth() * 2;
 		}
 		//Log.d("debug", "in appendBlockToEnd");
-		float newHeight;
+		float newHeight=0;
 		float oldHeight;
-		float newWidth;
+		float newWidth=0;
 		float distance;
 		float newLeft;
 		boolean thisBlockIsSmall = false;
 		
 		oldHeight = blockData[rightBlockIndex].BlockRect.top;
 		
-		if (oldHeight > height/2)
-			newHeight = (int)(Math.random()*height/3*2 + height/8);
-		else
-			newHeight = (int)(Math.random()*height/4 + height/8);
-		
-		if(Util.getTimeSinceRoundStartMillis() > Settings.timeUntilLongBlocksStopMillis && Util.roundStartTime!=0){
-			//Log.d("debug", "in normal block generation ");	
-			if (lastBlockWasSmall) lastBlockWasSmall = false;
-			else if (50 - BlockCounter <= 0) thisBlockIsSmall = true;
-			else thisBlockIsSmall = (randomGenerator.nextInt(50 - BlockCounter) <= 5);
+		if(BlockNumber==-1){
+			if (oldHeight > height/2)
+				newHeight = (int)(Math.random()*height/3*2 + height/8);
+			else
+				newHeight = (int)(Math.random()*height/4 + height/8);
 			
-			if (thisBlockIsSmall) {
-				newWidth = minBlockWidth;
-				lastBlockWasSmall = true;
+			if(Util.getTimeSinceRoundStartMillis() > Settings.timeUntilLongBlocksStopMillis){
+				//Log.d("debug", "in normal block generation ");	
+				if (lastBlockWasSmall) lastBlockWasSmall = false;
+				else if (50 - BlockCounter <= 0) thisBlockIsSmall = true;
+				else thisBlockIsSmall = (randomGenerator.nextInt(50 - BlockCounter) <= 5);
+				
+				if (thisBlockIsSmall) {
+					newWidth = minBlockWidth;
+					lastBlockWasSmall = true;
+				}
+				else {
+					newWidth = (int)(Math.random()*width/3+width/3);
+				}
+			}else{
+				newWidth = (int)(Math.random()*width/3+width*0.70f);
 			}
-			else {
-				newWidth = (int)(Math.random()*width/3+width/3);
+			
+			
+			newWidth -= (newWidth - Block.getTextureLeftWidth() - Block.getTextureRightWidth()) % (Block.getTextureMiddleWidth());
+			
+			distance = (int)(Math.random()*width/16+width/12); 
+			
+			if(distance <= Player.width)
+				distance = Player.width+10;
+		}else{	
+			distance = Player.width+5;
+			switch (BlockNumber){
+				case 1:
+					newHeight=oldHeight; 
+					newWidth=Util.getPercentOfScreenWidth(80);
+					break;
+				case 2:
+					newHeight=oldHeight+Util.getPercentOfScreenHeight(8);
+					newWidth=Util.getPercentOfScreenWidth(80);
+					break;
+				case 3:
+					newHeight=oldHeight;
+					newWidth=Util.getPercentOfScreenWidth(80);
+					break;
+				case 4:
+					newHeight=oldHeight+Util.getPercentOfScreenHeight(9);
+					newWidth=Util.getPercentOfScreenWidth(80);
+					break;
 			}
-		}else{
-			newWidth = (int)(Math.random()*width/3+width*0.70f);
-		}
+		}	
 		
 		
-		newWidth -= (newWidth - Block.getTextureLeftWidth() - Block.getTextureRightWidth()) % (Block.getTextureMiddleWidth());
-		
-		distance = (int)(Math.random()*width/16+width/12); 
-		
-//		newWidth = width/2; // FIXME REMOVE DEBUG VALUE
-//		distance = width/11; // FIXME REMOVE DEBUG VALUE
-		
-		if(distance <= Player.width)
-			distance = Player.width+10;
-		
-		Block lastBlock = blockData[rightBlockIndex];
-		newLeft = lastBlock.BlockRect.right + distance;
+//		Block lastBlock = blockData[rightBlockIndex];
+//		newLeft = lastBlock.BlockRect.right + distance; 
+		newLeft = blockData[rightBlockIndex].BlockRect.right + distance;
 		
 		blockData[leftBlockIndex].setHeight(newHeight);
 		blockData[leftBlockIndex].setWidth(newWidth);
 		blockData[leftBlockIndex].x = newLeft;
-
+	
+		
+		
 		leftBlockIndex++;
 	    if (leftBlockIndex == maxBlocks)
 	    	leftBlockIndex = 0;
@@ -376,7 +399,7 @@ public class Level {
 	    rightBlockIndex++;
 	    if (rightBlockIndex== maxBlocks)
 	    	rightBlockIndex = 0;
-	    
+		    
 		BlockCounter++;
 
 		//Log.d("debug", "left appendBlockToEnd");
@@ -390,7 +413,7 @@ public class Level {
 			{
 				obstacleDataJumper[i] = new ObstacleJump(-1000, 0, 0.9f, obstacleJumperWidth, obstacleJumperHeight, 'j', 60, 4);
 			}
-			obstacleDataJumper[i].x = -1000;
+			obstacleDataJumper[i].x = obstacleDataJumper[i].jumpSprite.x = -1000;
 			obstacleDataJumper[i].didTrigger = false;
 		}
 		for(int i = 0; i < maxObstaclesSlower; i++)
