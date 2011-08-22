@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
@@ -27,7 +26,6 @@ import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -86,7 +84,7 @@ public class HighScoreForm extends Activity {
 		Cursor cursor = highScoreAdapter.fetchLastEntry();
 		startManagingCursor(cursor);
 		if(cursor.getCount() > 0) {
-			nameField.setText(cursor.getString(cursor.getColumnIndexOrThrow(highScoreAdapter.KEY_NAME)));
+			nameField.setText(cursor.getString(cursor.getColumnIndexOrThrow(HighscoreAdapter.KEY_NAME)));
 		}
 		cursor.close();		
     }
@@ -117,8 +115,7 @@ public class HighScoreForm extends Activity {
 	        	        nameValuePairs.add(new BasicNameValuePair("score", score));
 	        	        httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 	
-	        	        // Execute HTTP Post Request
-	        	        HttpResponse response = httpclient.execute(httppost);
+	        	        httpclient.execute(httppost);
 	
 	        	    } catch (ClientProtocolException e) {
 	        	        // TODO Auto-generated catch block
@@ -130,8 +127,7 @@ public class HighScoreForm extends Activity {
         		}
         	}
         	
-        	// Save score locally
-        	long id = highScoreAdapter.createHighscore(score, name, isonline);
+        	highScoreAdapter.createHighscore(score, name, isonline);
         	highScoreAdapter.close();
         	
         	setResult(RESULT_OK);

@@ -3,7 +3,6 @@ package com.runnershigh;
 import com.highscore.HighscoreAdapter;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -217,7 +216,7 @@ public class main extends Activity {
 		private void initialize() {
 			if(Settings.RHDEBUG)
 				Log.d("debug", "initialize begin");
-			Context context = Util.getInstance().getAppContext();
+			Context context = Util.getAppContext();
 			
 			Rect rectgle= new Rect();
 			Window window= getWindow();
@@ -501,7 +500,7 @@ public class main extends Activity {
 			if (mTotalHighscores >= id)
 			{
 			    Cursor cursor = highScoreAdapter.getHighscore(id);
-			    String hs = cursor.getString(cursor.getColumnIndexOrThrow(highScoreAdapter.KEY_SCORE));
+			    String hs = cursor.getString(cursor.getColumnIndexOrThrow(HighscoreAdapter.KEY_SCORE));
 			    highScoreAdapter.close();		    
 			    return new Integer(hs);
 			}

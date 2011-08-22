@@ -3,11 +3,9 @@ package com.runnershigh;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
@@ -20,6 +18,7 @@ public class Menu extends Activity {
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
+
     	requestWindowFeature(Window.FEATURE_NO_TITLE);  
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		

@@ -51,13 +51,13 @@ public class Obstacle extends RHDrawable {
 		centerY=y;
 		 
 		if(type=='b'){
-			bonusScoreEffectImg = BitmapFactory.decodeResource(Util.getInstance().getAppContext().getResources(), R.drawable.bonusscore);
+			bonusScoreEffectImg = BitmapFactory.decodeResource(Util.getAppContext().getResources(), R.drawable.bonusscore);
 			float bonusScoreEffectImgWidthHeightFector = bonusScoreEffectImg.getWidth()/bonusScoreEffectImg.getHeight();
 			float bonusScoreEffectWidth = Util.getPercentOfScreenWidth(20);
 			float bonusScoreEffectHeight = bonusScoreEffectWidth/bonusScoreEffectImgWidthHeightFector;
 			bonusScoreEffect = new BonusScoreEffect(x-bonusScoreEffectWidth/2, y-bonusScoreEffectHeight/2, 0.85f, bonusScoreEffectWidth, bonusScoreEffectHeight);
 			bonusScoreEffect.loadBitmap(bonusScoreEffectImg);
-			Util.getInstance().getAppRenderer().addMesh(bonusScoreEffect);
+			Util.getAppRenderer().addMesh(bonusScoreEffect);
 		}
 		
 	}
