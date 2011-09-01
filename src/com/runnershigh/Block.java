@@ -80,6 +80,12 @@ public class Block extends Group {
 		BlockRect = new Rect((int)x, (int)(y+mHeight), (int)(x+mWidth), (int)y );
 	}
 	
+	public static void cleanup() {
+		if (mTextureLeft != null) mTextureLeft.recycle();
+		if (mTextureMiddle != null) mTextureMiddle.recycle();
+		if (mTextureRight != null) mTextureRight.recycle();
+	}
+	
 	public void updateRect()
 	{
 		BlockRect.left =(int)x;

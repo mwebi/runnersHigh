@@ -5,8 +5,8 @@
   android:layout_width="fill_parent"
   android:layout_height="fill_parent"
   android:padding="10dp"
-  android:textColor="#FFFFFF">
-  
+  android:textColor="#876842"
+  android:background="@drawable/info_background">
   
   <LinearLayout
   android:orientation="horizontal"
@@ -20,7 +20,7 @@
 	    android:layout_height="wrap_content"    
 	    android:text="@string/hs_title" 
 	    android:textSize="26dp"
-	    android:textColor="#FFFFFF"
+	    android:textColor="#92C36F"
 	    />
 
   <Button android:id="@+id/onlineHSButton"
@@ -33,5 +33,6 @@
   		android:id="@id/android:list"
         android:layout_width="fill_parent"
       	android:layout_height="wrap_content"
+      	android:textColor="#876842"
        	 />  
 </LinearLayout>

@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="hello">Hello World, main!</string>
-    <string name="app_name">runnersHigh</string>
+    <string name="app_name">RunnersHigh</string>
 	<string name="score">tah score</string>
 	<string name="hs_title">High-Score</string>
 	<string name="hs_error_name_empty">Name is empty !</string>
 	<string name="hs_error_no_internet">Please establish an internet connection !</string>
-	<string name="hs_bttn_getonline">Show online HighScore</string>
-	<string name="hs_bttn_getlocal">Show local HighScore</string>
+	<string name="hs_bttn_getonline">Show online highscore</string>
+	<string name="hs_bttn_getlocal">Show local highscore</string>
 	<string name="hs_bttn_pushOnline">Push Online</string>
 	<string name="hs_pushed_online">Score saved online !</string>
 	<string name="hs_already_pushed">Score is already online !</string>

@@ -1,7 +1,5 @@
 package com.runnershigh;
 
-import javax.microedition.khronos.opengles.GL10;
-
 import com.highscore.HighscoreAdapter;
 
 import android.app.Activity;
@@ -20,18 +18,22 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
 import android.view.MotionEvent;
-import android.view.SurfaceHolder;
 import android.view.Window;
 import android.view.WindowManager;
 
 public class main extends Activity {
 		PowerManager.WakeLock wakeLock ;
+		
+		private static long lastCreationTime = 0;
+		private static final int MIN_CREATION_TIMEOUT = 10000;
+		
+		
 		//MediaPlayer musicPlayerIntro;
 		MediaPlayer musicPlayerLoop;
 		boolean MusicLoopStartedForFirstTime = false;
-		boolean paused = false;
 
 		boolean isRunning = false;
+		RunnersHighView mGameView = null;
 
 	    private static final int SLEEP_TIME = 300;
 	    
@@ -39,8 +41,9 @@ public class main extends Activity {
 	    @Override
 		public void onCreate(Bundle savedInstanceState) {
 	    	super.onCreate(savedInstanceState);
+	    	
+	    	
 	    	//setContentView(R.layout.main);	 
-	    	paused=false;
 	    	
 	    	PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
 			wakeLock = pm.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK, "tag");
@@ -58,7 +61,7 @@ public class main extends Activity {
 	        musicPlayerLoop = MediaPlayer.create(getApplicationContext(), R.raw.gamebackground);
 	        musicPlayerLoop.setLooping(true);
 			musicPlayerLoop.seekTo(0);
-			musicPlayerLoop.setVolume(0.5f, 0.5f);
+			musicPlayerLoop.setVolume(0.3f, 0.3f);
 	        
 			requestWindowFeature(Window.FEATURE_NO_TITLE);  
 			getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -66,8 +69,8 @@ public class main extends Activity {
 			//setContentView(R.layout.runnershigh);	        
 			//(RunnersHighView) findViewById(R.id.runnersHighViewXML);
 			isRunning = true;
-			RunnersHighView gameView = new RunnersHighView(getApplicationContext()); 
-			setContentView(gameView);	     
+			mGameView = new RunnersHighView(getApplicationContext()); 
+			setContentView(mGameView);	     
 		}	
 		
 	    @Override
@@ -78,6 +81,8 @@ public class main extends Activity {
 			wakeLock.release();
 			musicPlayerLoop.release();
 			SoundManager.cleanup();
+			if (mGameView != null) mGameView.cleanup();
+			System.gc();
 			super.onDestroy();
 		}
 		@Override
@@ -88,7 +93,7 @@ public class main extends Activity {
 			if(MusicLoopStartedForFirstTime)
 				musicPlayerLoop.start();
 			super.onResume();
-			paused=false;
+
 		}
 		@Override
 		public void onStop() {
@@ -100,14 +105,13 @@ public class main extends Activity {
 		public void onRestart() {
 			if(Settings.RHDEBUG)
 				Log.d("debug", "onRestart");
-			paused=false;
+
 			super.onRestart();
 		}
 		@Override
 		public void onPause() {
 			if(Settings.RHDEBUG)
 				Log.d("debug", "onPause");
-			paused=true;
 			wakeLock.release();
 			musicPlayerLoop.pause();
 			super.onPause();
@@ -118,10 +122,14 @@ public class main extends Activity {
 			myIntent.putExtra("score", score);			
 			startActivity (myIntent);
 		}
-		
+
 		public void sleep() {
+			sleep(SLEEP_TIME);
+		}
+
+		public void sleep(int time) {
 			try {
-				Thread.sleep(SLEEP_TIME);
+				Thread.sleep(time);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -129,34 +137,35 @@ public class main extends Activity {
 		}
     
 	public class RunnersHighView extends GLSurfaceView implements Runnable {
-		private Player player;
-
+		private Player player = null;
 		private Level level;
 		private ParalaxBackground background;
 		private int width;
 		private int height;
-		private Button resetButton;
-		private Bitmap resetButtonImg;
-		private Button saveButton;
-		private Bitmap saveButtonImg;
-		private RHDrawable blackRHD;
-		private Bitmap blackImg;
+
+		private Button resetButton = null;
+		private Bitmap resetButtonImg = null;
+		private Button saveButton = null;
+		private Bitmap saveButtonImg = null;
+		private RHDrawable blackRHD = null;
+		private Bitmap blackImg = null;
+		private RHDrawable gameLoadingRHD = null;
+		private Bitmap gameLoadingImg = null;
 		private float blackImgAlpha;
 		private boolean scoreWasSaved = false;
 		private boolean deathSoundPlayed = false;
-		private OpenGLRenderer mRenderer;
+		private OpenGLRenderer mRenderer = null;
 		private CounterGroup mCounterGroup;
 		private CounterDigit mCounterDigit1;
 		private CounterDigit mCounterDigit2;
 		private CounterDigit mCounterDigit3;
 		private CounterDigit mCounterDigit4;
-		private Bitmap CounterFont; 
-		private Bitmap CounterYourScoreImg;
-		private RHDrawable CounterYourScoreDrawable;
+		private Bitmap CounterFont = null;; 
+		private Bitmap CounterYourScoreImg = null;;
+		private RHDrawable CounterYourScoreDrawable = null;;;
 		public  boolean doUpdateCounter = true;
 		private long timeAtLastSecond;
 		private int runCycleCounter;
-		private ProgressDialog loadingDialog;
 		private HighscoreAdapter highScoreAdapter;
 
 		private int mTotalHighscores = 0;
@@ -172,11 +181,12 @@ public class main extends Activity {
 		private HighscoreMark mHighscoreMark4 = null;
 		private HighscoreMark mHighscoreMark5 = null;
 		
-		private Bitmap mHighscoreMarkBitmap;
-		private RHDrawable mNewHighscore;
+		private Bitmap mHighscoreMarkBitmap = null;
+		private RHDrawable mNewHighscore = null;
 		
 		private int totalScore = 0;
 		private boolean threeKwasplayed = false;
+		private boolean gameIsLoading = true;
 
 		public RunnersHighView(Context context) {
 			super(context);
@@ -185,8 +195,8 @@ public class main extends Activity {
 			this.setRenderer(mRenderer);
 
 			Util.getInstance().setAppContext(context);
+			Util.getInstance().setAppRenderer(mRenderer);
 			
-
 	        Thread rHThread = new Thread(this);
 			rHThread.start();
 			
@@ -194,23 +204,31 @@ public class main extends Activity {
 //			initialize();
 		}
 		
+		public void cleanup() {
+			if (saveButtonImg != null) saveButtonImg.recycle();
+			if (blackImg != null) blackImg.recycle();
+			if (resetButtonImg!= null) resetButtonImg.recycle();
+			if (background != null) background.cleanup();
+			if (mHighscoreMarkBitmap != null) mHighscoreMarkBitmap.recycle();
+			if (level != null) level.cleanup(); 
+			if (player != null) player.cleanup();
+		}
+
 		private void initialize() {
+			if(Settings.RHDEBUG)
+				Log.d("debug", "initialize begin");
+			
+			long timeOfInitializationStart = System.currentTimeMillis();
+			Util.roundStartTime = System.currentTimeMillis();
+			
 			Context context = Util.getInstance().getAppContext();
 			
 			Rect rectgle= new Rect();
 			Window window= getWindow();
 			window.getDecorView().getWindowVisibleDisplayFrame(rectgle);
-			int StatusBarHeight= rectgle.bottom;
-			int contentViewTop= 
-			    window.findViewById(Window.ID_ANDROID_CONTENT).getTop();
-			int TitleBarHeight= contentViewTop - StatusBarHeight;
 
-			Log.e("*** Jorgesys :: ", "StatusBar Height= " + StatusBarHeight + " , TitleBar Height = " + TitleBarHeight); 
-			
 			DisplayMetrics metrics = new DisplayMetrics();
             getWindowManager().getDefaultDisplay().getMetrics(metrics);
-			
-            Log.e("debug" , "dpi: " + metrics.densityDpi);
 			
 			Display display = ((WindowManager) getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
 			width= display.getWidth();  
@@ -219,52 +237,150 @@ public class main extends Activity {
 			if(Settings.RHDEBUG)
 				Log.d("debug", "displaywidth: " + width + ", displayheight: " + height);
 			
-			Log.e("debug", "displaywidth: " + width + ", displayheight: " + height);
-			
 			Util.mScreenHeight=height;
 			Util.mScreenWidth=width;
 			Util.mWidthHeightRatio=width/height;
 			
+ 
+			BitmapFactory.Options options = new BitmapFactory.Options();
+			options.inTempStorage = new byte[16*1024];
+			
+			gameLoadingImg = BitmapFactory.decodeResource(context.getResources(),R.drawable.game_loading);
+			gameLoadingRHD = new RHDrawable(0, 0, 1, width, height);
+			gameLoadingRHD.loadBitmap(gameLoadingImg);
+			mRenderer.addMesh(gameLoadingRHD);
+			
+			long currentTime = System.currentTimeMillis();
+	    	
+	    	if (currentTime < lastCreationTime + MIN_CREATION_TIMEOUT) {
+	    		long sleeptime = MIN_CREATION_TIMEOUT - (currentTime - lastCreationTime);
+	    		lastCreationTime = currentTime;
+    			try {
+					Thread.sleep(sleeptime);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+					finish();
+				}
+	    	}
+	    	lastCreationTime = System.currentTimeMillis();
+	        
 			background = new ParalaxBackground(width, height);
 
 			mRenderer.addMesh(background);
 			sleep();
 			
-			background.loadLayerFar(BitmapFactory.decodeResource(context.getResources(),
-					R.drawable.backgroundlayer3_compr));
-			sleep();
-			background.loadLayerMiddle(BitmapFactory.decodeResource(context.getResources(),
-					R.drawable.backgroundlayer2_compr));
-			sleep();
-			background.loadLayerNear(BitmapFactory.decodeResource(context.getResources(),
-					R.drawable.backgroundlayer1_compr));
-			sleep();
 
+			try {
+			
+				background.loadLayerFar(BitmapFactory.decodeResource(context.getResources(),
+						R.drawable.game_background_layer_3));
+				sleep();
+			} catch (OutOfMemoryError oome) {
+				System.gc();
+				try {
+					Thread.sleep(MIN_CREATION_TIMEOUT);
+			
+					background.loadLayerFar(BitmapFactory.decodeResource(context.getResources(),
+							R.drawable.game_background_layer_3));
+					sleep();
+
+				}catch (OutOfMemoryError e) { 
+					e.printStackTrace();
+					setResult(1);
+					finish();
+				} catch (InterruptedException e) {
+					setResult(0);
+					finish();
+				}
+			}
+			try {
+				background.loadLayerMiddle(BitmapFactory.decodeResource(context.getResources(),
+						R.drawable.game_background_layer_2));
+				sleep();
+			} catch (OutOfMemoryError oome) {
+				System.gc();
+				try {
+					Thread.sleep(MIN_CREATION_TIMEOUT);
+					background.loadLayerMiddle(BitmapFactory.decodeResource(context.getResources(),
+							R.drawable.game_background_layer_2));
+					sleep();
+
+				}catch (OutOfMemoryError e) { 
+					e.printStackTrace();
+					setResult(1);
+					finish();
+				} catch (InterruptedException e) {
+					setResult(0);
+					finish();
+				}
+			}
+
+
+			try {
+				background.loadLayerNear(BitmapFactory.decodeResource(context.getResources(),
+						R.drawable.game_background_layer_1));
+				sleep();
+
+			} catch (OutOfMemoryError oome) {
+				System.gc();
+				try {
+					Thread.sleep(MIN_CREATION_TIMEOUT);
+					background.loadLayerNear(BitmapFactory.decodeResource(context.getResources(),
+							R.drawable.game_background_layer_1));
+					sleep();
+
+				}catch (OutOfMemoryError e) { 
+					e.printStackTrace();
+					setResult(1);
+					finish();
+				} catch (InterruptedException e) {
+					setResult(0);
+					finish();
+				}
+			}
+			
+			
+			
 			if(Settings.RHDEBUG)
 				Log.d("debug", "before addMesh");
 			
 			
-			resetButtonImg = BitmapFactory.decodeResource(context.getResources(),R.drawable.resetbutton);
-			resetButton = new Button(Util.getPercentOfScreenWidth(75), height-Util.getPercentOfScreenHeight(22), -2, 
-									 Util.getPercentOfScreenWidth(18), Util.getPercentOfScreenHeight(18));
+			resetButtonImg = BitmapFactory.decodeResource(context.getResources(),R.drawable.game_button_play_again);
+			resetButton = new Button(
+					Util.getPercentOfScreenWidth(72), 
+					height-Util.getPercentOfScreenHeight(18),
+					-2, 
+					Util.getPercentOfScreenWidth(26), 
+					Util.getPercentOfScreenHeight(13));
 			resetButton.loadBitmap(resetButtonImg);
 			mRenderer.addMesh(resetButton);			
 			
-			saveButtonImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.savebutton);
-			//saveButton = new Button(200, height-50-10, -2, 100, 50);
-			saveButton = new Button(Util.getPercentOfScreenWidth(50), height-Util.getPercentOfScreenHeight(22), -2, 
-					 				Util.getPercentOfScreenWidth(18), Util.getPercentOfScreenHeight(18));
+			saveButtonImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.game_button_save);
+			saveButton = new Button(
+					Util.getPercentOfScreenWidth(42), 
+					height-Util.getPercentOfScreenHeight(18),
+					-2, 
+					Util.getPercentOfScreenWidth(26),
+					Util.getPercentOfScreenHeight(13));
 			saveButton.loadBitmap(saveButtonImg);
 			mRenderer.addMesh(saveButton);
 			
+
+			player = new Player(getApplicationContext(), mRenderer, height);
+			sleep();
+			
 			level = new Level(context, mRenderer, width, height);
 			sleep();
+			
 			
 			if(Settings.RHDEBUG)
 				Log.d("debug", "after player creation");
 //			loadingDialog = new ProgressDialog( context );
 //		    loadingDialog.setProgressStyle(0);
 //		    loadingDialog.setMessage("Loading Highscore ...");
+		
+			
+
 			
 		    if(Settings.RHDEBUG)
 				Log.d("debug", "after loading messages");
@@ -275,34 +391,68 @@ public class main extends Activity {
 		    	Log.d("debug", "after HighscoreAdapter");
 		    
 			//new counter
-			CounterYourScoreImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.scorebackground);
-			CounterYourScoreDrawable = new RHDrawable(Util.getPercentOfScreenWidth(5), height-Util.getPercentOfScreenHeight(12), 1, Util.getPercentOfScreenWidth(27), Util.getPercentOfScreenHeight(7));
+			CounterYourScoreImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.game_background_score);
+			CounterYourScoreDrawable = new RHDrawable(
+					Util.getPercentOfScreenWidth(5),
+					height-Util.getPercentOfScreenHeight(15), 
+					0.9f, 
+					Util.getPercentOfScreenWidth(27), 
+					Util.getPercentOfScreenHeight(10));
+
 			CounterYourScoreDrawable.loadBitmap(CounterYourScoreImg); 
 			mRenderer.addMesh(CounterYourScoreDrawable);
 
 			if(Settings.RHDEBUG)
 				Log.d("debug", "after CounterYourScoreDrawable addMesh");
 			
-			CounterFont = BitmapFactory.decodeResource(context.getResources(), R.drawable.numberfont);
-			mCounterGroup = new CounterGroup(Util.getPercentOfScreenWidth(9), height-Util.getPercentOfScreenHeight(12.5f), 1, Util.getPercentOfScreenWidth(16), Util.getPercentOfScreenHeight(6), 25);
+			CounterFont = BitmapFactory.decodeResource(context.getResources(), R.drawable.game_numberfont);
+			mCounterGroup = new CounterGroup(
+					Util.getPercentOfScreenWidth(14), 
+					height-Util.getPercentOfScreenHeight(13.5f),
+					0.9f, Util.getPercentOfScreenWidth(16), 
+					Util.getPercentOfScreenHeight(6), 
+					25);
+
 			
 			if(Settings.RHDEBUG)
 				Log.d("debug", "after mCounterGroup");
 			
 
-			mCounterDigit1 = new CounterDigit(Util.getPercentOfScreenWidth(14), height-Util.getPercentOfScreenHeight(12.5f), 1, Util.getPercentOfScreenWidth(4), Util.getPercentOfScreenHeight(6.5f));
+
+			mCounterDigit1 = new CounterDigit(
+					Util.getPercentOfScreenWidth(19), 
+					height-Util.getPercentOfScreenHeight(13.5f), 
+					0.9f, 
+					Util.getPercentOfScreenWidth(3), 
+					Util.getPercentOfScreenHeight(6));
 			mCounterDigit1.loadBitmap(CounterFont); 
 			mCounterGroup.add(mCounterDigit1);
 
-			mCounterDigit2 = new CounterDigit(Util.getPercentOfScreenWidth(17.5f), height-Util.getPercentOfScreenHeight(12.5f), 1, Util.getPercentOfScreenWidth(4), Util.getPercentOfScreenHeight(6.5f));
+			mCounterDigit2 = new CounterDigit(
+					Util.getPercentOfScreenWidth(22),
+					height-Util.getPercentOfScreenHeight(13.5f),
+					0.9f,
+					Util.getPercentOfScreenWidth(3), 
+					Util.getPercentOfScreenHeight(6));
 			mCounterDigit2.loadBitmap(CounterFont); 
 			mCounterGroup.add(mCounterDigit2);
 
-			mCounterDigit3 = new CounterDigit(Util.getPercentOfScreenWidth(21), height-Util.getPercentOfScreenHeight(12.5f), 1, Util.getPercentOfScreenWidth(4), Util.getPercentOfScreenHeight(6.5f));
+			mCounterDigit3 = new CounterDigit(
+					Util.getPercentOfScreenWidth(25),
+					height-Util.getPercentOfScreenHeight(13.5f), 
+					0.9f,
+					Util.getPercentOfScreenWidth(3), 
+					Util.getPercentOfScreenHeight(6));
 			mCounterDigit3.loadBitmap(CounterFont); 
 			mCounterGroup.add(mCounterDigit3);
 
-			mCounterDigit4 = new CounterDigit(Util.getPercentOfScreenWidth(24.5f), height-Util.getPercentOfScreenHeight(12.5f), 1, Util.getPercentOfScreenWidth(4), Util.getPercentOfScreenHeight(6.5f));
+			mCounterDigit4 = new CounterDigit(
+					Util.getPercentOfScreenWidth(28),
+					height-Util.getPercentOfScreenHeight(13.5f),
+					0.9f, 
+					Util.getPercentOfScreenWidth(3), 
+					Util.getPercentOfScreenHeight(6));
+
 			mCounterDigit4.loadBitmap(CounterFont); 
 			mCounterGroup.add(mCounterDigit4);
 			
@@ -312,46 +462,42 @@ public class main extends Activity {
 			if(Settings.RHDEBUG)
 				Log.d("debug", "after counter");
 			
-			blackImg = Bitmap.createBitmap(16, 16, Bitmap.Config.ARGB_4444);
-			//blackImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.resetbutton);
+
+			blackImg = Bitmap.createBitmap(16, 16, Bitmap.Config.ARGB_8888);
 			blackRHD = new RHDrawable(0, 0, 1, width, height);
 			blackImg.eraseColor(-16777216);
 			blackImgAlpha=1;
 			blackRHD.setColor(0, 0, 0, blackImgAlpha);
 			blackRHD.loadBitmap(blackImg);
-			//mRenderer.addMesh(blackRHD);
+			mRenderer.addMesh(blackRHD);
 			
-			mHighscoreMarkBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.highscoremark);
+			gameLoadingRHD.z = -1.0f;
+			
+			
+			mHighscoreMarkBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.game_highscoremark);
 			 
 			mNewHighscore = new RHDrawable(width/2 - 128, height/2 - 64, -2, 256, 128);
-			mNewHighscore.loadBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.new_highscore));
+			mNewHighscore.loadBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.game_new_highscore));
 			mRenderer.addMesh(mNewHighscore);
 
 			if(Settings.showHighscoreMarks)
 				initHighscoreMarks();
 			
+			
+			//give the player time to read loading screen and controls
+			while(System.currentTimeMillis() < timeOfInitializationStart+Settings.TimeForLoadingScreenToBeVisible)
+				sleep(10);
+			
 			timeAtLastSecond = System.currentTimeMillis();
 	        runCycleCounter=0;
-
-			player = new Player(getApplicationContext(), mRenderer, height);
-			sleep();
-//	        
-			
-//	        Thread rHThread = new Thread(this);
-//			rHThread.start();
-			
+	        
+	        
+	        
+	        
 			if(Settings.RHDEBUG)
-				Log.d("debug", "RunnersHighView constructor ended");
+				Log.d("debug", "RunnersHighView initiation ended");
 		}
 		
-		public void surfaceChanged(SurfaceHolder holder) {
-			Log.e("debug", "surfaceChanged");
-		}
-		
-		public void onSurfaceChanged(SurfaceHolder holder) {
-			Log.e("debug", "onSurfaceChanged");
-		}
-				
 		public int getAmountOfLocalHighscores() {
 			highScoreAdapter.open();
 		    Cursor cursor = highScoreAdapter.fetchScores("0");
@@ -383,26 +529,49 @@ public class main extends Activity {
 			// this gives the app enough time to load
 			try{
 				//loadingDialog.show();
-
+				if(Settings.RHDEBUG)
+					Log.d("debug", "run method in try");
+				if(Settings.RHDEBUG)
+					Log.d("debug", "mRenderer.firstFrameDone: " + mRenderer.firstFrameDone);
+			
 				while(!mRenderer.firstFrameDone)
 					Thread.sleep(10);
 				
 				initialize();
 				
-				if(Settings.RHDEBUG)
-					Log.d("debug", "first frame done");
 
-				if(!musicPlayerLoop.isPlaying())
-					musicPlayerLoop.start();
+				long timeAtStart = System.currentTimeMillis();
+				while (System.currentTimeMillis() < timeAtStart + 2000)
+				{
+					blackImgAlpha-=0.005;
+					blackRHD.setColor(0, 0, 0, blackImgAlpha);
+					Thread.sleep(10);
+				}
+				
+				
+				blackImg.recycle();
+				gameLoadingImg.recycle();
+				
+				blackRHD.shouldBeDrawn = false;
+				gameLoadingRHD.shouldBeDrawn = false;
+				
+				mRenderer.removeMesh(blackRHD);
+				mRenderer.removeMesh(gameLoadingRHD);
+				
+				if(Settings.RHDEBUG)
+					Log.d("debug", "after fade in");
+
+				try {
+					if(!musicPlayerLoop.isPlaying())
+						musicPlayerLoop.start();
+				} catch (IllegalStateException e) {
+					e.printStackTrace();
+					Log.w("RH_RUN", "Illegal State Exception... do not restart game that quick... DUDE");
+				}
+				
 				MusicLoopStartedForFirstTime=true;
 				
-//				long timeAtStart = System.currentTimeMillis();
-//				while (System.currentTimeMillis() < timeAtStart + 2000)
-//				{
-//					blackImgAlpha-=0.005; 
-//					blackRHD.setColor(0, 0, 0, blackImgAlpha);
-//					Thread.sleep(10);
-//				}
+
 				//loadingDialog.hide();
 			}
 			catch (InterruptedException e)
@@ -410,18 +579,36 @@ public class main extends Activity {
 				e.printStackTrace();
 			}
 			
-			blackRHD.setColor(0, 0, 0, 0);
+			if(Settings.RHDEBUG)
+				Log.d("debug", "run method after try catch");
+			
 			blackRHD.z=-1.0f;
+			blackRHD.setColor(0, 0, 0, 0);
 			//mRenderer.removeMesh(blackRHD); //TODO: find a way to remove mesh without runtime errors
 
 			long timeForOneCycle=0;
 			long currentTimeTaken=0;
 			long starttime = 0;
 			
+	        gameIsLoading = false;
+			
+			if(Settings.RHDEBUG)				
+				Log.d("debug", "run method befor while");
+			//			long debugTime = System.currentTimeMillis(); // FIXME DEBUG TIME FOR VIDEO CAPTURE
+			Util.roundStartTime = System.currentTimeMillis();
+			
 			while(isRunning){
-				starttime= System.currentTimeMillis();
+				
+				starttime = System.currentTimeMillis();
+				
+//				if (debugTime + 15000 < starttime) sleep(100); // FIXME DEBUG TIME FOR VIDEO CAPTURE
 
-				player.playerSprite.setFrameUpdateTime( (level.baseSpeedMax+level.extraSpeedMax)*10 -((level.baseSpeed+level.extraSpeed)*10) );
+//				level.update(); // FIXME remove this line
+				
+				player.playerSprite.setFrameUpdateTime(
+						(level.baseSpeedMax+level.extraSpeedMax)*10 - 
+						((level.baseSpeed+level.extraSpeed)*10) +
+						60 );
 				if (player.update()) {
 						if(Settings.RHDEBUG){
 							currentTimeTaken = System.currentTimeMillis()- starttime;
@@ -433,6 +620,7 @@ public class main extends Activity {
 							Log.d("runtime", "time after level update: " + Integer.toString((int)currentTimeTaken));
 						}
 						background.update();
+						
 						if(Settings.RHDEBUG){
 							currentTimeTaken = System.currentTimeMillis()- starttime;
 							Log.d("runtime", "time after background update: " + Integer.toString((int)currentTimeTaken));
@@ -450,6 +638,8 @@ public class main extends Activity {
 						if(!deathSoundPlayed){
 							SoundManager.playSound(7, 1);
 							deathSoundPlayed=true;
+							
+							System.gc(); //do garbage collection
 						}
 						if(Settings.showHighscoreMarks){
 							if (totalScore > mHighscore1)
@@ -462,11 +652,11 @@ public class main extends Activity {
 					level.lowerSpeed();
 				}
 				
-				
 				if(doUpdateCounter)
 				{
 					totalScore = level.getDistanceScore() + player.getBonusScore();
-					mCounterGroup.tryToSetCounterTo(totalScore);
+					if (Settings.SHOW_FPS) mCounterGroup.tryToSetCounterTo(mRenderer.fps);
+					else mCounterGroup.tryToSetCounterTo(totalScore);
 					
 					if(totalScore>=3000 && threeKwasplayed==false)
 					{
@@ -633,50 +823,53 @@ public class main extends Activity {
 		
 
 		public boolean onTouchEvent(MotionEvent event) {
-			if(event.getAction() == MotionEvent.ACTION_UP)
-				player.setJump(false);
-			
-			else if(event.getAction() == MotionEvent.ACTION_DOWN){
-				if (resetButton.getShowButton() || saveButton.getShowButton()) {
-					if(resetButton.isClicked( event.getX(), Util.getInstance().toScreenY((int)event.getY()) ) ){
-						System.gc(); //do garbage collection
-						player.reset();
-						level.reset();
-						resetButton.setShowButton(false);
-						resetButton.z = -2.0f;
-						saveButton.setShowButton(false);
-						saveButton.z = -2.0f;
-						saveButton.x = saveButton.lastX; 
-						mCounterGroup.resetCounter();
-						scoreWasSaved=false;
-						deathSoundPlayed=false;
-						SoundManager.playSound(1, 1);
-						doUpdateCounter=true;
-						
-						if(Settings.showHighscoreMarks){
-							mNewHighscore.z = -2.0f;
-							initHighscoreMarks();
-						}
+			if(!gameIsLoading){
+				if(event.getAction() == MotionEvent.ACTION_UP)
+					player.setJump(false);
+				
+				else if(event.getAction() == MotionEvent.ACTION_DOWN){
+					if (resetButton.getShowButton() || saveButton.getShowButton()) {
+						if(resetButton.isClicked( event.getX(), Util.getInstance().toScreenY((int)event.getY()) ) ){
+							System.gc(); //do garbage collection
+							player.reset();
+							level.reset();
+							resetButton.setShowButton(false);
+							resetButton.z = -2.0f;
+							saveButton.setShowButton(false);
+							saveButton.z = -2.0f;
+							saveButton.x = saveButton.lastX; 
+							mCounterGroup.resetCounter();
+							scoreWasSaved=false;
+							deathSoundPlayed=false;
+							SoundManager.playSound(1, 1);
+							doUpdateCounter=true;
 							
-						threeKwasplayed = false;
-						totalScore = 0;
+							if(Settings.showHighscoreMarks){
+								mNewHighscore.z = -2.0f;
+								initHighscoreMarks();
+							}
+								
+							threeKwasplayed = false;
+							totalScore = 0;
+							Util.roundStartTime = System.currentTimeMillis();
+						}
+						else if(saveButton.isClicked( event.getX(), Util.getInstance().toScreenY((int)event.getY())  ) && !scoreWasSaved){
+							//save score
+							saveButton.setShowButton(false);
+							saveButton.z = -2.0f;
+							saveButton.lastX = saveButton.x;
+							saveButton.x = -5000;
+							
+							saveScore(totalScore);
+	
+							//play save sound
+							SoundManager.playSound(4, 1);
+							scoreWasSaved=true;
+						}
 					}
-					else if(saveButton.isClicked( event.getX(), Util.getInstance().toScreenY((int)event.getY())  ) && !scoreWasSaved){
-						//save score
-						saveButton.setShowButton(false);
-						saveButton.z = -2.0f;
-						saveButton.lastX = saveButton.x;
-						saveButton.x = -5000;
-						
-						saveScore(totalScore);
-
-						//play save sound
-						SoundManager.playSound(4, 1);
-						scoreWasSaved=true;
+					else {
+						player.setJump(true);
 					}
-				}
-				else {
-					player.setJump(true);
 				}
 			}
 			

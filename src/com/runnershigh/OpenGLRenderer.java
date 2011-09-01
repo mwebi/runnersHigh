@@ -26,10 +26,11 @@ import android.util.Log;
 
 public class OpenGLRenderer implements Renderer {
 	private final Group root;
-	private long timeAtLastSecond;
+	private long timeAtLastSecond = 0;
 	private long currentTimeTaken=0;
 	private long starttime = 0;
 	private int fpsCounter;
+	public int fps = 0;
 	
 	public boolean firstFrameDone = false;
 
@@ -99,7 +100,9 @@ public class OpenGLRenderer implements Renderer {
 		}
 		
 		// Draw our scene.
-		root.draw(gl);
+		synchronized (root) {
+			root.draw(gl);
+		}
 		fpsCounter++;
 		
 		
@@ -108,10 +111,13 @@ public class OpenGLRenderer implements Renderer {
 			Log.d("frametime", "time after draw: " + Integer.toString((int)currentTimeTaken));
 		}
 		
-		if((System.currentTimeMillis() - timeAtLastSecond) > 1000 && Settings.RHDEBUG){
+		if((System.currentTimeMillis() - timeAtLastSecond) > 1000){
 			timeAtLastSecond = System.currentTimeMillis();
-			Log.d("framerate", "draws per second: " + Integer.toString(fpsCounter));
+			fps = fpsCounter;
 			fpsCounter=0;
+			if(Settings.RHDEBUG) {
+				Log.d("framerate", "draws per second: " + Integer.toString(fpsCounter));
+			}
 		}
 		
 		firstFrameDone = true;
@@ -162,10 +168,14 @@ public class OpenGLRenderer implements Renderer {
 	 *            the mesh to add.
 	 */
 	public void addMesh(Mesh mesh) {
-		root.add(mesh);
+		synchronized (root) {
+			root.add(mesh);	
+		}
 	}
 	
 	public void removeMesh(Mesh mesh) {
-		root.remove(mesh);
+		synchronized (root) {
+			root.remove(mesh);
+		}
 	}
 }

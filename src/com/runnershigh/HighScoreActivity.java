@@ -78,7 +78,7 @@ public class HighScoreActivity extends ListActivity {
         		clearHighscore();        		
         	}
         });        
-       */        
+        */        
         loadingDialog = new ProgressDialog( this );
         loadingDialog.setProgressStyle(0);
         loadingDialog.setMessage("Loading Highscore ...");

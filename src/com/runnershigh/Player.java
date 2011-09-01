@@ -8,9 +8,8 @@ import android.graphics.Rect;
 import android.util.Log;
 
 public class Player{
-	private static float MAX_JUMP_HEIGHT = Util.getPercentOfScreenHeight(17);  //50
+	private static float MAX_JUMP_HEIGHT = Util.getPercentOfScreenHeight(15);  //50
 	//private static float MIN_JUMP_HEIGHT = Util.getPercentOfScreenHeight(5);  //30
-	public Bitmap playerImg;
 	private float lastPosY;
 	static public float width;
 	static public float height;
@@ -33,8 +32,11 @@ public class Player{
 	private float speedoffsetXStart;
 	private float speedoffsetXMax;
 	private float speedoffsetXStep;
-	private Bitmap playerSpriteImg; 
-	public PlayerSprite playerSprite;
+	private Bitmap playerSpriteImg = null; 
+	public Sprite playerSprite;
+	private boolean fingerOnScreen = false;
+	private float bonusVelocity = 0;
+	private float bonusVelocityDownfallSpeed = 0;
 	
 	public int bonusItems = 0;
 	private int bonusScorePerItem = 200;
@@ -47,15 +49,16 @@ public class Player{
 		width = Util.getPercentOfScreenWidth(9); //40; dicker //40; nyan cat //60; nyan cat pre minimalize //62; playersprite settings
 		height = width*Util.mWidthHeightRatio; //40; dicker //30;  nyan cat //42; nyan cat pre minimalize //63; playersprite settings
 		
-		velocityMax = Util.getPercentOfScreenHeight(2); //9 Util.getPercentOfScreenHeight(1.875f)
-		velocityDownfallSpeed = velocityMax/20;
+		velocityMax = Util.getPercentOfScreenHeight(3); //9 Util.getPercentOfScreenHeight(1.875f)
+		velocityDownfallSpeed = velocityMax/30.0f;
+		bonusVelocityDownfallSpeed = velocityDownfallSpeed / 6.0f;
 		
 		speedoffsetXStart = x;
 		speedoffsetXMax = Util.getPercentOfScreenWidth(7);
 		speedoffsetXStep = Util.getPercentOfScreenWidth(0.002f);
 		
-		playerSpriteImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.bastardchar512x128);
-		playerSprite = new PlayerSprite(x, y, 0.5f, width, height, 25, 8); 
+		playerSpriteImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.game_character_spritesheet);
+		playerSprite = new Sprite(x, y, 0.5f, width, height, 25, 8); 
 		playerSprite.loadBitmap(playerSpriteImg); 
 		glrenderer.addMesh(playerSprite);
 		
@@ -68,10 +71,16 @@ public class Player{
 		ObstacleRect = new Rect();
 	}
 	
+	public void cleanup() {
+		if (playerSpriteImg != null) playerSpriteImg.recycle();
+	}
+	
 	public void setJump(boolean jump) {
+		fingerOnScreen = jump;
 		if(!jump)
 		{
 			reachedPeak = true;
+			bonusVelocity = 0.0f;
 		}
 		
 		if(reachedPeak || !onGround) return;
@@ -119,7 +128,11 @@ public class Player{
 		else if (velocity > velocityMax)
 			velocity = velocityMax;
 		
-		y += velocity;
+		y += velocity + bonusVelocity;
+
+		bonusVelocity-= bonusVelocityDownfallSpeed;
+		if (bonusVelocity < 0)
+			bonusVelocity = 0;
 		
 		playerRect.left =(int)x;
 		playerRect.top =(int)(y+height);
@@ -139,6 +152,7 @@ public class Player{
 					reachedPeak = false;
 					jumping = false;
 					onGround = true;
+					bonusVelocity = 0.0f;
 				}
 				else{
 					// false -> player stops at left -> block mode
@@ -176,8 +190,10 @@ public class Player{
 				Level.obstacleDataJumper[i].didTrigger=true;
 				
 				SoundManager.playSound(6, 1);
-				velocity = Util.getPercentOfScreenHeight(1.3f);//6; //katapultiert den player wie ein trampolin nach oben
+				velocity = Util.getPercentOfScreenHeight(2.6f);//6; //katapultiert den player wie ein trampolin nach oben
 				
+				if (fingerOnScreen)
+					bonusVelocity = Util.getPercentOfScreenHeight(1.5f);
 			}
 		}
 		
@@ -210,9 +226,11 @@ public class Player{
 
 			if( checkIntersect(playerRect, ObstacleRect) && !Level.obstacleDataBonus[i].didTrigger)
 			{
-				Level.obstacleDataBonus[i].didTrigger=true;
-
 				SoundManager.playSound(8, 1);
+				Level.obstacleDataBonus[i].didTrigger=true;
+				Level.obstacleDataBonus[i].bonusScoreEffect.effectX = Level.obstacleDataBonus[i].x;
+				Level.obstacleDataBonus[i].bonusScoreEffect.effectY = Level.obstacleDataBonus[i].y;
+				Level.obstacleDataBonus[i].bonusScoreEffect.doBonusScoreEffect=true;
 				bonusItems++;
 				Level.obstacleDataBonus[i].z= -1;
 			}
