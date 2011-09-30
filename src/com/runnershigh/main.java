@@ -1,5 +1,7 @@
 package com.runnershigh;
 
+import javax.microedition.khronos.opengles.GL10;
+
 import com.highscore.HighscoreAdapter;
 
 import android.app.Activity;
@@ -53,21 +55,17 @@ public class main extends Activity {
 	        SoundManager.initSounds(this);
 	        SoundManager.loadSounds();
 	        
-	        //musicPlayerIntro = MediaPlayer.create(getApplicationContext(), R.raw.nyanintro);
-	        //musicPlayerIntro.start();
-	        //musicPlayerIntro.setVolume(0.5f, 0.5f);
-	        //musicPlayerIntro.setLooping(false);
+	        if (Settings.SHOW_FPS) musicPlayerLoop = MediaPlayer.create(getApplicationContext(), R.raw.jobrohunter);
+	        else musicPlayerLoop = MediaPlayer.create(getApplicationContext(), R.raw.gamebackground);
 	        
-	        musicPlayerLoop = MediaPlayer.create(getApplicationContext(), R.raw.gamebackground);
 	        musicPlayerLoop.setLooping(true);
 			musicPlayerLoop.seekTo(0);
-			musicPlayerLoop.setVolume(0.3f, 0.3f);
-	        
+			musicPlayerLoop.setVolume(0.5f, 0.5f);
+			
+			
 			requestWindowFeature(Window.FEATURE_NO_TITLE);  
 			getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
 			
-			//setContentView(R.layout.runnershigh);	        
-			//(RunnersHighView) findViewById(R.id.runnersHighViewXML);
 			isRunning = true;
 			mGameView = new RunnersHighView(getApplicationContext()); 
 			setContentView(mGameView);	     
@@ -185,8 +183,9 @@ public class main extends Activity {
 		private RHDrawable mNewHighscore = null;
 		
 		private int totalScore = 0;
-		private boolean threeKwasplayed = false;
+		private boolean nineKwasplayed = false;
 		private boolean gameIsLoading = true;
+		
 
 		public RunnersHighView(Context context) {
 			super(context);
@@ -293,6 +292,7 @@ public class main extends Activity {
 					finish();
 				}
 			}
+			
 			try {
 				background.loadLayerMiddle(BitmapFactory.decodeResource(context.getResources(),
 						R.drawable.game_background_layer_2));
@@ -314,7 +314,6 @@ public class main extends Activity {
 					finish();
 				}
 			}
-
 
 			try {
 				background.loadLayerNear(BitmapFactory.decodeResource(context.getResources(),
@@ -338,7 +337,6 @@ public class main extends Activity {
 					finish();
 				}
 			}
-			
 			
 			
 			if(Settings.RHDEBUG)
@@ -372,6 +370,7 @@ public class main extends Activity {
 			level = new Level(context, mRenderer, width, height);
 			sleep();
 			
+		
 			
 			if(Settings.RHDEBUG)
 				Log.d("debug", "after player creation");
@@ -564,6 +563,7 @@ public class main extends Activity {
 				try {
 					if(!musicPlayerLoop.isPlaying())
 						musicPlayerLoop.start();
+					
 				} catch (IllegalStateException e) {
 					e.printStackTrace();
 					Log.w("RH_RUN", "Illegal State Exception... do not restart game that quick... DUDE");
@@ -636,7 +636,7 @@ public class main extends Activity {
 						saveButton.setShowButton(true);
 						saveButton.z = 1.0f;
 						if(!deathSoundPlayed){
-							SoundManager.playSound(7, 1);
+							SoundManager.playSound(7, 1, 0.5f, 0.5f, 0);
 							deathSoundPlayed=true;
 							
 							System.gc(); //do garbage collection
@@ -658,10 +658,10 @@ public class main extends Activity {
 					if (Settings.SHOW_FPS) mCounterGroup.tryToSetCounterTo(mRenderer.fps);
 					else mCounterGroup.tryToSetCounterTo(totalScore);
 					
-					if(totalScore>=3000 && threeKwasplayed==false)
+					if(totalScore>=9000 && nineKwasplayed==false)
 					{
-						threeKwasplayed=true;
-						SoundManager.playSound(2, 1);
+						nineKwasplayed=true;
+						SoundManager.playSound(9, 1, 1000, 1000, 0);
 					}
 				}
 					
@@ -849,7 +849,7 @@ public class main extends Activity {
 								initHighscoreMarks();
 							}
 								
-							threeKwasplayed = false;
+							nineKwasplayed = false;
 							totalScore = 0;
 							Util.roundStartTime = System.currentTimeMillis();
 						}

@@ -2,6 +2,9 @@ package com.runnershigh;
 
 
 import java.util.Random;
+
+import javax.microedition.khronos.opengles.GL10;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -94,6 +97,8 @@ public class Level {
 	private boolean lastBlockWasSmall = false;
 	private int minBlockWidth = 0;
 
+
+	private RHDrawable mWaves = null;
 	
 	public Level(Context context, OpenGLRenderer glrenderer, int _width, int _heigth) {
 		if(Settings.RHDEBUG)
@@ -142,6 +147,9 @@ public class Level {
 		}
 		renderer = glrenderer;
 		
+		
+		
+		
 		randomGenerator = new Random();
 		
 		blockData = new Block[maxBlocks];
@@ -180,6 +188,13 @@ public class Level {
 		
 		initializeBlocks(true);
 		initializeObstacles(true);
+		
+		
+		mWaves = new RHDrawable(0, 0, 0.7f, width*4, height);
+		mWaves.loadBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.game_waves)
+				, GL10.GL_REPEAT, GL10.GL_CLAMP_TO_EDGE);
+		renderer.addMesh(mWaves);
+		
 		
 	}
 	
@@ -238,7 +253,11 @@ public class Level {
 			
 			deltaLevelPosition = baseSpeed + extraSpeed;
 			levelPosition += deltaLevelPosition;
-
+			
+			
+			mWaves.x -= deltaLevelPosition+2;
+			if (mWaves.x < -mWaves.width/2)
+				mWaves.x = 0;
 
 			//Log.d("debug", "deltaLevelPosition/10: " + deltaLevelPosition/10);
 			//scoreCounter += deltaLevelPosition/10;
@@ -390,8 +409,6 @@ public class Level {
 		blockData[leftBlockIndex].setWidth(newWidth);
 		blockData[leftBlockIndex].x = newLeft;
 	
-		
-		
 		leftBlockIndex++;
 	    if (leftBlockIndex == maxBlocks)
 	    	leftBlockIndex = 0;
@@ -401,6 +418,8 @@ public class Level {
 	    	rightBlockIndex = 0;
 		    
 		BlockCounter++;
+		
+		
 
 		//Log.d("debug", "left appendBlockToEnd");
 	}
