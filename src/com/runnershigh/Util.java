@@ -10,6 +10,7 @@ public class Util {
 	public static int mWidthHeightRatio = 0;
 	private static Context mContext = null;
 	private static OpenGLRenderer mRenderer = null;
+	public static long roundStartTime = 0;
 	
 	public static synchronized Util getInstance() {
 		if(mInstance == null)
@@ -26,8 +27,6 @@ public class Util {
 		float percentHeight=mScreenHeight/100*percent;
 		return percentHeight;
 	} 	
-
-	
 	
 	public int toScreenY(int y) {
 		y *= -1;
@@ -55,5 +54,10 @@ public class Util {
 	{
 		assert(mRenderer != null);
 		return mRenderer;
+	}
+	public static long getTimeSinceRoundStartMillis()
+	{
+		assert(roundStartTime != 0);
+		return System.currentTimeMillis()-roundStartTime;
 	}
 }

@@ -1,7 +1,7 @@
 package com.runnershigh;
 
 
-public class PlayerSprite extends Mesh {
+public class Sprite extends Mesh {
 	private float width;
 	private float height;
 	private int currentFrame;
@@ -11,7 +11,7 @@ public class PlayerSprite extends Mesh {
 	private float textureWidthOfOneFrame;
 	private float textureCoordinates[] = {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,};
 	
-	public PlayerSprite(float _x, float _y, float _z, float _width, float _height, int _FrameUpdateTime, int _numberOfFrames) {
+	public Sprite(float _x, float _y, float _z, float _width, float _height, int _FrameUpdateTime, int _numberOfFrames) {
 		x = _x;
 		y = _y;
 		z = _z;

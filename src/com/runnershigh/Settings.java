@@ -30,8 +30,15 @@ public class Settings {
 	static final boolean RHDEBUG = false;
 	static boolean SHOW_FPS = false;
 	
-	
 	static final boolean showHighscoreMarks = false;
 	
-	static final int FirstBlockHeight = 50;
+	//gameplay settings
+	static public float FirstBlockHeight = 50;
+	
+	static final int TimeForLoadingScreenToBeVisible = 3500;
+	
+	static final int TimeOfFirstSpeedIncrease = 30000;
+	static final int timeToFurtherSpeedIncreaseMillis = 10000;
+	static final int timeUntilLongBlocksStopMillis = 40000;
+
 }

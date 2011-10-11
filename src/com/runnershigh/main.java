@@ -52,21 +52,17 @@ public class main extends Activity {
 	        SoundManager.initSounds(this);
 	        SoundManager.loadSounds();
 	        
-	        //musicPlayerIntro = MediaPlayer.create(getApplicationContext(), R.raw.nyanintro);
-	        //musicPlayerIntro.start();
-	        //musicPlayerIntro.setVolume(0.5f, 0.5f);
-	        //musicPlayerIntro.setLooping(false);
+	        if (Settings.SHOW_FPS) musicPlayerLoop = MediaPlayer.create(getApplicationContext(), R.raw.jobrohunter);
+	        else musicPlayerLoop = MediaPlayer.create(getApplicationContext(), R.raw.gamebackground);
 	        
-	        musicPlayerLoop = MediaPlayer.create(getApplicationContext(), R.raw.gamebackground);
 	        musicPlayerLoop.setLooping(true);
 			musicPlayerLoop.seekTo(0);
-			musicPlayerLoop.setVolume(0.3f, 0.3f);
-	        
+			musicPlayerLoop.setVolume(0.5f, 0.5f);
+			
+			
 			requestWindowFeature(Window.FEATURE_NO_TITLE);  
 			getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
 			
-			//setContentView(R.layout.runnershigh);	        
-			//(RunnersHighView) findViewById(R.id.runnersHighViewXML);
 			isRunning = true;
 			mGameView = new RunnersHighView(getApplicationContext()); 
 			setContentView(mGameView);	     
@@ -184,8 +180,9 @@ public class main extends Activity {
 		private RHDrawable mNewHighscore = null;
 		
 		private int totalScore = 0;
-		private boolean threeKwasplayed = false;
+		private boolean nineKwasplayed = false;
 		private boolean gameIsLoading = true;
+		
 
 		public RunnersHighView(Context context) {
 			super(context);
@@ -195,7 +192,7 @@ public class main extends Activity {
 
 			Util.getInstance().setAppContext(context);
 			Util.getInstance().setAppRenderer(mRenderer);
-
+			
 	        Thread rHThread = new Thread(this);
 			rHThread.start();
 			
@@ -216,7 +213,11 @@ public class main extends Activity {
 		private void initialize() {
 			if(Settings.RHDEBUG)
 				Log.d("debug", "initialize begin");
-			Context context = Util.getAppContext();
+			
+			long timeOfInitializationStart = System.currentTimeMillis();
+			Util.roundStartTime = System.currentTimeMillis();
+			
+			Context context = Util.getInstance().getAppContext();
 			
 			Rect rectgle= new Rect();
 			Window window= getWindow();
@@ -288,6 +289,7 @@ public class main extends Activity {
 					finish();
 				}
 			}
+			
 			try {
 				background.loadLayerMiddle(BitmapFactory.decodeResource(context.getResources(),
 						R.drawable.game_background_layer_2));
@@ -309,7 +311,6 @@ public class main extends Activity {
 					finish();
 				}
 			}
-
 
 			try {
 				background.loadLayerNear(BitmapFactory.decodeResource(context.getResources(),
@@ -335,38 +336,39 @@ public class main extends Activity {
 			}
 			
 			
-			
 			if(Settings.RHDEBUG)
 				Log.d("debug", "before addMesh");
 			
 			
 			resetButtonImg = BitmapFactory.decodeResource(context.getResources(),R.drawable.game_button_play_again);
 			resetButton = new Button(
-					Util.getPercentOfScreenWidth(75), 
-					height-Util.getPercentOfScreenHeight(15),
+					Util.getPercentOfScreenWidth(72), 
+					height-Util.getPercentOfScreenHeight(18),
 					-2, 
-					Util.getPercentOfScreenWidth(20), 
-					Util.getPercentOfScreenHeight(10));
+					Util.getPercentOfScreenWidth(26), 
+					Util.getPercentOfScreenHeight(13));
 			resetButton.loadBitmap(resetButtonImg);
 			mRenderer.addMesh(resetButton);			
 			
 			saveButtonImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.game_button_save);
-			//saveButton = new Button(200, height-50-10, -2, 100, 50);
 			saveButton = new Button(
-					Util.getPercentOfScreenWidth(50), 
-					height-Util.getPercentOfScreenHeight(15),
+					Util.getPercentOfScreenWidth(42), 
+					height-Util.getPercentOfScreenHeight(18),
 					-2, 
-					Util.getPercentOfScreenWidth(20),
-					Util.getPercentOfScreenHeight(10));
+					Util.getPercentOfScreenWidth(26),
+					Util.getPercentOfScreenHeight(13));
 			saveButton.loadBitmap(saveButtonImg);
 			mRenderer.addMesh(saveButton);
+			
+
+			player = new Player(getApplicationContext(), mRenderer, height);
+			sleep();
 			
 			level = new Level(context, mRenderer, width, height);
 			sleep();
 			
-			player = new Player(getApplicationContext(), mRenderer, height);
-			sleep();
 		
+			
 			if(Settings.RHDEBUG)
 				Log.d("debug", "after player creation");
 //			loadingDialog = new ProgressDialog( context );
@@ -478,9 +480,14 @@ public class main extends Activity {
 				initHighscoreMarks();
 			
 			
+			//give the player time to read loading screen and controls
+			while(System.currentTimeMillis() < timeOfInitializationStart+Settings.TimeForLoadingScreenToBeVisible)
+				sleep(10);
 			
 			timeAtLastSecond = System.currentTimeMillis();
 	        runCycleCounter=0;
+	        
+	        
 	        
 	        
 			if(Settings.RHDEBUG)
@@ -500,7 +507,7 @@ public class main extends Activity {
 			if (mTotalHighscores >= id)
 			{
 			    Cursor cursor = highScoreAdapter.getHighscore(id);
-			    String hs = cursor.getString(cursor.getColumnIndexOrThrow(HighscoreAdapter.KEY_SCORE));
+			    String hs = cursor.getString(cursor.getColumnIndexOrThrow(highScoreAdapter.KEY_SCORE));
 			    highScoreAdapter.close();		    
 			    return new Integer(hs);
 			}
@@ -553,6 +560,7 @@ public class main extends Activity {
 				try {
 					if(!musicPlayerLoop.isPlaying())
 						musicPlayerLoop.start();
+					
 				} catch (IllegalStateException e) {
 					e.printStackTrace();
 					Log.w("RH_RUN", "Illegal State Exception... do not restart game that quick... DUDE");
@@ -584,10 +592,11 @@ public class main extends Activity {
 			if(Settings.RHDEBUG)				
 				Log.d("debug", "run method befor while");
 			//			long debugTime = System.currentTimeMillis(); // FIXME DEBUG TIME FOR VIDEO CAPTURE
+			Util.roundStartTime = System.currentTimeMillis();
 			
 			while(isRunning){
 				
-				starttime= System.currentTimeMillis();
+				starttime = System.currentTimeMillis();
 				
 //				if (debugTime + 15000 < starttime) sleep(100); // FIXME DEBUG TIME FOR VIDEO CAPTURE
 
@@ -608,6 +617,7 @@ public class main extends Activity {
 							Log.d("runtime", "time after level update: " + Integer.toString((int)currentTimeTaken));
 						}
 						background.update();
+						
 						if(Settings.RHDEBUG){
 							currentTimeTaken = System.currentTimeMillis()- starttime;
 							Log.d("runtime", "time after background update: " + Integer.toString((int)currentTimeTaken));
@@ -623,7 +633,7 @@ public class main extends Activity {
 						saveButton.setShowButton(true);
 						saveButton.z = 1.0f;
 						if(!deathSoundPlayed){
-							SoundManager.playSound(7, 1);
+							SoundManager.playSound(7, 1, 0.5f, 0.5f, 0);
 							deathSoundPlayed=true;
 							
 							System.gc(); //do garbage collection
@@ -645,10 +655,10 @@ public class main extends Activity {
 					if (Settings.SHOW_FPS) mCounterGroup.tryToSetCounterTo(mRenderer.fps);
 					else mCounterGroup.tryToSetCounterTo(totalScore);
 					
-					if(totalScore>=3000 && threeKwasplayed==false)
+					if(totalScore>=9000 && nineKwasplayed==false)
 					{
-						threeKwasplayed=true;
-						SoundManager.playSound(2, 1);
+						nineKwasplayed=true;
+						SoundManager.playSound(9, 1, 1000, 1000, 0);
 					}
 				}
 					
@@ -836,8 +846,9 @@ public class main extends Activity {
 								initHighscoreMarks();
 							}
 								
-							threeKwasplayed = false;
+							nineKwasplayed = false;
 							totalScore = 0;
+							Util.roundStartTime = System.currentTimeMillis();
 						}
 						else if(saveButton.isClicked( event.getX(), Util.getInstance().toScreenY((int)event.getY())  ) && !scoreWasSaved){
 							//save score
