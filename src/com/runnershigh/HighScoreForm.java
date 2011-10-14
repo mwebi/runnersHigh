@@ -26,6 +26,7 @@ import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -101,6 +102,14 @@ public class HighScoreForm extends Activity {
         	// Save score online
         	if(checkboxPushOnline.isChecked()) {        	      		
 
+        		try {
+                	highScoreAdapter.createHighscore(score, name, isonline);
+        		} catch (Exception e) {
+					Log.w(Settings.LOG_TAG, "create highscore threw an exception");
+					Log.w(Settings.LOG_TAG, "Maybe a double attempt? HTC Sensation does that for example");
+					return;
+				}
+        		
         		if(!isOnline()) {
         			highScoreAdapter.toastMessage(R.string.hs_error_no_internet);
         		} else {
@@ -127,7 +136,6 @@ public class HighScoreForm extends Activity {
         		}
         	}
         	
-        	highScoreAdapter.createHighscore(score, name, isonline);
         	highScoreAdapter.close();
         	
         	setResult(RESULT_OK);
