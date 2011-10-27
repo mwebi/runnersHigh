@@ -7,7 +7,6 @@ import javax.microedition.khronos.opengles.GL10;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Rect;
 import android.util.Log;
 
@@ -167,21 +166,12 @@ public class Level {
 		leftBonusIndex = 0;
 		rightBonusIndex = maxObstaclesBonus;
 
+		obstacleSlowImg = Util.loadBitmapFromAssets("game_obstacle_slow.png");
+		obstacleBonusImg =Util.loadBitmapFromAssets("game_obstacle_bonus.png"); 
 		
-		obstacleSlowImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.game_obstacle_slow );
-		obstacleBonusImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.game_obstacle_bonus);
-
-		
-		Block.setTextureLeft(
-				BitmapFactory.decodeResource(
-						context.getResources(), R.drawable.game_block_left ));
-		Block.setTextureMiddle(
-				BitmapFactory.decodeResource(
-						context.getResources(), R.drawable.game_block_middle ));
-		Block.setTextureRight(
-				BitmapFactory.decodeResource(
-						context.getResources(), R.drawable.game_block_right ));
-		
+		Block.setTextureLeft(Util.loadBitmapFromAssets("game_block_left.png"));
+		Block.setTextureMiddle(Util.loadBitmapFromAssets("game_block_middle.png"));
+		Block.setTextureRight(Util.loadBitmapFromAssets("game_block_right.png"));
 
 		slowDown = false;
 		
@@ -190,7 +180,7 @@ public class Level {
 		
 		
 		mWaves = new RHDrawable(0, 0, 0.7f, width*4, height);
-		mWaves.loadBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.game_waves)
+		mWaves.loadBitmap(Util.loadBitmapFromAssets("game_waves.png")
 				, GL10.GL_REPEAT, GL10.GL_CLAMP_TO_EDGE);
 		renderer.addMesh(mWaves);
 		

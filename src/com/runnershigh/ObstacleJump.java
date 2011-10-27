@@ -1,7 +1,6 @@
 package com.runnershigh;
 
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 
 
 public class ObstacleJump extends Obstacle {
@@ -12,7 +11,7 @@ public class ObstacleJump extends Obstacle {
 		super(_x, _y, _z, _width, _height, type);
 		
 		jumpSprite = new Sprite(_x, _y, _z, _width, _height, _FrameUpdateTime, _numberOfFrames);
-		jumpSprite.loadBitmap(BitmapFactory.decodeResource(Util.getAppContext().getResources(), R.drawable.game_obstacle_jump_animated) );
+		jumpSprite.loadBitmap(Util.loadBitmapFromAssets("game_obstacle_jump_animated.png") );
 
 		Util.getAppRenderer().addMesh(jumpSprite);
 		

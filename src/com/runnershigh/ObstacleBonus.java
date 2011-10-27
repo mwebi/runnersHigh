@@ -1,7 +1,6 @@
 package com.runnershigh;
 
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 
 public class ObstacleBonus extends Obstacle {
 	public char ObstacleType; //s=slow, j=jumper //b=bonus
@@ -30,13 +29,13 @@ public class ObstacleBonus extends Obstacle {
 		centerX=x;
 		centerY=y;
 		
-		bonusScoreEffectImg = BitmapFactory.decodeResource(Util.getInstance().getAppContext().getResources(), R.drawable.game_bonusscore);
+		bonusScoreEffectImg = Util.loadBitmapFromAssets("game_bonusscore.png");
 		float bonusScoreEffectImgWidthHeightFector = bonusScoreEffectImg.getWidth()/bonusScoreEffectImg.getHeight();
 		float bonusScoreEffectWidth = Util.getPercentOfScreenWidth(20);
 		float bonusScoreEffectHeight = bonusScoreEffectWidth/bonusScoreEffectImgWidthHeightFector;
 		bonusScoreEffect = new BonusScoreEffect(x-bonusScoreEffectWidth/2, y-bonusScoreEffectHeight/2, 0.85f, bonusScoreEffectWidth, bonusScoreEffectHeight);
 		bonusScoreEffect.loadBitmap(bonusScoreEffectImg);
-		Util.getInstance().getAppRenderer().addMesh(bonusScoreEffect);
+		Util.getAppRenderer().addMesh(bonusScoreEffect);
 		
 		
 	}

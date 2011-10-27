@@ -98,17 +98,18 @@ public class HighScoreForm extends Activity {
 
         int isonline = 0;
         
-        if(name.length() > 0) {        	
+        if(name.length() > 0) { 
+        
+            try {
+                highScoreAdapter.createHighscore(score, name, isonline);
+            } catch (Exception e) {
+                Log.w(Settings.LOG_TAG, "create highscore threw an exception");
+                Log.w(Settings.LOG_TAG, "Maybe a double attempt? HTC Sensation does that for example");
+                return;
+            }       	
+            
         	// Save score online
         	if(checkboxPushOnline.isChecked()) {        	      		
-
-        		try {
-                	highScoreAdapter.createHighscore(score, name, isonline);
-        		} catch (Exception e) {
-					Log.w(Settings.LOG_TAG, "create highscore threw an exception");
-					Log.w(Settings.LOG_TAG, "Maybe a double attempt? HTC Sensation does that for example");
-					return;
-				}
         		
         		if(!isOnline()) {
         			highScoreAdapter.toastMessage(R.string.hs_error_no_internet);

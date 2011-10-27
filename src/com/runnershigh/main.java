@@ -52,8 +52,7 @@ public class main extends Activity {
 	        SoundManager.initSounds(this);
 	        SoundManager.loadSounds();
 	        
-	        if (Settings.SHOW_FPS) musicPlayerLoop = MediaPlayer.create(getApplicationContext(), R.raw.jobrohunter);
-	        else musicPlayerLoop = MediaPlayer.create(getApplicationContext(), R.raw.gamebackground);
+	        musicPlayerLoop = MediaPlayer.create(getApplicationContext(), R.raw.gamebackground);
 	        
 	        musicPlayerLoop.setLooping(true);
 			musicPlayerLoop.seekTo(0);
@@ -217,7 +216,7 @@ public class main extends Activity {
 			long timeOfInitializationStart = System.currentTimeMillis();
 			Util.roundStartTime = System.currentTimeMillis();
 			
-			Context context = Util.getInstance().getAppContext();
+			Context context = Util.getAppContext();
 			
 			Rect rectgle= new Rect();
 			Window window= getWindow();
@@ -241,7 +240,7 @@ public class main extends Activity {
 			BitmapFactory.Options options = new BitmapFactory.Options();
 			options.inTempStorage = new byte[16*1024];
 			
-			gameLoadingImg = BitmapFactory.decodeResource(context.getResources(),R.drawable.game_loading);
+			gameLoadingImg = Util.loadBitmapFromAssets("game_loading.jpg"); 
 			gameLoadingRHD = new RHDrawable(0, 0, 1, width, height);
 			gameLoadingRHD.loadBitmap(gameLoadingImg);
 			mRenderer.addMesh(gameLoadingRHD);
@@ -268,16 +267,15 @@ public class main extends Activity {
 
 			try {
 			
-				background.loadLayerFar(BitmapFactory.decodeResource(context.getResources(),
-						R.drawable.game_background_layer_3));
+				background.loadLayerFar(Util.loadBitmapFromAssets("game_background_layer_3.png"));
 				sleep();
 			} catch (OutOfMemoryError oome) {
 				System.gc();
 				try {
 					Thread.sleep(MIN_CREATION_TIMEOUT);
 			
-					background.loadLayerFar(BitmapFactory.decodeResource(context.getResources(),
-							R.drawable.game_background_layer_3));
+					background.loadLayerFar(
+							Util.loadBitmapFromAssets("game_background_layer_3.png"));
 					sleep();
 
 				}catch (OutOfMemoryError e) { 
@@ -291,15 +289,13 @@ public class main extends Activity {
 			}
 			
 			try {
-				background.loadLayerMiddle(BitmapFactory.decodeResource(context.getResources(),
-						R.drawable.game_background_layer_2));
+				background.loadLayerMiddle(Util.loadBitmapFromAssets("game_background_layer_2.png"));
 				sleep();
 			} catch (OutOfMemoryError oome) {
 				System.gc();
 				try {
 					Thread.sleep(MIN_CREATION_TIMEOUT);
-					background.loadLayerMiddle(BitmapFactory.decodeResource(context.getResources(),
-							R.drawable.game_background_layer_2));
+					background.loadLayerMiddle(Util.loadBitmapFromAssets("game_background_layer_2.png"));
 					sleep();
 
 				}catch (OutOfMemoryError e) { 
@@ -313,16 +309,14 @@ public class main extends Activity {
 			}
 
 			try {
-				background.loadLayerNear(BitmapFactory.decodeResource(context.getResources(),
-						R.drawable.game_background_layer_1));
+				background.loadLayerNear(Util.loadBitmapFromAssets("game_background_layer_1.png"));
 				sleep();
 
 			} catch (OutOfMemoryError oome) {
 				System.gc();
 				try {
 					Thread.sleep(MIN_CREATION_TIMEOUT);
-					background.loadLayerNear(BitmapFactory.decodeResource(context.getResources(),
-							R.drawable.game_background_layer_1));
+					background.loadLayerNear(Util.loadBitmapFromAssets("game_background_layer_1.png"));
 					sleep();
 
 				}catch (OutOfMemoryError e) { 
@@ -340,7 +334,7 @@ public class main extends Activity {
 				Log.d("debug", "before addMesh");
 			
 			
-			resetButtonImg = BitmapFactory.decodeResource(context.getResources(),R.drawable.game_button_play_again);
+			resetButtonImg = Util.loadBitmapFromAssets("game_button_play_again.png");
 			resetButton = new Button(
 					Util.getPercentOfScreenWidth(72), 
 					height-Util.getPercentOfScreenHeight(18),
@@ -350,7 +344,7 @@ public class main extends Activity {
 			resetButton.loadBitmap(resetButtonImg);
 			mRenderer.addMesh(resetButton);			
 			
-			saveButtonImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.game_button_save);
+			saveButtonImg =Util.loadBitmapFromAssets("game_button_save.png");
 			saveButton = new Button(
 					Util.getPercentOfScreenWidth(42), 
 					height-Util.getPercentOfScreenHeight(18),
@@ -387,7 +381,7 @@ public class main extends Activity {
 		    	Log.d("debug", "after HighscoreAdapter");
 		    
 			//new counter
-			CounterYourScoreImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.game_background_score);
+			CounterYourScoreImg = Util.loadBitmapFromAssets("game_background_score.png");
 			CounterYourScoreDrawable = new RHDrawable(
 					Util.getPercentOfScreenWidth(5),
 					height-Util.getPercentOfScreenHeight(15), 
@@ -401,7 +395,7 @@ public class main extends Activity {
 			if(Settings.RHDEBUG)
 				Log.d("debug", "after CounterYourScoreDrawable addMesh");
 			
-			CounterFont = BitmapFactory.decodeResource(context.getResources(), R.drawable.game_numberfont);
+			CounterFont = Util.loadBitmapFromAssets("game_numberfont.png");
 			mCounterGroup = new CounterGroup(
 					Util.getPercentOfScreenWidth(14), 
 					height-Util.getPercentOfScreenHeight(13.5f),
@@ -470,10 +464,10 @@ public class main extends Activity {
 			gameLoadingRHD.z = -1.0f;
 			
 			
-			mHighscoreMarkBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.game_highscoremark);
+			mHighscoreMarkBitmap = Util.loadBitmapFromAssets("game_highscoremark.png");
 			 
 			mNewHighscore = new RHDrawable(width/2 - 128, height/2 - 64, -2, 256, 128);
-			mNewHighscore.loadBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.game_new_highscore));
+			mNewHighscore.loadBitmap(Util.loadBitmapFromAssets("game_new_highscore.png"));
 			mRenderer.addMesh(mNewHighscore);
 
 			if(Settings.showHighscoreMarks)
@@ -507,7 +501,7 @@ public class main extends Activity {
 			if (mTotalHighscores >= id)
 			{
 			    Cursor cursor = highScoreAdapter.getHighscore(id);
-			    String hs = cursor.getString(cursor.getColumnIndexOrThrow(highScoreAdapter.KEY_SCORE));
+			    String hs = cursor.getString(cursor.getColumnIndexOrThrow(HighscoreAdapter.KEY_SCORE));
 			    highScoreAdapter.close();		    
 			    return new Integer(hs);
 			}
@@ -669,17 +663,17 @@ public class main extends Activity {
 				}
 				timeForOneCycle= System.currentTimeMillis()- starttime;
 
-				if(timeForOneCycle>9)
-					timeForOneCycle=9;
-				
-				try{ Thread.sleep(10-timeForOneCycle); }
-				catch (InterruptedException e)
-				{
-					e.printStackTrace();
+				if(timeForOneCycle < 10) {
+					try{ Thread.sleep(10-timeForOneCycle); }
+					catch (InterruptedException e)
+					{
+						e.printStackTrace();
+					}
 				}
+				
 				runCycleCounter++;
 				
-				if(Settings.RHDEBUG){
+				if(Settings.RHDEBUG) {
 					currentTimeTaken = System.currentTimeMillis()- starttime;
 					Log.d("runtime", "time after thread sleep : " + Integer.toString((int)currentTimeTaken));
 				}
