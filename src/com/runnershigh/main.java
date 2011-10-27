@@ -72,6 +72,7 @@ public class main extends Activity {
 	    	if(Settings.RHDEBUG)
 	    		Log.d("debug", "onDestroy main");
 	    	isRunning = false;
+	    	
 			wakeLock.release();
 			musicPlayerLoop.release();
 			SoundManager.cleanup();
@@ -531,7 +532,7 @@ public class main extends Activity {
 				
 
 				long timeAtStart = System.currentTimeMillis();
-				while (System.currentTimeMillis() < timeAtStart + 2000)
+				while (System.currentTimeMillis() < timeAtStart + 2000 && isRunning)
 				{
 					blackImgAlpha-=0.005;
 					blackRHD.setColor(0, 0, 0, blackImgAlpha);
@@ -552,22 +553,24 @@ public class main extends Activity {
 					Log.d("debug", "after fade in");
 
 				try {
-					if(!musicPlayerLoop.isPlaying())
+					if(isRunning && !musicPlayerLoop.isPlaying())
 						musicPlayerLoop.start();
 					
 				} catch (IllegalStateException e) {
 					e.printStackTrace();
-					Log.w("RH_RUN", "Illegal State Exception... do not restart game that quick... DUDE");
+					Log.w(Settings.LOG_TAG, "seems like you startet the game more" +
+							" than once in a few seconds or canceld the game start");
+					Log.w(Settings.LOG_TAG, "PLEASE DO NOT DO THIS UNLESS IT IS A STRESS TEST");
+					return;
 				}
 				
 				MusicLoopStartedForFirstTime=true;
-				
 
-				//loadingDialog.hide();
 			}
 			catch (InterruptedException e)
 			{
 				e.printStackTrace();
+				return;
 			}
 			
 			if(Settings.RHDEBUG)

@@ -108,10 +108,10 @@ public class SoundManager {
 	 */
 	public static void cleanup()
 	{
-		mSoundPool.release();
+		if (mSoundPool != null) mSoundPool.release();
 		mSoundPool = null;
-	    mSoundPoolMap.clear();
-	    mAudioManager.unloadSoundEffects();
+		if (mSoundPoolMap != null) mSoundPoolMap.clear();
+		if (mAudioManager != null) mAudioManager.unloadSoundEffects();
 	    _instance = null;
  
 	}
