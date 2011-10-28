@@ -1,6 +1,5 @@
 package com.runnershigh;
 
-import android.util.Log;
 
 public class Sprite extends Mesh {
 	private float width;

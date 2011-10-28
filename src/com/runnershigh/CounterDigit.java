@@ -1,6 +1,5 @@
 package com.runnershigh;
 
-import android.util.Log;
 
 public class CounterDigit extends Mesh {
 	protected float width;

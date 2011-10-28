@@ -9,10 +9,10 @@
 package com.runnershigh;
 
 import java.io.IOException;
+import android.view.View.OnKeyListener;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
@@ -28,9 +28,11 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -59,6 +61,20 @@ public class HighScoreForm extends Activity {
         
         // Find form elements
         nameField = (EditText) findViewById(R.id.title);
+        nameField.setSingleLine(true);
+        nameField.setOnKeyListener(new OnKeyListener() {
+			
+			public boolean onKey(View v, int keyCode, KeyEvent event) {
+				if (keyCode == KeyEvent.KEYCODE_ENTER) {
+					// hide keyboard when ENTER is pressed
+					InputMethodManager imm = (InputMethodManager)getApplicationContext().getSystemService(
+							Context.INPUT_METHOD_SERVICE);
+					imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+				}
+				return false;
+			}
+		});
+        
         scoreField = (TextView) findViewById(R.id.score);
         checkboxPushOnline = (CheckBox) findViewById(R.id.postOnline);
         Button confirmButton = (Button) findViewById(R.id.confirm);
@@ -86,7 +102,7 @@ public class HighScoreForm extends Activity {
 		Cursor cursor = highScoreAdapter.fetchLastEntry();
 		startManagingCursor(cursor);
 		if(cursor.getCount() > 0) {
-			nameField.setText(cursor.getString(cursor.getColumnIndexOrThrow(highScoreAdapter.KEY_NAME)));
+			nameField.setText(cursor.getString(cursor.getColumnIndexOrThrow(HighscoreAdapter.KEY_NAME)));
 		}
 		cursor.close();		
     }
@@ -99,10 +115,19 @@ public class HighScoreForm extends Activity {
 
         int isonline = 0;
         
-        if(name.length() > 0) {        	
+        if(name.length() > 0) { 
+        
+            try {
+                highScoreAdapter.createHighscore(score, name, isonline);
+            } catch (Exception e) {
+                Log.w(Settings.LOG_TAG, "create highscore threw an exception");
+                Log.w(Settings.LOG_TAG, "Maybe a double attempt? HTC Sensation does that for example");
+                return;
+            }       	
+            
         	// Save score online
         	if(checkboxPushOnline.isChecked()) {        	      		
-
+        		
         		if(!isOnline()) {
         			highScoreAdapter.toastMessage(R.string.hs_error_no_internet);
         		} else {
@@ -117,8 +142,7 @@ public class HighScoreForm extends Activity {
 	        	        nameValuePairs.add(new BasicNameValuePair("score", score));
 	        	        httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 	
-	        	        // Execute HTTP Post Request
-	        	        HttpResponse response = httpclient.execute(httppost);
+	        	        httpclient.execute(httppost);
 	
 	        	    } catch (ClientProtocolException e) {
 	        	        // TODO Auto-generated catch block
@@ -130,8 +154,6 @@ public class HighScoreForm extends Activity {
         		}
         	}
         	
-        	// Save score locally
-        	long id = highScoreAdapter.createHighscore(score, name, isonline);
         	highScoreAdapter.close();
         	
         	setResult(RESULT_OK);

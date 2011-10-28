@@ -105,7 +105,7 @@ public class HighScoreActivity extends ListActivity {
 	        startManagingCursor(cursor);
 	       	                
 	        // Create an array to specify the fields we want to display in the list
-	        String[] from = new String[]{ highScoreAdapter.KEY_SCORE, highScoreAdapter.KEY_NAME };
+	        String[] from = new String[]{ HighscoreAdapter.KEY_SCORE, HighscoreAdapter.KEY_NAME };
 	
 	        // and an array of the fields we want to bind those fields to
 	        int[] to = new int[]{ R.id.score, R.id.name };
@@ -194,7 +194,7 @@ public class HighScoreActivity extends ListActivity {
     
     // ---------------------------------------------------------
     // Truncate HighScore Database Table
-    private void clearHighscore() {
+    public void clearHighscore() {
     	
     	AlertDialog.Builder alert = new AlertDialog.Builder(this);
 
@@ -259,7 +259,7 @@ public class HighScoreActivity extends ListActivity {
         	        nameValuePairs.add(new BasicNameValuePair("score", score));
         	        httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 
-        	        HttpResponse response = httpclient.execute(httppost);        	       
+        	        httpclient.execute(httppost);        	       
         	        highScoreAdapter.updateScore(id, 1);
         	        highScoreAdapter.toastMessage(R.string.hs_pushed_online);
         	    } catch (ClientProtocolException e) {

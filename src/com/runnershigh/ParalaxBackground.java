@@ -2,7 +2,6 @@ package com.runnershigh;
 
 import javax.microedition.khronos.opengles.GL10;
 import android.graphics.Bitmap;
-import android.util.Log;
 
 public class ParalaxBackground extends Group {
 	

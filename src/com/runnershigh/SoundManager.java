@@ -62,16 +62,27 @@ public class SoundManager {
 	 */
 	public static void loadSounds()
 	{
-		mSoundPoolMap.put(1, mSoundPool.load(mContext, R.raw.reset, 1));
-		mSoundPoolMap.put(2, mSoundPool.load(mContext, R.raw.threek, 1));
+		// loading WMA causes problems on HTC Sensation
+//		mSoundPoolMap.put(1, mSoundPool.load(mContext, R.raw.reset, 1));
+//		mSoundPoolMap.put(2, mSoundPool.load(mContext, R.raw.threek, 1));
 		mSoundPoolMap.put(3, mSoundPool.load(mContext, R.raw.jump, 1));
 		mSoundPoolMap.put(4, mSoundPool.load(mContext, R.raw.save, 1));
 		mSoundPoolMap.put(5, mSoundPool.load(mContext, R.raw.slow , 1));
 		mSoundPoolMap.put(6, mSoundPool.load(mContext, R.raw.trampoline, 1));
-		mSoundPoolMap.put(7, mSoundPool.load(mContext, R.raw.deathsound , 1));
+		mSoundPoolMap.put(7, mSoundPool.load(mContext, R.raw.petenicesplash , 1));
 		mSoundPoolMap.put(8, mSoundPool.load(mContext, R.raw.bonus, 1));
+		mSoundPoolMap.put(9, mSoundPool.load(mContext, R.raw.ninek, 1));
+		
 	}
  
+	
+	public static void playSound(int index,float speed, float volumeL, float volumeR, int loopMode)
+	{
+		float streamVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+	     streamVolume = streamVolume / mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+	     if(mSoundPoolMap.get(index)!=null)
+	    	 mSoundPool.play(mSoundPoolMap.get(index), streamVolume*volumeL, streamVolume*volumeR, 1, loopMode, speed);		
+	}
 	/**
 	 * Plays a Sound
 	 *
@@ -80,10 +91,7 @@ public class SoundManager {
 	 */
 	public static void playSound(int index,float speed)
 	{
-		     float streamVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
-		     streamVolume = streamVolume / mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
-		     if(mSoundPoolMap.get(index)!=null)
-		    	 mSoundPool.play(mSoundPoolMap.get(index), streamVolume, streamVolume, 1, 0, speed);		    	 
+		playSound(index, speed, 1.0f, 1.0f, 0);
 	}
  
 	/**
@@ -100,10 +108,10 @@ public class SoundManager {
 	 */
 	public static void cleanup()
 	{
-		mSoundPool.release();
+		if (mSoundPool != null) mSoundPool.release();
 		mSoundPool = null;
-	    mSoundPoolMap.clear();
-	    mAudioManager.unloadSoundEffects();
+		if (mSoundPoolMap != null) mSoundPoolMap.clear();
+		if (mAudioManager != null) mAudioManager.unloadSoundEffects();
 	    _instance = null;
  
 	}

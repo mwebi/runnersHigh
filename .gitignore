@@ -3,3 +3,6 @@
 *.apk
 *.class
 R.java
+org.eclipse.jdt.core.prefs
+bin
+gen

@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 public class Info extends Activity{
 	
@@ -15,8 +16,7 @@ public class Info extends Activity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.info);
 
-        //requestWindowFeature(Window.FEATURE_NO_TITLE);  
-        //getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        Toast.makeText(getApplicationContext(), "names and logos are clickable", Toast.LENGTH_LONG).show();
     }
     
     public void visitWebsite(View view) {

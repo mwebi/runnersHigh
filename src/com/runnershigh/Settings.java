@@ -7,6 +7,9 @@
 package com.runnershigh;
 
 public class Settings {	
+	
+	static final String LOG_TAG = "RunnersHigh";
+	
 	static final String URL_RUNNERSHIGH = "http://rh.fidrelity.at";
 	static final String HIGHSCORE_GET_URL = "http://rh.fidrelity.at/best.php";
 	static final String HIGHSCORE_POST_URL = "http://rh.fidrelity.at/post/post_highscore.php";
