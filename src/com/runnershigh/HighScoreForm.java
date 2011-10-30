@@ -116,15 +116,7 @@ public class HighScoreForm extends Activity {
         int isonline = 0;
         
         if(name.length() > 0) { 
-        
-            try {
-                highScoreAdapter.createHighscore(score, name, isonline);
-            } catch (Exception e) {
-                Log.w(Settings.LOG_TAG, "create highscore threw an exception");
-                Log.w(Settings.LOG_TAG, "Maybe a double attempt? HTC Sensation does that for example");
-                return;
-            }       	
-            
+                    
         	// Save score online
         	if(checkboxPushOnline.isChecked()) {        	      		
         		
@@ -153,6 +145,15 @@ public class HighScoreForm extends Activity {
 	        	    isonline = 1;
         		}
         	}
+        	
+        	// Save HS locally
+        	try {
+                highScoreAdapter.createHighscore(score, name, isonline);
+            } catch (Exception e) {
+                Log.w(Settings.LOG_TAG, "create highscore threw an exception");
+                Log.w(Settings.LOG_TAG, "Maybe a double attempt? HTC Sensation does that for example");
+                return;
+            }       	
         	
         	highScoreAdapter.close();
         	
