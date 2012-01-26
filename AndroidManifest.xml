@@ -9,7 +9,7 @@
         android:largeScreens="true"
         android:anyDensity="true"
         />
-    <application android:icon="@drawable/icon" android:label="@string/app_name" android:debuggable="true">
+    <application android:icon="@drawable/icon" android:label="@string/app_name" android:debuggable="false">
         <activity android:name=".main"
                   android:label="@string/app_name"
                   android:screenOrientation="landscape">        

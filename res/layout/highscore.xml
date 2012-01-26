@@ -1,38 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-  xmlns:android="http://schemas.android.com/apk/res/android"
-  android:orientation="vertical"
-  android:layout_width="fill_parent"
-  android:layout_height="fill_parent"
-  android:padding="10dp"
-  android:textColor="#876842"
-  android:background="@drawable/info_background">
-  
-  <LinearLayout
-  android:orientation="horizontal"
-  android:layout_width="fill_parent"
-  android:layout_height="wrap_content"
-  android:layout_marginBottom="25dp" >
-  
-  <TextView  
-		android:id="@+id/titleScore"
-	  	android:layout_width="wrap_content" 
-	    android:layout_height="wrap_content"    
-	    android:text="@string/hs_title" 
-	    android:textSize="26dp"
-	    android:textColor="#92C36F"
-	    />
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    android:padding="10dp"
+    android:textColor="#876842" android:background="@drawable/highscore_background">
+
+    <LinearLayout
+        android:id="@+id/linearLayout1"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="3" >
 
-  <Button android:id="@+id/onlineHSButton"
-		android:layout_marginLeft="15dp" 
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-	    android:text="@string/hs_bttn_getonline" />
-  </LinearLayout>
-  <ListView 
-  		android:id="@id/android:list"
-        android:layout_width="fill_parent"
-      	android:layout_height="wrap_content"
-      	android:textColor="#876842"
-       	 />  
+        <Button
+            android:id="@+id/buttonLocalHighscore"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="10"
+            android:background="@drawable/highscore_local" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <Button
+            android:id="@+id/buttonOnlineHighscore"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="10"
+            android:background="@drawable/highscore_online" />
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="10" android:padding="10dp">
+
+        <TableLayout
+            android:id="@+id/highscoreTable"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        </TableLayout>
+
+    </ScrollView>
+
+    <View
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="2" />
+
 </LinearLayout>

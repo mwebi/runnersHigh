@@ -25,6 +25,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
@@ -34,30 +35,39 @@ import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.os.Handler;
+import android.view.Gravity;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.ScrollView;
 import android.widget.SimpleCursorAdapter;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
+import android.widget.TableRow.LayoutParams;
 
 import com.highscore.HighscoreAdapter;
 
-public class HighScoreActivity extends ListActivity {
+public class HighScoreActivity extends Activity {
 	
 	private HighscoreAdapter highScoreAdapter = null;
-
-	private static final String SHOW_LIMIT = "10";
+	
 	private static final String POST_HIGHSCORE_URL = Settings.HIGHSCORE_POST_URL; // "http://rh.fidrelity.at/post/post_highscore.php";
 	private static final String GET_HIGHSCORE_URL = Settings.HIGHSCORE_GET_URL; // "http://rh.fidrelity.at/best.php";
 	
-	private boolean isOnlineView = false;
-	
 	private ProgressDialog loadingDialog;
 	
-	private final String[] empty = new String[0];	
+	private TableLayout highscoreTable;
+	
+	private Boolean onlineIsShown = false;
 	// ---------------------------------------------------
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -66,80 +76,178 @@ public class HighScoreActivity extends ListActivity {
 		
         super.onCreate(savedInstanceState);
         setContentView(R.layout.highscore);
-        
-        highScoreAdapter = new HighscoreAdapter(this);
-        highScoreAdapter.open();       
-        
-        // Clear Button
-        /*
-        Button clearButton = (Button) findViewById(R.id.clearButton);
-        clearButton.setOnClickListener(new View.OnClickListener() {
-        	public void onClick(View view) {
-        		clearHighscore();        		
-        	}
-        });        
-        */        
-        loadingDialog = new ProgressDialog( this );
-        loadingDialog.setProgressStyle(0);
-        loadingDialog.setMessage("Loading Highscore ...");
-        //loadingDialog.setCancelable(false);
 
-        switchHighScoreButton("Online");        
-        registerForContextMenu(getListView());
+        highScoreAdapter = new HighscoreAdapter(this);
+        highScoreAdapter.open();
         
-        fillData(empty);      
+        highscoreTable = (TableLayout) findViewById(R.id.highscoreTable);
+        
+        final Context context = this;
+        
+        final Handler handler = new Handler();
+
+        findViewById(R.id.buttonLocalHighscore).setOnClickListener(new OnClickListener() {
+			
+			public void onClick(View v) {
+				if (onlineIsShown) {
+
+					Toast.makeText(context, R.string.hs_loading_local, Toast.LENGTH_SHORT).show();
+					
+					handler.postDelayed(new Runnable() {
+						
+						public void run() {
+							showLocalScore();
+						}
+					}, 500);
+				}
+			}
+		});
+        
+
+        findViewById(R.id.buttonOnlineHighscore).setOnClickListener(new OnClickListener() {
+			
+			public void onClick(View v) {
+				if (!onlineIsShown) {
+
+					Toast.makeText(context, R.string.hs_loading_online, Toast.LENGTH_SHORT).show();
+					
+					handler.postDelayed(new Runnable() {
+						
+						public void run() {
+							showOnlineScore();
+						}
+					}, 500);
+				}
+			}
+		});
+        
+        
+        Toast.makeText(context, R.string.hs_loading_local, Toast.LENGTH_SHORT).show();
+		
+		handler.postDelayed(new Runnable() {
+			
+			public void run() {
+				showLocalScore();
+			}
+		}, 500);
     }
-        
-    // ---------------------------------------------------------
-    // Fetch highscore from database table and put it into the listView
-    private void fillData(String[] onlineData) {
+    
+    private void showLocalScore() {
     	
-    	// Online List
-    	if(onlineData.length > 0) {
-    		setListAdapter(new ArrayAdapter<String>(this, R.layout.list_single_row, onlineData));
-    		switchHighScoreButton("LOCAL");    	         		
-    	// Local List
-    	} else {   
+    	onlineIsShown = false;
+    	
+    	highscoreTable.removeAllViews();
+    	
+    	Cursor c = highScoreAdapter.fetchScores("0");
+    	
+    	int currentPlace = 1;
+    	
+    	do {
+
+    		final String placeString = ""+(currentPlace++)+".";
+    		final String scoreString = c.getString(2);
+    		final String nameString = c.getString(1);
     		
-	        Cursor cursor = highScoreAdapter.fetchScores(SHOW_LIMIT);
-	        startManagingCursor(cursor);
-	       	                
-	        // Create an array to specify the fields we want to display in the list
-	        String[] from = new String[]{ HighscoreAdapter.KEY_SCORE, HighscoreAdapter.KEY_NAME };
-	
-	        // and an array of the fields we want to bind those fields to
-	        int[] to = new int[]{ R.id.score, R.id.name };
-	        
-	        // Creates the backing adapter for the ListView.
-	        SimpleCursorAdapter adapter
-	            = new SimpleCursorAdapter(
-	                      this,                             // The Context for the ListView
-	                      R.layout.list_row,          		// Points to the XML for a list item
-	                      cursor,                           // The cursor to get items from
-	                      from,
-	                      to
-	              );
-	
-	        // Sets the ListView's adapter to be the cursor adapter that was just created.
-	        setListAdapter(adapter);
-	        switchHighScoreButton("ONLINE");
-    	}
-    	loadingDialog.hide();
-    }
-       
-    // ---------------------------------------------------------
-    // Load online Highscore
-    public void loadOnlineHighscore(int size) {
+    		View additional;
+    		
+    		if (c.getString(3).equalsIgnoreCase("0")) {
+    			additional = new Button(this);
+    			
+    			final Context context = this;
+    			final int id = c.getInt(0);
+		       
+    			additional.setOnClickListener(new OnClickListener() {
+					
+					public void onClick(View v) {
+						AlertDialog.Builder alert = new AlertDialog.Builder(context);
+				
+				        alert.setTitle("Push this score online ?");
+				        alert.setMessage("Name: " + nameString + "\nScore: " + scoreString);
+				
+				        // OK
+				        alert.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+				        public void onClick(DialogInterface dialog, int whichButton) {          
+				        	// Push score online
+				        	if(!isOnline()) {
+				        		highScoreAdapter.toastMessage(R.string.hs_error_no_internet);
+				        	} else {
+				        	        		
+				        		// Create a new HttpClient and Post Header
+				        	    HttpClient httpclient = new DefaultHttpClient();
+				        	    HttpPost httppost = new HttpPost(POST_HIGHSCORE_URL);
+				
+				        	    try {
+				        	        List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
+				        	        nameValuePairs.add(new BasicNameValuePair("name", nameString));
+				        	        nameValuePairs.add(new BasicNameValuePair("score", scoreString));
+				        	        httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+				
+				        	        httpclient.execute(httppost);        	       
+				        	        highScoreAdapter.updateScore(id, 1);
+				        	        highScoreAdapter.toastMessage(R.string.hs_pushed_online);
+				        	        
+				        	        runOnUiThread(new Runnable() {
+										
+										public void run() {
+											showLocalScore();
+											
+										}
+									});
+				        	    } catch (ClientProtocolException e) {
+				        	        // TODO Auto-generated catch block
+				        	    } catch (IOException e) {
+				        	        // TODO Auto-generated catch block
+				        	    }        		
+				        	}        	
+				          }
+				        });
+				        
+				        // CANCEL
+				        alert.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+				          public void onClick(DialogInterface dialog, int whichButton) {
+				            // Canceled.
+				          }
+				        });
+				        alert.show();  
+					}
+				});
+    			additional.setBackgroundResource(R.drawable.highscore_submit);
+    			
+    			LayoutParams paramsOfSubmitButton = new LayoutParams(0, LayoutParams.MATCH_PARENT, 3.0f);
+            	additional.setLayoutParams(paramsOfSubmitButton);
+    		} else {
+    			additional = new TextView(this, null, android.R.attr.textAppearanceSmallInverse);
+    			((TextView)additional).setText("is online");
+
+        		LayoutParams paramsOfAdditional = new LayoutParams(0, LayoutParams.WRAP_CONTENT, 3.0f);
+        		paramsOfAdditional.gravity = Gravity.CENTER_VERTICAL | Gravity.RIGHT;
+        		additional.setLayoutParams(paramsOfAdditional);
+    		}
+    		
+    		generateLine(placeString, scoreString, nameString, additional);
+    		
+    	} while(c.moveToNext());
     	
-    	final String[] onlineData = new String[size]; // {};
+    	
+    	
+    }
+    
+    private void showOnlineScore() {
+    	
+    	
     	
     	if(!isOnline()) {
-    		highScoreAdapter.toastMessage(R.string.hs_error_no_internet);
+    		Toast.makeText(this, R.string.hs_error_no_internet, Toast.LENGTH_SHORT).show();
     	} else {
-    		
+
+        	onlineIsShown = true;
+        	
+
+        	highscoreTable.removeAllViews();
+        	
 	    	try {
 	    		HttpClient client = new DefaultHttpClient();  
-	    		String getURL = GET_HIGHSCORE_URL + "?size=" + Integer.toString(size);
+	    		String getURL = GET_HIGHSCORE_URL + "?size=" + Integer.toString(Settings.onlineHighscoreLimit);
 	    		HttpGet get = new HttpGet(getURL);
 	    		// query data from server
 	    		HttpResponse responseGet = client.execute(get); 
@@ -147,139 +255,77 @@ public class HighScoreActivity extends ListActivity {
 	    		if (resEntityGet != null) {
 	    			JSONArray jArray = new JSONArray(EntityUtils.toString(resEntityGet));
 	    			
-					String name;
-					String score;
+					String nameString;
+					String scoreString;
+					String timeStamp;
 					
 	    			for(int i = 0; i < jArray.length(); i++) {
-	    				name = jArray.getJSONObject(i).getString("name");
-	    				score = jArray.getJSONObject(i).getString("score");
+	    				nameString = jArray.getJSONObject(i).getString("name");
+	    				scoreString = jArray.getJSONObject(i).getString("score");
+	    				timeStamp = jArray.getJSONObject(i).getString("created_at");
 	    				
-	    				onlineData[i] = score + "   " + name;
+	    				View additional = new TextView(this, null, android.R.attr.textAppearanceSmallInverse);
+	        			((TextView)additional).setText(timeStamp);
+
+	            		LayoutParams paramsOfAdditional = new LayoutParams(0, LayoutParams.WRAP_CONTENT, 3.0f);
+	            		paramsOfAdditional.gravity = Gravity.CENTER_VERTICAL | Gravity.RIGHT;
+	            		additional.setLayoutParams(paramsOfAdditional);
+	            		
+	            		generateLine(""+(i+1), scoreString, nameString, additional);
 	    			}             
-	
-	    			fillData(onlineData);
 	    		}
+
 	    	} catch (Exception e) {
 	    		e.printStackTrace();
 	    	}
     	}
+
     }
     
-    // ---------------------------------------------------------
-    // Switch Views
-    private void switchHighScoreButton(String state) {    	
-    	Button getOnlineHS = (Button) findViewById(R.id.onlineHSButton);
+    
+    private void generateLine(String placeString, String scoreString, String nameString, View additional) {
     	
-    	if(state == "ONLINE") {
-    		loadingDialog.show();
-    		getOnlineHS.setText(R.string.hs_bttn_getonline);
-	        getOnlineHS.setOnClickListener(new View.OnClickListener() {
-				public void onClick(View v) {
-					loadOnlineHighscore(10);
-				}
-			});
-	        isOnlineView = false;
-	        
-    	} else {
+    	TextView place = new TextView(this, null, android.R.attr.textAppearanceLargeInverse);
+		place.setText(placeString);
+		LayoutParams paramsOfPlace = new LayoutParams(0, LayoutParams.WRAP_CONTENT, 2.0f);
+		paramsOfPlace.gravity = Gravity.CENTER_VERTICAL | Gravity.RIGHT;
+		place.setLayoutParams(paramsOfPlace);
 
-    		getOnlineHS.setText(R.string.hs_bttn_getlocal);			
-            getOnlineHS.setOnClickListener(new View.OnClickListener() {
-    			public void onClick(View v) {
-    				fillData(empty);
-    			}
-    		});
-            isOnlineView = true;
-    	}
+		TextView score = new TextView(this, null, android.R.attr.textAppearanceMediumInverse);
+		score.setText(scoreString);
+		LayoutParams paramsOfScore = new LayoutParams(0, LayoutParams.WRAP_CONTENT, 3.0f);
+		paramsOfScore.gravity = Gravity.CENTER;
+		score.setLayoutParams(paramsOfScore);
+		
+		TextView name = new TextView(this, null, android.R.attr.textAppearanceMediumInverse);
+		name.setText(nameString);
+		LayoutParams paramsOfName = new LayoutParams(0, LayoutParams.WRAP_CONTENT, 10.0f);
+		paramsOfName.gravity = Gravity.CENTER_VERTICAL | Gravity.LEFT;
+		name.setLayoutParams(paramsOfName);
+		
+
+		addLine(place, score, name, additional);
     }
     
-    // ---------------------------------------------------------
-    // Truncate HighScore Database Table
-    public void clearHighscore() {
+    private void addLine(View place, View score, View name, View additional) {
+    	TableRow tr = new TableRow(this);
+
+    	tr.setLayoutParams(new LayoutParams(
+                LayoutParams.FILL_PARENT,
+                LayoutParams.WRAP_CONTENT));
     	
-    	AlertDialog.Builder alert = new AlertDialog.Builder(this);
-
-        alert.setTitle("Clear Highscore");
-        alert.setMessage("Do you really want to delete all local Highscores ?");        
-  
-        alert.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-        public void onClick(DialogInterface dialog, int whichButton) {          
-        	highScoreAdapter.clear();
-        	fillData(empty);
-        	}
-        });
-
-        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-          public void onClick(DialogInterface dialog, int whichButton) {
-            // Canceled.
-          }
-        });               	
+    	
+    	tr.addView(place);
+    	tr.addView(score);
+    	tr.addView(name);
+    	tr.addView(additional);
+    	
+    	highscoreTable.addView(tr);
+    	ImageView line = new ImageView(this);
+    	line.setBackgroundResource(R.drawable.highscore_line);
+    	highscoreTable.addView(line);
     }
     
-    // ---------------------------------------------------------
-    // onClick Item list element
-    @Override
-    protected void onListItemClick(ListView l, View v, int position, final long id) {
-        super.onListItemClick(l, v, position, id);
-               
-        if(isOnlineView == true)
-        	return;    
-        
-        AlertDialog.Builder alert = new AlertDialog.Builder(this);
-
-        alert.setTitle("Highscore");
-        alert.setMessage("Push this score online ?");
-
-        // Fetch data from database
-        Cursor cursor = highScoreAdapter.fetchSingleScore(id);
-        final String name = cursor.getString(cursor.getColumnIndex(HighscoreAdapter.KEY_NAME));
-        final String score = cursor.getString(cursor.getColumnIndex(HighscoreAdapter.KEY_SCORE));
-        final int isonline = cursor.getInt(cursor.getColumnIndex(HighscoreAdapter.KEY_ISONLINE));
-       
-        final TextView input = new TextView(this);
-        input.setText("Name: " + name + " Score: " + score);
-        alert.setView(input);
-
-        // OK
-        alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-        public void onClick(DialogInterface dialog, int whichButton) {          
-        	// Push score online
-        	if(isonline == 1) {
-        		highScoreAdapter.toastMessage(R.string.hs_already_pushed);
-        	} else if(!isOnline()) {
-        		highScoreAdapter.toastMessage(R.string.hs_error_no_internet);
-        	} else {
-        	        		
-        		// Create a new HttpClient and Post Header
-        	    HttpClient httpclient = new DefaultHttpClient();
-        	    HttpPost httppost = new HttpPost(POST_HIGHSCORE_URL);
-
-        	    try {
-        	        List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
-        	        nameValuePairs.add(new BasicNameValuePair("name", name));
-        	        nameValuePairs.add(new BasicNameValuePair("score", score));
-        	        httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-
-        	        httpclient.execute(httppost);        	       
-        	        highScoreAdapter.updateScore(id, 1);
-        	        highScoreAdapter.toastMessage(R.string.hs_pushed_online);
-        	    } catch (ClientProtocolException e) {
-        	        // TODO Auto-generated catch block
-        	    } catch (IOException e) {
-        	        // TODO Auto-generated catch block
-        	    }        		
-        	}        	
-          }
-        });
-        
-        // CANCEL
-        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-          public void onClick(DialogInterface dialog, int whichButton) {
-            // Canceled.
-          }
-        });
-        cursor.close();
-        alert.show();        
-    }
     
     // ---------------------------------------------------------
 	// Check if user is connected to the internet

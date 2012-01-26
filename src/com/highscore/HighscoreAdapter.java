@@ -87,7 +87,7 @@ public class HighscoreAdapter extends DbAdapter {
 		if (mCursor != null) {
 			mCursor.moveToFirst();
 		}
-
+		
 		return mCursor;
 	}
 

@@ -44,4 +44,5 @@ public class Settings {
 	static final int timeToFurtherSpeedIncreaseMillis = 10000;
 	static final int timeUntilLongBlocksStopMillis = 40000;
 
+	static final int onlineHighscoreLimit = 100;
 }
