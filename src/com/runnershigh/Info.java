@@ -35,7 +35,6 @@ public class Info extends Activity{
 			browserIntent = new Intent("android.intent.action.VIEW", Uri.parse(Settings.URL_ANDREAS));
 			break;
     	case R.id.buttonChris:
-    	case R.id.ButtonChris1:
 			browserIntent = new Intent("android.intent.action.VIEW", Uri.parse(Settings.URL_CHRIS));
 			break;
     	case R.id.buttonFrancois:
@@ -46,9 +45,6 @@ public class Info extends Activity{
 			break;
     	case R.id.buttonManuel:
 			browserIntent = new Intent("android.intent.action.VIEW", Uri.parse(Settings.URL_MANUEL));
-			break;
-    	case R.id.ButtonSteve:
-			browserIntent = new Intent("android.intent.action.VIEW", Uri.parse(Settings.URL_STEVE));
 			break;
     	case R.id.buttonWebi:
 			browserIntent = new Intent("android.intent.action.VIEW", Uri.parse(Settings.URL_WEBI));
@@ -65,10 +61,6 @@ public class Info extends Activity{
 			browserIntent = new Intent("android.intent.action.VIEW", Uri.parse(Settings.URL_MMA));
 			break;
 
-
-    	case R.id.buttonSony:
-			browserIntent = new Intent("android.intent.action.VIEW", Uri.parse(Settings.URL_SONY));
-			break;
 			
 		default:
 			Log.e("RunnersHigh", "unexpected buttonclick");
