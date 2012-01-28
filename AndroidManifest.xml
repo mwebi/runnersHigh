@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-      package="com.runnershigh"
+      package="com.alarmclocksnoozers.runnershigh"
       android:versionCode="450"
       android:versionName="4.50"
       android:installLocation="preferExternal">
