@@ -27,8 +27,6 @@ import org.json.JSONArray;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.ListActivity;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
@@ -41,13 +39,8 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.ScrollView;
-import android.widget.SimpleCursorAdapter;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -63,16 +56,13 @@ public class HighScoreActivity extends Activity {
 	private static final String POST_HIGHSCORE_URL = Settings.HIGHSCORE_POST_URL; // "http://rh.fidrelity.at/post/post_highscore.php";
 	private static final String GET_HIGHSCORE_URL = Settings.HIGHSCORE_GET_URL; // "http://rh.fidrelity.at/best.php";
 	
-	private ProgressDialog loadingDialog;
-	
 	private TableLayout highscoreTable;
 	
-	private Boolean onlineIsShown = false;
 	// ---------------------------------------------------
     @Override
     public void onCreate(Bundle savedInstanceState) {
-    	requestWindowFeature(Window.FEATURE_NO_TITLE);  
-		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
+//    	requestWindowFeature(Window.FEATURE_NO_TITLE);  
+//		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		
         super.onCreate(savedInstanceState);
         setContentView(R.layout.highscore);
@@ -89,17 +79,15 @@ public class HighScoreActivity extends Activity {
         findViewById(R.id.buttonLocalHighscore).setOnClickListener(new OnClickListener() {
 			
 			public void onClick(View v) {
-				if (onlineIsShown) {
 
-					Toast.makeText(context, R.string.hs_loading_local, Toast.LENGTH_SHORT).show();
+				Toast.makeText(context, R.string.hs_loading_local, Toast.LENGTH_SHORT).show();
+				
+				handler.postDelayed(new Runnable() {
 					
-					handler.postDelayed(new Runnable() {
-						
-						public void run() {
-							showLocalScore();
-						}
-					}, 500);
-				}
+					public void run() {
+						showLocalScore();
+					}
+				}, 500);
 			}
 		});
         
@@ -107,17 +95,15 @@ public class HighScoreActivity extends Activity {
         findViewById(R.id.buttonOnlineHighscore).setOnClickListener(new OnClickListener() {
 			
 			public void onClick(View v) {
-				if (!onlineIsShown) {
 
-					Toast.makeText(context, R.string.hs_loading_online, Toast.LENGTH_SHORT).show();
+				Toast.makeText(context, R.string.hs_loading_online, Toast.LENGTH_SHORT).show();
+				
+				handler.postDelayed(new Runnable() {
 					
-					handler.postDelayed(new Runnable() {
-						
-						public void run() {
-							showOnlineScore();
-						}
-					}, 500);
-				}
+					public void run() {
+						showOnlineScore();
+					}
+				}, 500);
 			}
 		});
         
@@ -134,11 +120,14 @@ public class HighScoreActivity extends Activity {
     
     private void showLocalScore() {
     	
-    	onlineIsShown = false;
-    	
     	highscoreTable.removeAllViews();
     	
     	Cursor c = highScoreAdapter.fetchScores("0");
+    	
+    	if (c.isAfterLast()) {
+            Toast.makeText(this, R.string.hs_no_data, Toast.LENGTH_SHORT).show();
+    		return;
+    	}
     	
     	int currentPlace = 1;
     	
@@ -239,9 +228,6 @@ public class HighScoreActivity extends Activity {
     	if(!isOnline()) {
     		Toast.makeText(this, R.string.hs_error_no_internet, Toast.LENGTH_SHORT).show();
     	} else {
-
-        	onlineIsShown = true;
-        	
 
         	highscoreTable.removeAllViews();
         	
