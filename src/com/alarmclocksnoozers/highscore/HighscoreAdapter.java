@@ -11,7 +11,7 @@
  * 	TODO: Delete entries, if there are more than SHOW_LIMIT
  */
 
-package com.highscore;
+package com.alarmclocksnoozers.highscore;
 
 import android.content.ContentValues;
 import android.content.Context;

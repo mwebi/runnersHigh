@@ -1,4 +1,4 @@
-package com.runnershigh;
+package com.alarmclocksnoozers.runnershigh;
 
 import android.app.Activity;
 import android.app.AlertDialog;

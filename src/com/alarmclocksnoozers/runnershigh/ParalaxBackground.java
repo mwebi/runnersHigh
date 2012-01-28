@@ -1,4 +1,4 @@
-package com.runnershigh;
+package com.alarmclocksnoozers.runnershigh;
 
 import javax.microedition.khronos.opengles.GL10;
 import android.graphics.Bitmap;

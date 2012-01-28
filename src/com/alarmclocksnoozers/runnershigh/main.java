@@ -1,6 +1,4 @@
-package com.runnershigh;
-
-import com.highscore.HighscoreAdapter;
+package com.alarmclocksnoozers.runnershigh;
 
 import android.app.Activity;
 import android.content.Context;
@@ -19,6 +17,7 @@ import android.view.Display;
 import android.view.MotionEvent;
 import android.view.Window;
 import android.view.WindowManager;
+import com.alarmclocksnoozers.highscore.HighscoreAdapter;
 
 public class main extends Activity {
 		PowerManager.WakeLock wakeLock ;

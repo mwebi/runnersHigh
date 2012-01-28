@@ -5,7 +5,7 @@
  * 		Displays a button ...
  */
 
-package com.runnershigh;
+package com.alarmclocksnoozers.runnershigh;
 
 public class Button extends RHDrawable{
 	private boolean showButton = false;

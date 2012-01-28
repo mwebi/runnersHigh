@@ -6,7 +6,7 @@
  * 	Highscore form Activity - shows input field to save score and name 
  */
 
-package com.runnershigh;
+package com.alarmclocksnoozers.runnershigh;
 
 import java.io.IOException;
 import android.view.View.OnKeyListener;
@@ -38,7 +38,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.highscore.HighscoreAdapter;
+import com.alarmclocksnoozers.highscore.HighscoreAdapter;
 
 public class HighScoreForm extends Activity {
 	

@@ -6,7 +6,7 @@
  * 	Highscore Activity itself - shows highscores of user 
  */
 
-package com.runnershigh;
+package com.alarmclocksnoozers.runnershigh;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -47,7 +47,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.TableRow.LayoutParams;
 
-import com.highscore.HighscoreAdapter;
+import com.alarmclocksnoozers.highscore.HighscoreAdapter;
 
 public class HighScoreActivity extends Activity {
 	

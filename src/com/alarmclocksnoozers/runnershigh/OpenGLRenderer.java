@@ -13,13 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.runnershigh;
+package com.alarmclocksnoozers.runnershigh;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-import com.runnershigh.Group;
-import com.runnershigh.Mesh;
 import android.opengl.GLU;
 import android.opengl.GLSurfaceView.Renderer;
 import android.util.Log;

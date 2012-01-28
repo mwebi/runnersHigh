@@ -6,7 +6,7 @@
  * 	Parent class for DbAdapter classes
  * 	opens or closes db connection
  */
-package com.highscore;
+package com.alarmclocksnoozers.highscore;
 
 import android.content.Context;
 import android.database.SQLException;

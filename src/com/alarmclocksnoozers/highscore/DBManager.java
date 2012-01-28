@@ -7,7 +7,7 @@
  * 	To update database table(s): increase DATABASE_VERSION + 1
  */
 
-package com.highscore;
+package com.alarmclocksnoozers.highscore;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
