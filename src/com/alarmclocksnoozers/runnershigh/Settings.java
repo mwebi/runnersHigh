@@ -45,4 +45,7 @@ public class Settings {
 	static final int timeUntilLongBlocksStopMillis = 40000;
 
 	static final int onlineHighscoreLimit = 100;
+	
+	
+	static final String URL_DONATE = "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=PSPCC2Z4PLL8W";
 }

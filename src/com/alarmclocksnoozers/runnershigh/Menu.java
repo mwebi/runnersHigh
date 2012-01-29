@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.Gravity;
@@ -103,6 +104,11 @@ public class Menu extends Activity {
     		mPlayButton.getBackground().clearColorFilter();
     	}
     	
+    }
+    
+    public void donate(View view) {
+    	Intent browserIntent = new Intent("android.intent.action.VIEW", Uri.parse(Settings.URL_DONATE));
+    	startActivity(browserIntent);
     }
     
     protected Dialog onCreateDialog(int id) {

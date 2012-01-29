@@ -42,21 +42,20 @@
 				android:onClick="showInfo"
 			android:layout_margin="5dp"/>
 	</LinearLayout>
-	<LinearLayout android:id="@+id/linearLayout3"
-		android:orientation="vertical"
-		android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:gravity="right" android:layout_weight="1">	
-			
-        	<View
-		        android:layout_width="fill_parent"
-		        android:layout_height="fill_parent"
-		        android:scaleType="fitCenter"
-	        android:layout_weight="1"/>
-        	<Button android:onClick="playGameWithFPS" android:background="#0000" android:id="@+id/buttonFPS" android:layout_weight="1" android:layout_height="100dp" android:layout_width="100dp"></Button>
-	        
-        	
-        
+
+	<LinearLayout
+	    android:id="@+id/linearLayout3"
+	    android:layout_width="fill_parent"
+	    android:layout_height="fill_parent"
+	    android:layout_weight="1"
+	    android:gravity="right"
+	    android:orientation="vertical" >
+
+	    <Button
+	        android:id="@+id/buttonDonate"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:background="@drawable/button_donate" android:layout_margin="10dp" android:onClick="donate"/>
 	</LinearLayout>
 	
 </LinearLayout>
