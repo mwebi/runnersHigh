@@ -50,12 +50,6 @@
 	    android:layout_weight="1"
 	    android:gravity="right"
 	    android:orientation="vertical" >
-
-	    <Button
-	        android:id="@+id/buttonDonate"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:background="@drawable/button_donate" android:layout_margin="10dp" android:onClick="donate"/>
 	</LinearLayout>
 	
 </LinearLayout>
