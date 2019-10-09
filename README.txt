@@ -1,6 +1,5 @@
 Version 4.0
 
-Visit game page at http://rh.fidrelity.at/
 Licensed under CC BY-NC-SA: http://creativecommons.org/licenses/by-nc-sa/3.0/deed.en_US
 
 
